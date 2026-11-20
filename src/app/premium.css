@@ -210,3 +210,19 @@ button,a,input,textarea,select { -webkit-tap-highlight-color:transparent; }
   .academy-content .mission-grid,.academy-content .review-card{grid-template-columns:1fr}
 }
 @media(prefers-reduced-motion:reduce){*,*:before,*:after{scroll-behavior:auto!important;transition:none!important}}
+
+
+/* Typography and Lucide icon refinements */
+.academy-brand{font-size:13px;letter-spacing:-.35px;gap:7px}
+.brand-flower{width:32px;height:32px;flex:none}
+.brand-flower svg,.metric-icon svg,.academy-goal-icon svg,.rail-heading-icon svg,.rail-next-icon svg{display:block}
+.profile-avatar>span svg{display:block}
+.academy-info-note>svg{flex:none;margin-top:1px;color:#6e9bda}
+.academy-card-heading>svg{color:#79a6e4;flex:none}
+.art-code-card>span svg{display:block}
+.academy-content .objective-list li{display:flex;align-items:center;gap:7px}
+.academy-content .objective-list li svg{color:#45ac88;flex:none}
+.meta-duration{display:inline-flex;align-items:center;gap:6px}
+.academy-content .external-link{display:inline-flex;align-items:center;gap:5px}
+.academy-content .empty-state>span{display:inline-flex}
+.sidebar-ad a>svg{flex:none}
