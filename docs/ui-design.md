@@ -1,4 +1,4 @@
-# Identité visuelle — Formation Pro 360
+# Identité visuelle : Formation Pro 360
 
 ## Orientation UX
 Direction : tableau de bord éducatif professionnel inspiré de la capture de référence communiquée par le commanditaire, sans reprise du logo, de l'avatar ou de la marque de cette référence.

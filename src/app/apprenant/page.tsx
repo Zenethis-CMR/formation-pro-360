@@ -1,5 +1,6 @@
 "use client";
 import { useMemo, useState, type FormEvent } from "react";
+import { Sparkles, Check, Clock3 } from "lucide-react";
 import { useDemo } from "@/context/demo-store";
 import { latestSubmission, missionState, stateLabels } from "@/lib/mission-engine";
 
@@ -20,7 +21,7 @@ export default function Apprenant() {
     setError(""); setSelectedId(null); setUrl(""); setNote("");
   }
   return <main className="page">
-    <section className="page-hero"><div><span className="eyebrow">ESPACE APPRENANT / PARCOURS ACTIF</span><h1>Ton parcours, <span>tes victoires.</span></h1><p>Valide les missions une par une. Chaque livrable est évalué avant le déblocage du niveau suivant.</p></div><div className="hero-icon" aria-hidden="true">✦</div></section>
+    <section className="page-hero"><div><span className="eyebrow">ESPACE APPRENANT / PARCOURS ACTIF</span><h1>Ton parcours, <span>tes victoires.</span></h1><p>Valide les missions une par une. Chaque livrable est évalué avant le déblocage du niveau suivant.</p></div><div className="hero-icon" aria-hidden="true"><Sparkles size={38} strokeWidth={1.8}/></div></section>
     <section className="stats-grid" aria-label="Progression">
       <div className="stat-card"><span>TON NIVEAU</span><strong>{level.toString().padStart(2,"0")}</strong><small>Progression par expérience</small></div>
       <div className="stat-card"><span>EXPÉRIENCE GAGNÉE</span><strong>{xp} <em>XP</em></strong><small>Uniquement après validation</small></div>
@@ -35,8 +36,8 @@ export default function Apprenant() {
         return <article className="mission-card" key={mission.id}>
           <div className="mission-head"><span className="week">SEMAINE {mission.week}</span><span className={"status "+status}>{stateLabels[status]}</span></div>
           <div className="mission-type">{mission.domain}</div><h3>{mission.title}</h3><p>{mission.description}</p>
-          <ul className="objective-list">{mission.objectives.map((item) => <li key={item}>✓ {item}</li>)}</ul>
-          <div className="mission-meta"><span>◷ {mission.duration}</span><span className="xp">+{mission.xp} XP</span></div>
+          <ul className="objective-list">{mission.objectives.map((item) => <li key={item}><Check size={14} strokeWidth={2} aria-hidden="true"/>{item}</li>)}</ul>
+          <div className="mission-meta"><span className="meta-duration"><Clock3 size={14} strokeWidth={1.8} aria-hidden="true"/>{mission.duration}</span><span className="xp">+{mission.xp} XP</span></div>
           {status === "locked" && <div className="helper">Prérequis : {mission.prerequisites.join(", ")}</div>}
           {status === "in_review" && <div className="helper">Livrable soumis · En attente de correction</div>}
           {status === "approved" && <div className="helper positive">Mission approuvée · {last?.score ?? 0}/100</div>}
