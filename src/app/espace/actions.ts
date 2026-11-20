@@ -66,3 +66,16 @@ export async function createMission(formData: FormData) {
   revalidatePath(trainerPath);
   redirect(trainerPath+"?success=created");
 }
+
+
+export async function publishMission(formData: FormData) {
+  const {supabase} = await requireRole("trainer");
+  const missionId = String(formData.get("missionId") || "");
+  if (!idPattern.test(missionId)) redirect(trainerPath+"?error=invalid");
+  const {error} = await supabase.from("missions").update({published:true})
+    .eq("id",missionId).eq("published",false);
+  if (error) redirect(trainerPath+"?error=publish");
+  revalidatePath(trainerPath);
+  revalidatePath(learnerPath);
+  redirect(trainerPath+"?success=published");
+}
