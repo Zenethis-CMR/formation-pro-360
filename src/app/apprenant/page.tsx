@@ -26,9 +26,9 @@ export default function Apprenant() {
       <div className="stat-card"><span>EXPÉRIENCE GAGNÉE</span><strong>{xp} <em>XP</em></strong><small>Uniquement après validation</small></div>
       <div className="stat-card"><span>MISSIONS VALIDÉES</span><strong>{approvedCount}<em> / {missions.length}</em></strong><small>Seuil de réussite : 80/100</small></div>
     </section>
-    <section className="panel progress-panel"><div className="section-head"><h2>Progression des missions</h2><strong>{missions.length ? Math.round(approvedCount / missions.length * 100) : 0}%</strong></div><div className="progress-track" role="progressbar" aria-label="Missions validées" aria-valuenow={approvedCount} aria-valuemin={0} aria-valuemax={missions.length}><div style={{width:(missions.length ? approvedCount / missions.length * 100 : 0)+"%"}}/></div><p>Les missions verrouillées s’ouvrent après validation de leurs prérequis.</p></section>
+    <section id="progression" className="panel progress-panel"><div className="section-head"><h2>Progression des missions</h2><strong>{missions.length ? Math.round(approvedCount / missions.length * 100) : 0}%</strong></div><div className="progress-track" role="progressbar" aria-label="Missions validées" aria-valuenow={approvedCount} aria-valuemin={0} aria-valuemax={missions.length}><div style={{width:(missions.length ? approvedCount / missions.length * 100 : 0)+"%"}}/></div><p>Les missions verrouillées s’ouvrent après validation de leurs prérequis.</p></section>
     {success && <div className="alert success" role="status">{success}</div>}
-    <section><div className="section-head"><div><span className="eyebrow">LE CHEMIN DE L’EXPERTISE</span><h2>Missions à accomplir</h2></div><span className="counter">{missions.length} missions</span></div>
+    <section id="missions"><div className="section-head"><div><span className="eyebrow">LE CHEMIN DE L’EXPERTISE</span><h2>Missions à accomplir</h2></div><span className="counter">{missions.length} missions</span></div>
       <div className="mission-grid">{sorted.map((mission) => {
         const status = missionState(mission, submissions);
         const last = latestSubmission(mission.id, submissions);
