@@ -5,7 +5,7 @@ import { createClient, isSupabaseConfigured } from "@/lib/supabase/server";
 export async function sendMagicLink(formData: FormData) {
   if (!isSupabaseConfigured()) redirect("/login?error=setup");
   const email = String(formData.get("email") || "").trim().toLowerCase();
-  if (email.length > 254 || !/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(email)) {
+  if (email.length > 254 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
     redirect("/login?error=email");
   }
   const supabase = await createClient();
