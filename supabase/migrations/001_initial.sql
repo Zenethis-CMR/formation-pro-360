@@ -46,6 +46,10 @@ create table public.submissions (
   check ((status='pending' and score is null and reviewed_by is null and reviewed_at is null)
       or (status <> 'pending' and score is not null and reviewed_by is not null and reviewed_at is not null))
 );
+-- Prevent double pending/approved submissions even under concurrent requests.
+create unique index submissions_one_active_or_approved
+on public.submissions(learner_id, mission_id)
+where status in ('pending','approved');
 create index submissions_learner_mission_time on public.submissions(learner_id, mission_id, created_at desc);
 create index submissions_pending on public.submissions(status, created_at) where status='pending';
 
