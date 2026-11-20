@@ -32,7 +32,7 @@ export async function reviewMission(formData: FormData) {
   const scoreText = String(formData.get("score") ?? "");
   const score = Number(scoreText);
   const feedback = String(formData.get("feedback") || "").trim();
-  if (!idPattern.test(submissionId) || !/^\\d{1,3}$/.test(scoreText) || !Number.isInteger(score) ||
+  if (!idPattern.test(submissionId) || !/^\d{1,3}$/.test(scoreText) || !Number.isInteger(score) ||
       score < 0 || score > 100 || feedback.length < 3 || feedback.length > 1500) {
     redirect(trainerPath+"?error=invalid");
   }
