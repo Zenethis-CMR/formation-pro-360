@@ -1,5 +1,6 @@
 "use client";
 import { useState, type FormEvent } from "react";
+import { Inbox, ExternalLink } from "lucide-react";
 import { useDemo } from "@/context/demo-store";
 import { latestSubmission, missionState, reviewCriteria } from "@/lib/mission-engine";
 
@@ -44,13 +45,13 @@ export default function Formateur() {
     {notice && <div className="alert success" role="status">{notice}</div>}
     {error && <div className="alert danger" role="alert">{error}</div>}
     <section className="panel"><div className="section-head"><div><span className="eyebrow">CORRECTION</span><h2>Soumissions à examiner</h2></div><span className="counter">{pending.length} en attente</span></div>
-      {pending.length === 0 ? <div className="empty-state"><span>✧</span><h3>Aucune soumission en attente</h3><p>Ouvre l’espace apprenant et soumets la mission M01 pour tester le circuit complet.</p></div> :
+      {pending.length === 0 ? <div className="empty-state"><span><Inbox size={34} strokeWidth={1.6}/></span><h3>Aucune soumission en attente</h3><p>Ouvre l’espace apprenant et soumets la mission M01 pour tester le circuit complet.</p></div> :
         <div className="review-list">{pending.map((submission) => {
           const mission = missions.find((item) => item.id === submission.missionId);
           return <div className="review-card" key={submission.id}>
             <div><span className="week">{mission?.id} · {mission?.domain}</span><h3>{mission?.title ?? "Mission inconnue"}</h3>
               <p className="muted">{submission.note || "Aucune note jointe"}</p>
-              <a className="external-link" href={submission.url} target="_blank" rel="noopener noreferrer">Ouvrir le livrable ↗</a></div>
+              <a className="external-link" href={submission.url} target="_blank" rel="noopener noreferrer">Ouvrir le livrable <ExternalLink size={14} strokeWidth={1.8}/></a></div>
             <div className="review-controls"><label>Note /100<input type="number" min={0} max={100} step={1} placeholder="80" value={scores[submission.id] ?? ""} onChange={(e) => setScores((prev) => ({...prev,[submission.id]:e.target.value}))}/></label>
               <label>Retour pédagogique<textarea rows={3} placeholder="Ce qui fonctionne et ce qu’il faut améliorer…" value={feedback[submission.id] ?? ""} onChange={(e) => setFeedback((prev) => ({...prev,[submission.id]:e.target.value}))}/></label>
               <button className="primary-btn" onClick={() => onReview(submission.id)}>Valider l’évaluation</button>
