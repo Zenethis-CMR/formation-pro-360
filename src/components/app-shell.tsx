@@ -46,7 +46,7 @@ function DashboardSidebar() {
       <div className="sidebar-ad-icon"><UIIcon name="spark" size={20}/></div>
       <b>Chaque projet compte.</b>
       <p>Progresse en développant de vraies compétences.</p>
-      <Link href="/apprenant">Découvrir les missions <span aria-hidden="true">↗</span></Link>
+      <Link href="/apprenant">Découvrir les missions <UIIcon name="arrow" size={16}/></Link>
     </div>
     <div className="sidebar-footer">© Formation Pro 360<br/><small>Prototype pédagogique</small></div>
   </aside>;
