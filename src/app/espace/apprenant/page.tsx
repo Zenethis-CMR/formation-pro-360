@@ -1,3 +1,4 @@
+import { signOut } from "@/app/auth/actions";
 import { redirect } from "next/navigation";
 import { submitMission } from "@/app/espace/actions";
 import { requireRole } from "@/lib/auth/require-role";
@@ -27,6 +28,7 @@ export default async function LearnerSpace({searchParams}:{searchParams:Promise<
   return <main className="page">
     <section className="page-hero"><div><span className="eyebrow">ESPACE APPRENANT · COMPTE SÉCURISÉ</span><h1>Progression <span>réelle.</span></h1>
       <p>Tes missions sont conservées dans la base de données. Le formateur valide les livrables avant l’attribution des XP.</p></div></section>
+    <form action={signOut} style={{display:"flex",justifyContent:"flex-end"}}><button type="submit" className="text-btn">Se déconnecter</button></form>
     <div className="stats-grid"><div className="stat-card"><span>NIVEAU</span><strong>{level}</strong></div>
       <div className="stat-card"><span>EXPÉRIENCE</span><strong>{xp} <em>XP</em></strong></div>
       <div className="stat-card"><span>MISSIONS VALIDÉES</span><strong>{approved.size}<em> / {missions.length}</em></strong></div></div>
