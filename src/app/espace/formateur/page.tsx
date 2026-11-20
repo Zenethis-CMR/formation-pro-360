@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
-import { createMission, reviewMission } from "@/app/espace/actions";
+import { createMission, reviewMission, publishMission } from "@/app/espace/actions";
+import { signOut } from "@/app/auth/actions";
 import { requireRole } from "@/lib/auth/require-role";
 import { isSupabaseConfigured } from "@/lib/supabase/server";
 
@@ -20,6 +21,7 @@ export default async function TrainerSpace({searchParams}:{searchParams:Promise<
   return <main className="page">
     <section className="page-hero"><div><span className="eyebrow">ESPACE FORMATEUR · AUTORISATION VÉRIFIÉE</span>
       <h1>Évaluer pour <span>faire progresser.</span></h1><p>Les évaluations sont enregistrées dans PostgreSQL ; les XP sont attribués par une opération sécurisée et contrôlée.</p></div></section>
+    <form action={signOut} style={{display:"flex",justifyContent:"flex-end"}}><button type="submit" className="text-btn">Se déconnecter</button></form>
     <div className="stats-grid"><div className="stat-card"><span>SOUMISSIONS EN ATTENTE</span><strong>{pending.length}</strong></div>
       <div className="stat-card"><span>MISSIONS PUBLIÉES</span><strong>{catalog.filter(m=>m.published).length}</strong></div>
       <div className="stat-card"><span>MISSIONS EN BROUILLON</span><strong>{catalog.filter(m=>!m.published).length}</strong></div></div>
@@ -40,8 +42,15 @@ export default async function TrainerSpace({searchParams}:{searchParams:Promise<
         </form>
       </article>)}</div>}
     </section>
+    <section className="panel"><div className="section-head"><h2>Brouillons à publier</h2><span className="counter">{catalog.filter(m=>!m.published).length} brouillon(s)</span></div>
+      <div className="review-list">{catalog.filter(m=>!m.published).map(m=><div key={m.id} className="review-card">
+        <div><span className="week">{m.domain}</span><h3>{m.title}</h3><p className="muted">Récompense : {m.xp} XP</p></div>
+        <form action={publishMission} className="form"><input type="hidden" name="missionId" value={m.id}/>
+          <button type="submit" className="primary-btn">Publier la mission</button>
+        </form></div>)}</div>
+    </section>
     <section className="panel" style={{maxWidth:660}}><span className="eyebrow">PROGRAMME</span><h2>Créer une mission</h2>
-      <p className="muted">La mission est créée comme brouillon. Sa publication et ses prérequis seront gérés dans une prochaine étape.</p>
+      <p className="muted">La mission est créée comme brouillon, puis peut être publiée depuis la liste ci-dessus. La gestion graphique des prérequis sera ajoutée ensuite.</p>
       <form action={createMission} className="form">
         <label>Titre<input name="title" required minLength={3} maxLength={110}/></label>
         <label>Domaine<input name="domain" required minLength={2} maxLength={80} defaultValue="Développement web"/></label>
