@@ -1,19 +1,45 @@
-# Supabase (PostgreSQL + Auth) — branche de développement
+# Formation Pro 360 : activation Supabase
 
-## Statut
-Cette branche prépare le branchement à Supabase. **Aucune base distante n'est encore créée ni migrée**.
-La démonstration actuelle sur `main` reste intacte.
+## État réel
 
-## Déploiement sécurisé
-1. Connecter Supabase au compte puis créer un projet dans une région adaptée, en vérifiant les coûts et les exigences de protection des données.
-2. Dans SQL Editor du **nouveau projet**, examiner et exécuter `supabase/migrations/001_initial.sql`. Ne pas lancer cette migration non idempotente sur une base existante.
-3. Renseigner dans Vercel (Production / Preview) : `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`, `NEXT_PUBLIC_SITE_URL` (URL de l'application), via l'interface sécurisée. Ne pas les committer avec des valeurs réelles.
-4. Dans Supabase Authentication > URL Configuration, définir Site URL et la redirection `https://formation-pro-360.vercel.app/auth/callback` (et les URL de prévisualisation si nécessaire).
-5. Un compte s'inscrit via email, devenant **learner** par défaut. Pour attribuer le premier rôle formateur, effectuer la commande SQL d'amorçage de la fin de la migration en remplaçant l'adresse du formateur.
-6. Vérifier 4 scénarios avec deux comptes distincts : soumission apprenant, correction formateur, refus d'accès formateur par apprenant, isolation des soumissions et XP.
-7. Ne fusionner la branche dans `main` qu'après tests et vérification des autorisations.
+- Projet Supabase : **Formation Pro 360** (référence `llwuukoqwlwpefgipvgc`), région Paris.
+- PostgreSQL actif et migré avec `001_initial.sql` puis `002_optimize_rls.sql`.
+- Les cinq tables sont protégées par RLS et quatre missions de départ sont publiées.
+- Vercel possède les variables d'environnement publiques requises (URL, clé publishable, URL du site).
+- Les pages de démonstration `/apprenant` et `/formateur` restent séparées des espaces réels protégés `/espace/apprenant` et `/espace/formateur`.
+
+## Configuration Supabase Auth, action manuelle dans le tableau de bord
+
+Dans Supabase, sélectionner **Formation Pro 360**, puis Authentication > URL Configuration.
+1. Site URL : `https://formation-pro-360.vercel.app`
+2. Ajouter aux URL de redirection : `https://formation-pro-360.vercel.app/auth/callback`
+3. Ajouter uniquement les URL de prévisualisation de confiance nécessaires aux tests, puis les retirer à la fin.
+4. Vérifier qu'un modèle d'e-mail de connexion OTP/magic link est activé. Pour des comptes réels, contrôler les restrictions d'inscription et les limites d'envoi. Ne pas envoyer des e-mails de test à des tiers sans consentement.
+
+## Amorcer le premier compte formateur
+
+1. Une fois les URL de connexion configurées et l'application déployée, se connecter sur `/login` avec l'e-mail du formateur.
+2. Le nouveau compte est **learner** par défaut.
+3. L'administrateur identifie l'e-mail qu'il est autorisé à promouvoir puis exécute dans SQL Editor :
+
+```sql
+update public.profiles set role='trainer'
+where id=(select id from auth.users where email='EMAIL_DU_FORMATEUR');
+```
+
+L'adresse doit être remplacée localement par celle du formateur réel. Vérifier la ligne modifiée avant de déclarer le compte prêt. Aucun accès formateur n'est accordé automatiquement sur simple indication d'un e-mail.
+
+## Tests avant passage en production
+
+- Déploiement Next.js en preview puis contrôle TypeScript et routes.
+- Essai de connexion par lien e-mail avec deux comptes distincts.
+- Vérifier qu'un apprenant ne peut pas consulter `/espace/formateur` ni les soumissions des autres.
+- Valider un livrable à 85/100 : apparition d'une seule ligne d'XP et déblocage du prérequis suivant.
+- Rejeter un livrable avec une note inférieure à 80 : correction possible, pas d'XP attribués.
+- Tests mobiles, validation, absence de clés secrètes dans GitHub.
 
 ## Sécurité
-Les rôles sont déterminés dans PostgreSQL, jamais par un champ modifiable depuis le navigateur.
-RLS est activé sur toutes les tables. La revue et l'attribution des XP se font dans une fonction PostgreSQL autorisée uniquement pour le formateur.
-Aucune clé service-role n'est nécessaire dans le front-end ou dans les actions serveur.
+
+Les fonctions `public.is_trainer` et `public.review_submission` sont des fonctions SECURITY DEFINER explicitement contrôlées : ce choix déclenche un avertissement du linter Supabase. Toute fonction de correction vérifie le rôle en base avant de modifier les résultats. Ne pas supprimer ces contrôles ni exposer une clé de service dans l'application.
+
+L'application n'utilise que la **clé publishable** autorisée dans le front-end. Aucune clé d'administration ni mot de passe ne doit être commité. La première version de production ne doit pas traiter de données sensibles avant tests complets.
