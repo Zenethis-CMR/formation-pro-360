@@ -10,20 +10,40 @@ const trainerPath = "/espace/formateur";
 export async function submitMission(formData: FormData) {
   const {supabase, user} = await requireRole("learner");
   const missionId = String(formData.get("missionId") || "");
+  const source = String(formData.get("source") || "");
+  const backTo = idPattern.test(missionId) && source==="atelier"
+    ? "/espace/atelier/"+missionId : learnerPath;
   const url = String(formData.get("url") || "").trim();
   const note = String(formData.get("note") || "").trim();
   if (!idPattern.test(missionId) || url.length > 800 || note.length > 1200) {
-    redirect(learnerPath+"?error=invalid");
+    redirect(backTo+"?error=invalid");
   }
   let link: URL;
-  try { link = new URL(url); } catch { redirect(learnerPath+"?error=invalid"); }
-  if (!["http:","https:"].includes(link.protocol)) redirect(learnerPath+"?error=invalid");
+  try { link = new URL(url); } catch { redirect(backTo+"?error=invalid"); }
+  if (!["http:","https:"].includes(link.protocol)) redirect(backTo+"?error=invalid");
   const {error} = await supabase.from("submissions").insert({
     mission_id: missionId, learner_id: user.id, url: link.href, note
   });
-  if (error) redirect(learnerPath+"?error=submission");
+  if (error) redirect(backTo+"?error=submission");
   revalidatePath(learnerPath);
-  redirect(learnerPath+"?success=sent");
+  revalidatePath(backTo);
+  redirect(backTo+"?success=sent");
+}
+
+export async function completeWorkshopStep(formData: FormData) {
+  const {supabase,user}=await requireRole("learner");
+  const missionId=String(formData.get("missionId")||"");
+  const stepText=String(formData.get("step")||"");
+  if(!idPattern.test(missionId)|| !/^[1-8]$/.test(stepText)) {
+    redirect(learnerPath+"?error=invalid");
+  }
+  const workshopPath="/espace/atelier/"+missionId;
+  const {error}=await supabase.from("workshop_steps").insert({
+    mission_id:missionId, learner_id:user.id, step_number:Number(stepText)
+  });
+  if(error && error.code!=="23505") redirect(workshopPath+"?error=step");
+  revalidatePath(workshopPath);
+  redirect(workshopPath+"?success=step");
 }
 
 export async function reviewMission(formData: FormData) {
