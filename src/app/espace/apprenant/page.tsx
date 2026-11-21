@@ -3,6 +3,9 @@ import { redirect } from "next/navigation";
 import { submitMission } from "@/app/espace/actions";
 import { requireRole } from "@/lib/auth/require-role";
 import { isSupabaseConfigured } from "@/lib/supabase/server";
+import { CurriculumRoadmap } from "@/components/curriculum-roadmap";
+import { curriculumWeeks } from "@/lib/curriculum";
+import { TechnologyBadge, technologiesForMission, displayDomain } from "@/components/technology-badge";
 
 type Params = { error?: string; success?: string };
 type Mission = { id:string; title:string; domain:string; description:string; week:number;
@@ -25,6 +28,7 @@ export default async function LearnerSpace({searchParams}:{searchParams:Promise<
   const xp = (rawXp || []).reduce((sum,x) => sum + Number(x.xp),0);
   const level = Math.floor(xp/300)+1;
   const deps = (rawDeps || []) as {mission_id:string;prerequisite_id:string}[];
+  const activeWeek = curriculumWeeks.find(w => missions.some(m => m.week===w.week && !approved.has(m.id)))?.week ?? 8;
   return <main className="page">
     <section className="page-hero"><div><span className="eyebrow">ESPACE APPRENANT · COMPTE SÉCURISÉ</span><h1>Progression <span>réelle.</span></h1>
       <p>Tes missions sont conservées dans la base de données. Le formateur valide les livrables avant l’attribution des XP.</p></div></section>
@@ -34,16 +38,23 @@ export default async function LearnerSpace({searchParams}:{searchParams:Promise<
       <div className="stat-card"><span>MISSIONS VALIDÉES</span><strong>{approved.size}<em> / {missions.length}</em></strong></div></div>
     {params.success && <p className="alert success">Livrable enregistré. Il attend maintenant la correction du formateur.</p>}
     {params.error && <p className="alert danger">Impossible d’enregistrer cette soumission. Vérifie les informations et les prérequis.</p>}
-    <div className="section-head"><h2>Programme et missions</h2><span className="counter">Seuil : 80/100</span></div>
-    <div className="mission-grid">{missions.map(m=>{
+    <CurriculumRoadmap missions={missions} approved={approved}/>
+    <div className="section-head" id="missions"><h2>Programme et missions</h2><span className="counter">Seuil : 80/100</span></div>
+    <div className="curriculum-mission-list">{curriculumWeeks.map(w=>{
+      const weekMissions = missions.filter(m=>m.week===w.week);
+      if(!weekMissions.length) return null;
+      const completedThisWeek = weekMissions.filter(m=>approved.has(m.id)).length;
+      return <details className="curriculum-week-group" key={w.week} open={w.week===activeWeek}>
+        <summary><span className="curriculum-week-name"><span>SEMAINE {w.week}</span><strong>{w.title}</strong></span><span className="curriculum-week-total">{completedThisWeek}/{weekMissions.length} validée(s)</span></summary>
+        <div className="mission-grid">{weekMissions.map(m=>{
       const recent = submissions.find(s=>s.mission_id===m.id);
       const blocked = deps.some(d=>d.mission_id===m.id && !approved.has(d.prerequisite_id));
       const completed = approved.has(m.id);
       const canSubmit = !blocked && !completed && (!recent || recent.status==="changes_requested");
-      return <article className="mission-card" key={m.id}>
+      return <article className="mission-card" id={"mission-"+m.id} key={m.id}>
         <div className="mission-head"><span className="week">SEMAINE {m.week}</span><span className={"status "+(completed?"approved":blocked?"locked":recent?.status==="pending"?"in_review":"available")}>
           {completed?"Validée":blocked?"Verrouillée":recent?.status==="pending"?"En évaluation":recent?.status==="changes_requested"?"À corriger":"Disponible"}</span></div>
-        <div className="mission-type">{m.domain}</div><h3>{m.title}</h3><p>{m.description}</p>
+        <div className="mission-type"><span>{displayDomain(m.domain)}</span>{technologiesForMission(m).map(tech=><TechnologyBadge name={tech} key={tech}/>)}</div><h3>{m.title}</h3><p>{m.description}</p>
         <p className="muted">Livrable : {m.deliverable}</p><ul className="objective-list">{(m.objectives||[]).map(o=><li key={o}>✓ {o}</li>)}</ul>
         <div className="mission-meta"><span>◷ {m.duration}</span><span className="xp">+{m.xp} XP</span></div>
         {recent?.feedback && <p className="helper">{recent.score}/100 · {recent.feedback}</p>}
@@ -54,6 +65,8 @@ export default async function LearnerSpace({searchParams}:{searchParams:Promise<
           <button className="primary-btn" type="submit">Soumettre à la correction</button>
         </form>}
       </article>;
+    })}</div>
+      </details>;
     })}</div>
   </main>;
 }
