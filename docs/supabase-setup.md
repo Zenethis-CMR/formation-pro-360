@@ -107,3 +107,26 @@ Correction structurée :
 - Les apprenants n'ont aucun droit d'écriture sur les notes enregistrées.
 
 À vérifier avec deux utilisateurs avant une montée en charge : calendrier daté après la saisie par le formateur ; sécurité RLS ; soumission, échec de mission, nouveau livrable, note détaillée et attribution unique d'XP.
+
+
+## Pilotage, alertes et messages pédagogiques
+
+Migration `008_coaching_messages.sql` :
+- Table `coach_messages` sécurisée par RLS, avec messages consultables seulement par le destinataire et les formateurs. La création est réservée aux comptes formateurs et à un destinataire de rôle apprenant.
+- Les messages sont **internes** à la plateforme : aucune adresse externe, notification WhatsApp, e-mail ou SMS n'est utilisée.
+- Tableau formateur : nombre de travaux en attente, signalement des reprises et semaines à rattraper, indicateur d'activité, conseils personnalisables, contact individuel.
+- Tableau apprenant : action prioritaire, atelier accessible, améliorations demandées et messages du formateur.
+- Les suggestions sont calculées sur les validations `xp_ledger`, les prérequis, les soumissions, les étapes et les séances réellement enregistrées.
+
+Règles des alertes :
+- Aucun retard, aucun compteur d'inactivité et aucune échéance tant que le formateur n'a pas fixé la date de début.
+- Une semaine n'est à rattraper qu'après la fin de son septième jour et seulement si au moins une de ses missions n'a pas été validée.
+- Une attente de correction est distinguée d'un travail à reprendre. Un projet en cours de correction n'est pas présenté comme un échec.
+- Les messages, les recommandations et les séances déclarées n'attribuent aucun XP ni badge.
+
+Contrôles manuels avec deux comptes réels à terminer :
+1. Définir la date du début, vérifier la cohérence du calendrier sans fausses alertes.
+2. Formateur : envoyer une consigne interne à l'apprenant ; apprenant : vérifier sa réception après reconnexion.
+3. Soumettre un projet, corriger à moins de 80, remettre une version améliorée et valider à 80 ou plus.
+4. Vérifier l'unicité des XP, des badges et la séparation des messages entre comptes.
+5. Vérifier l'envoi Resend sur un téléphone réel ; surveiller la délivrabilité avant une ouverture plus large.
