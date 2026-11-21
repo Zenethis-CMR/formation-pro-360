@@ -3,9 +3,9 @@
 ## État réel
 
 - Projet Supabase : **Formation Pro 360** (référence `llwuukoqwlwpefgipvgc`), région Paris.
-- PostgreSQL actif avec `001_initial.sql`, `002_optimize_rls.sql` et `003_eight_week_curriculum.sql`.
+- PostgreSQL actif avec les migrations `001_initial.sql` à `004_verified_badges_practice.sql`.
 - **16 missions publiées** sur huit semaines, avec prérequis progressifs. La validation d'une mission attribue des XP une seule fois.
-- Les cinq tables sont protégées par RLS et quatre missions de départ sont publiées.
+- Les huit tables applicatives sont protégées par RLS : profils, missions, prérequis, soumissions, XP, badges, badges acquis et séances de pratique.
 - Vercel possède les variables d'environnement publiques requises (URL, clé publishable, URL du site).
 - Les pages de démonstration `/apprenant` et `/formateur` restent séparées des espaces réels protégés `/espace/apprenant` et `/espace/formateur`.
 
@@ -51,9 +51,17 @@ L'apprenant visualise une carte des huit étapes, chaque semaine avec ses compé
 
 Le formateur accède au programme, au nombre de comptes apprenants et au total des XP effectivement attribués. La feuille de route est décrite dans `src/lib/curriculum.ts` et les données réelles dans la migration `003_eight_week_curriculum.sql`. Les nouveaux exercices ajoutés via l'interface peuvent être créés en brouillon.
 
-## Domaine et e-mails (après finalisation)
+## SMTP à configurer avant ouverture aux apprenants
 
-- Domaine souhaité à la fin du projet : `formation.zenithis.tech`.
-- À ce moment, ajouter `https://formation.zenithis.tech` comme URL du site et `https://formation.zenithis.tech/auth/callback` parmi les URL de redirection Supabase.
-- Configurer un fournisseur SMTP professionnel, vérifier l'expéditeur/DNS, puis tester la délivrabilité depuis un compte apprenant distinct. Sans SMTP personnalisé, les e-mails d'authentification Supabase sont fortement limités.
-- Ne pas modifier l'URL publique de production ni imposer ce domaine avant validation de tous les tests.
+- Fournisseur retenu : **Resend via SMTP personnalisé**. Guide d'activation : [auth-email-resend.md](./auth-email-resend.md).
+- Activer et vérifier l'expéditeur `no-reply@auth.zenithis.tech` dès maintenant, indépendamment du site.
+- Domaine de l'application réservé à la fin du projet : `formation.zenithis.tech`. Mettre à jour les URL Vercel, Supabase et les redirections seulement après validation.
+- Aucune clé Resend ne doit être écrite dans GitHub, les composants React ou les variables publiques Vercel.
+- La limite de 2 e-mails/heure reste en place tant que le SMTP personnalisé n'est pas réellement activé.
+
+## Gamification en données réelles
+
+- Catalogue de six badges déclenchés par 1, 2, 4, 8, 12 et 16 missions **validées**.
+- L'attribution est automatique à chaque nouvel XP certifié en base, sans possibilité pour un navigateur d'écrire directement un badge.
+- Un défi de pratique différent chaque jour de la semaine. La séance est déclarée par l'apprenant, sans XP, et stockée par jour au fuseau Africa/Douala.
+- Statistiques apprenant et suivi de cohorte formateur, basés sur Supabase. Aucun XP n'est attribué par simple clic sur « séance terminée ».
