@@ -69,3 +69,22 @@ Le formateur accède au programme, au nombre de comptes apprenants et au total d
 ## Contrôles de permissions
 
 La migration `005_restrict_client_writes.sql` révoque explicitement à `authenticated` les écritures directes sur les rôles et les XP. Les clients peuvent toujours enregistrer une pratique quotidienne et soumettre une mission selon les politiques RLS. Les fonctions de validation côté serveur restent seules responsables de la création des récompenses après évaluation.
+
+
+## Ateliers guidés : apprendre avant d'être noté
+
+Migration `006_guided_workshops.sql` :
+- 16 ateliers reliés aux missions existantes, chacun avec un brief, **4 étapes concrètes**, des résultats attendus, une grille de 4 critères, un conseil et un lien de documentation.
+- 64 étapes de travail et un suivi individuel `workshop_steps`, sécurisé par RLS et par un trigger qui vérifie les prérequis.
+- Atelier accessible depuis une carte de mission via `/espace/atelier/[id]` avec statut de verrouillage, progression des étapes, retour de correction et formulaire de remise.
+- Consignes consultables même si les prérequis ne sont pas encore validés ; impossible de cocher ou de soumettre tant que la mission est verrouillée.
+- Le formateur voit la même grille de critères directement à côté du projet à corriger.
+- **Cocher une étape ne crée jamais d'XP, ne déverrouille aucune mission et n'attribue aucun badge.** Seule la validation de la soumission par un formateur peut le faire.
+- Aucun contenu utilisateur existant n'est supprimé.
+
+Contrôles avant publication :
+- [ ] Depuis le compte apprenant, marquer une étape du premier atelier puis rafraîchir : l'étape reste cochée.
+- [ ] Depuis ce même compte, ouvrir une mission verrouillée : lecture possible, actions bloquées.
+- [ ] Soumettre un projet depuis l'atelier accessible : la correction apparaît dans le tableau formateur.
+- [ ] Corriger à 85/100 : XP et badge attribués une seule fois.
+- [ ] Vérifier mobile, navigation clavier, absence de secrets dans l'application.
