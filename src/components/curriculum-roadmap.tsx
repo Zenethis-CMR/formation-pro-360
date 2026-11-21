@@ -5,11 +5,12 @@ import { curriculumWeeks } from "@/lib/curriculum";
 type MissionRef = { id: string; week: number; title: string };
 type Props = {
   missions: MissionRef[];
+  prerequisites?: {mission_id:string;prerequisite_id:string}[];
   approved?: Set<string>;
   variant?: "learner" | "trainer";
 };
 
-export function CurriculumRoadmap({ missions, approved = new Set<string>(), variant = "learner" }: Props) {
+export function CurriculumRoadmap({ missions, approved = new Set<string>(), prerequisites = [], variant = "learner" }: Props) {
   const trainer = variant === "trainer";
   const total = missions.length;
   const validated = missions.filter(m => approved.has(m.id)).length;
@@ -33,7 +34,11 @@ export function CurriculumRoadmap({ missions, approved = new Set<string>(), vari
     </div>
     <div className="journey-week-grid">
       {curriculumWeeks.map(w => {
-        const group = missions.filter(m => m.week === w.week);
+        const group = missions.filter(m => m.week === w.week).sort((a,b)=>{
+          if(prerequisites.some(d=>d.mission_id===b.id&&d.prerequisite_id===a.id))return -1;
+          if(prerequisites.some(d=>d.mission_id===a.id&&d.prerequisite_id===b.id))return 1;
+          return a.title.localeCompare(b.title,"fr");
+        });
         const done = group.filter(m => approved.has(m.id)).length;
         const isDone = !trainer && group.length > 0 && done === group.length;
         const isCurrent = !trainer && w.week === activeWeek;
