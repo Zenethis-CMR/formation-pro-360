@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import Link from "next/link";
 import { createMission, reviewMission, publishMission } from "@/app/espace/actions";
 import { signOut } from "@/app/auth/actions";
 import { requireRole } from "@/lib/auth/require-role";
@@ -91,13 +92,16 @@ export default async function TrainerSpace({searchParams}:{searchParams:Promise<
     </section>
     <section className="panel"><div className="section-head"><h2>Brouillons à publier</h2><span className="counter">{catalog.filter(m=>!m.published).length} brouillon(s)</span></div>
       <div className="review-list">{catalog.filter(m=>!m.published).map(m=><div key={m.id} className="review-card">
-        <div><span className="week">SEMAINE {m.week} · {displayDomain(m.domain)}</span><h3>{m.title}</h3><p className="muted">Récompense : {m.xp} XP</p></div>
+        <div><span className="week">SEMAINE {m.week} · {displayDomain(m.domain)}</span><h3>{m.title}</h3>
+          <p className="muted">Récompense : {m.xp} XP</p>
+          <Link className="authoring-guide-link" href={"/espace/formateur/atelier/"+m.id}>Rédiger ou modifier les quatre étapes de l'atelier</Link>
+        </div>
         <form action={publishMission} className="form"><input type="hidden" name="missionId" value={m.id}/>
           <button type="submit" className="primary-btn">Publier la mission</button>
         </form></div>)}</div>
     </section>
     <section className="panel" style={{maxWidth:660}}><span className="eyebrow">PROGRAMME</span><h2>Créer une mission</h2>
-      <p className="muted">La mission est créée comme brouillon, puis peut être publiée depuis la liste ci-dessus. La gestion graphique des prérequis sera ajoutée ensuite.</p>
+      <p className="muted">La mission est d’abord enregistrée en brouillon. Choisis éventuellement un prérequis, rédige ses étapes pédagogiques, puis publie-la.</p>
       <form action={createMission} className="form">
         <label>Titre<input name="title" required minLength={3} maxLength={110}/></label>
         <label>Domaine<input name="domain" required minLength={2} maxLength={80} defaultValue="Développement web"/></label>
@@ -105,6 +109,13 @@ export default async function TrainerSpace({searchParams}:{searchParams:Promise<
         <label>Livrable attendu<input name="deliverable" required minLength={3} maxLength={500}/></label>
         <div className="field-row"><label>Semaine<input name="week" type="number" required defaultValue={1} min={1} max={8}/></label>
           <label>XP<input name="xp" type="number" required defaultValue={100} min={10} max={1000}/></label></div>
+        <label>Mission préalable (optionnelle)
+          <select name="prerequisiteId" defaultValue="">
+            <option value="">Aucun prérequis</option>
+            {catalog.filter(m=>m.published).map(m=><option value={m.id} key={m.id}>Semaine {m.week} · {m.title}</option>)}
+          </select>
+          <small>La mission préalable doit déjà être publiée et appartenir à la même semaine ou à une semaine antérieure.</small>
+        </label>
         <button className="primary-btn" type="submit">Enregistrer comme brouillon</button>
       </form>
     </section>
