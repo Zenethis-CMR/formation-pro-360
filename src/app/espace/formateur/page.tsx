@@ -5,6 +5,7 @@ import { requireRole } from "@/lib/auth/require-role";
 import { isSupabaseConfigured } from "@/lib/supabase/server";
 import { CurriculumRoadmap } from "@/components/curriculum-roadmap";
 import { displayDomain } from "@/components/technology-badge";
+import { CohortProgress } from "@/components/cohort-progress";
 
 type Params={error?:string;success?:string};
 type Submission={id:string;mission_id:string;learner_id:string;url:string;note:string;created_at:string};
@@ -13,13 +14,15 @@ export default async function TrainerSpace({searchParams}:{searchParams:Promise<
   if(!isSupabaseConfigured()) redirect("/espace");
   const {supabase} = await requireRole("trainer");
   const params=await searchParams;
-  const [{data:submissions,error:se},{data:missions,error:me},{data:learners,error:le},{data:awards,error:ae}] = await Promise.all([
+  const [{data:submissions,error:se},{data:missions,error:me},{data:learners,error:le},{data:awards,error:ae},{data:allSubmissions,error:allSe},{data:practice,error:pe}] = await Promise.all([
     supabase.from("submissions").select("id,mission_id,learner_id,url,note,created_at").eq("status","pending").order("created_at"),
     supabase.from("missions").select("id,title,domain,xp,published,week").order("week"),
     supabase.from("profiles").select("id").eq("role","learner"),
-    supabase.from("xp_ledger").select("xp")
+    supabase.from("xp_ledger").select("learner_id,mission_id,xp"),
+    supabase.from("submissions").select("learner_id,status,created_at"),
+    supabase.from("practice_checkins").select("learner_id,practice_date")
   ]);
-  if(se||me||le||ae)return <main className="page"><p className="alert danger">Erreur de chargement. Vérifie les migrations SQL et les droits du compte.</p></main>;
+  if(se||me||le||ae||allSe||pe)return <main className="page"><p className="alert danger">Erreur de chargement. Vérifie les migrations SQL et les droits du compte.</p></main>;
   const pending=(submissions||[]) as Submission[], catalog=(missions||[]) as Mission[];
   const byId = new Map(catalog.map(m=>[m.id,m]));
   return <main className="page">
@@ -31,6 +34,7 @@ export default async function TrainerSpace({searchParams}:{searchParams:Promise<
       <div className="stat-card"><span>APPRENANTS INSCRITS</span><strong>{(learners||[]).length}</strong></div>
       <div className="stat-card"><span>XP ATTRIBUÉS</span><strong>{(awards||[]).reduce((sum,x)=>sum+Number(x.xp),0)}</strong></div></div>
     <CurriculumRoadmap missions={catalog} variant="trainer"/>
+    <CohortProgress learners={learners||[]} awards={awards||[]} submissions={allSubmissions||[]} practice={practice||[]} missionCount={catalog.filter(m=>m.published).length}/>
     {params.success && <p className="alert success">Modification enregistrée dans la base de données.</p>}
     {params.error && <p className="alert danger">Échec de l’opération. Vérifie les champs ou les droits d’accès.</p>}
     <section className="panel"><div className="section-head"><h2>Soumissions à évaluer</h2><span className="counter">{pending.length} en attente</span></div>
