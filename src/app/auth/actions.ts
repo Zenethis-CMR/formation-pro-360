@@ -14,7 +14,15 @@ export async function sendMagicLink(formData: FormData) {
     email,
     options: {emailRedirectTo: new URL("/auth/callback", origin).toString()}
   });
-  if (error) redirect("/login?error=send");
+  if (error) {
+    if (error.code === "over_email_send_rate_limit" || error.status === 429) {
+      redirect("/login?error=quota");
+    }
+    if (error.code === "email_address_not_authorized") {
+      redirect("/login?error=unauthorized");
+    }
+    redirect("/login?error=send");
+  }
   redirect("/login?sent=1");
 }
 
