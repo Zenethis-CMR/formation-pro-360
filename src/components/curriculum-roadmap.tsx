@@ -39,7 +39,7 @@ export function CurriculumRoadmap({ missions, approved = new Set<string>(), vari
         const isCurrent = !trainer && w.week === activeWeek;
         const state = trainer ? "catalog" : isDone ? "completed" : isCurrent ? "current" : "upcoming";
         const progress = group.length ? Math.round(done / group.length * 100) : 0;
-        const destination = group[0] ? "/espace/apprenant#mission-" + group[0].id : "/espace/apprenant";
+        const destination = group[0] ? "/espace/atelier/" + group[0].id : "/espace/apprenant";
         return <div key={w.week} className={"journey-week " + state}>
           <div className="journey-week-top">
             <span className="journey-week-index">S{String(w.week).padStart(2,"0")}</span>
