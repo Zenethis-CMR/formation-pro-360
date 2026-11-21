@@ -63,7 +63,7 @@ export async function reviewMission(formData: FormData) {
 
   if(guide && Array.isArray(guide.rubric) && guide.rubric.length===4) {
     const raw=[0,1,2,3].map(index=>String(formData.get("criterion"+index)??""));
-    if(raw.some(value=>!/^\\d{1,2}$/.test(value)||Number(value)>25)) {
+    if(raw.some(value=>!/^\d{1,2}$/.test(value)||Number(value)>25)) {
       redirect(trainerPath+"?error=invalid");
     }
     const scores=raw.map(Number);
@@ -74,7 +74,7 @@ export async function reviewMission(formData: FormData) {
   } else {
     // Custom trainer-created missions may not have a guided rubric yet.
     const raw=String(formData.get("score")??"");
-    if(!/^\\d{1,3}$/.test(raw)||Number(raw)>100) {
+    if(!/^\d{1,3}$/.test(raw)||Number(raw)>100) {
       redirect(trainerPath+"?error=invalid");
     }
     const {error}=await supabase.rpc("review_submission",{
@@ -135,7 +135,7 @@ export async function completeDailyPractice() {
 export async function saveTrainingStartDate(formData:FormData) {
   const {supabase,user}=await requireRole("trainer");
   const startDate=String(formData.get("startDate")||"");
-  if(!/^\\d{4}-\\d{2}-\\d{2}$/.test(startDate)) redirect(trainerPath+"?error=date");
+  if(!/^\d{4}-\d{2}-\d{2}$/.test(startDate)) redirect(trainerPath+"?error=date");
   const candidate=new Date(startDate+"T12:00:00Z");
   if(!Number.isFinite(candidate.getTime())||candidate.toISOString().slice(0,10)!==startDate||
      startDate<"2024-01-01"||startDate>"2100-12-31") {
