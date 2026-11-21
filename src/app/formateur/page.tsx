@@ -2,6 +2,7 @@
 import { useState, type FormEvent } from "react";
 import { Inbox, ExternalLink } from "lucide-react";
 import { useDemo } from "@/context/demo-store";
+import { displayDomain } from "@/components/technology-badge";
 import { latestSubmission, missionState, reviewCriteria } from "@/lib/mission-engine";
 
 export default function Formateur() {
@@ -49,7 +50,7 @@ export default function Formateur() {
         <div className="review-list">{pending.map((submission) => {
           const mission = missions.find((item) => item.id === submission.missionId);
           return <div className="review-card" key={submission.id}>
-            <div><span className="week">{mission?.id} · {mission?.domain}</span><h3>{mission?.title ?? "Mission inconnue"}</h3>
+            <div><span className="week">{mission?.id} · {displayDomain(mission?.domain || "")}</span><h3>{mission?.title ?? "Mission inconnue"}</h3>
               <p className="muted">{submission.note || "Aucune note jointe"}</p>
               <a className="external-link" href={submission.url} target="_blank" rel="noopener noreferrer">Ouvrir le livrable <ExternalLink size={14} strokeWidth={1.8}/></a></div>
             <div className="review-controls"><label>Note /100<input type="number" min={0} max={100} step={1} placeholder="80" value={scores[submission.id] ?? ""} onChange={(e) => setScores((prev) => ({...prev,[submission.id]:e.target.value}))}/></label>
