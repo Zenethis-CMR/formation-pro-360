@@ -8,6 +8,8 @@ import { CurriculumRoadmap } from "@/components/curriculum-roadmap";
 import { curriculumWeeks } from "@/lib/curriculum";
 import { TechnologyBadge, technologiesForMission, displayDomain } from "@/components/technology-badge";
 import { LearningAchievements, type Badge, type EarnedBadge, type PracticeCheckin } from "@/components/learning-achievements";
+import { SkillMastery } from "@/components/skill-mastery";
+import { TrainingSchedule } from "@/components/training-schedule";
 
 type Params = { error?: string; success?: string };
 type Mission = { id:string; title:string; domain:string; description:string; week:number;
@@ -17,16 +19,17 @@ export default async function LearnerSpace({searchParams}:{searchParams:Promise<
   if (!isSupabaseConfigured()) redirect("/espace");
   const {supabase,user} = await requireRole("learner");
   const params = await searchParams;
-  const [{data:rawMissions,error:missionError},{data:rawSubs,error:subsError},{data:rawXp,error:xpError},{data:rawDeps,error:depsError},{data:badgeCatalog,error:badgeError},{data:myBadges,error:earnedError},{data:practice,error:practiceError}] = await Promise.all([
+  const [{data:rawMissions,error:missionError},{data:rawSubs,error:subsError},{data:rawXp,error:xpError},{data:rawDeps,error:depsError},{data:badgeCatalog,error:badgeError},{data:myBadges,error:earnedError},{data:practice,error:practiceError},{data:settings,error:settingsError}] = await Promise.all([
     supabase.from("missions").select("id,title,domain,description,week,deliverable,objectives,duration,xp").eq("published",true).order("week"),
     supabase.from("submissions").select("id,mission_id,status,score,feedback,created_at").eq("learner_id",user.id).order("created_at",{ascending:false}),
     supabase.from("xp_ledger").select("mission_id,xp").eq("learner_id",user.id),
     supabase.from("mission_prerequisites").select("mission_id,prerequisite_id"),
     supabase.from("badges").select("slug,title,description,icon,required_missions").order("required_missions"),
     supabase.from("learner_badges").select("badge_slug,awarded_at").eq("learner_id",user.id),
-    supabase.from("practice_checkins").select("practice_date").eq("learner_id",user.id).order("practice_date",{ascending:false}).limit(45)
+    supabase.from("practice_checkins").select("practice_date").eq("learner_id",user.id).order("practice_date",{ascending:false}).limit(45),
+    supabase.from("training_settings").select("start_date").eq("id",true).maybeSingle()
   ]);
-  if(missionError || subsError || xpError || depsError || badgeError || earnedError || practiceError) return <main className="page"><p className="alert danger">Impossible de charger le parcours. Vérifie que les migrations SQL sont appliquées.</p></main>;
+  if(missionError || subsError || xpError || depsError || badgeError || earnedError || practiceError || settingsError) return <main className="page"><p className="alert danger">Impossible de charger le parcours. Vérifie que les migrations SQL sont appliquées.</p></main>;
   const missions = (rawMissions || []) as Mission[];
   const submissions = (rawSubs || []) as Submission[];
   const approved = new Set((rawXp || []).map(x => x.mission_id as string));
@@ -46,6 +49,8 @@ export default async function LearnerSpace({searchParams}:{searchParams:Promise<
     {params.success && <p className="alert success">{params.success==="practice"?"Séance de pratique enregistrée pour aujourd’hui.": "Livrable enregistré. Il attend maintenant la correction du formateur."}</p>}
     {params.error && <p className="alert danger">{params.error==="practice"?"Impossible d’enregistrer la séance. Essaie à nouveau.":"Impossible d’enregistrer cette soumission. Vérifie les informations et les prérequis."}</p>}
     <LearningAchievements catalog={(badgeCatalog||[]) as Badge[]} earned={(myBadges||[]) as EarnedBadge[]} practice={(practice||[]) as PracticeCheckin[]} validatedCount={approved.size} currentMission={currentMission ? {id:currentMission.id,title:currentMission.title} : null}/>
+    <SkillMastery missions={missions} approved={approved}/>
+    <TrainingSchedule startDate={settings?.start_date??null} missions={missions} approved={approved}/>
     <CurriculumRoadmap missions={missions} approved={approved} prerequisites={deps}/>
     <div className="section-head" id="missions"><h2>Programme et missions</h2><span className="counter">Seuil : 80/100</span></div>
     <div className="curriculum-mission-list">{curriculumWeeks.map(w=>{

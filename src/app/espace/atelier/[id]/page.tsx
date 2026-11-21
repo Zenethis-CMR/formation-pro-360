@@ -51,6 +51,13 @@ export default async function MissionWorkshop({params,searchParams}:Props) {
   const blocked=missing.length>0;
   const validated=acquired.has(id);
   const recent=((rawSubs||[]) as Submission[])[0];
+  const {data:assessment,error:assessmentError}=recent
+    ? await supabase.from("submission_assessments")
+        .select("criterion_scores,total_score").eq("submission_id",recent.id).maybeSingle()
+    : {data:null,error:null};
+  if(assessmentError) return <main className="page"><p className="alert danger">Impossible de charger la correction détaillée.</p></main>;
+  const earnedCriteria=assessment && Array.isArray(assessment.criterion_scores)
+    ? assessment.criterion_scores as number[] : [];
   const checked=new Set((rawChecked||[]).map(x=>x.step_number));
   const steps=Array.isArray(guide.steps)?guide.steps:[];
   const rubric=Array.isArray(guide.rubric)?guide.rubric:[];
@@ -114,7 +121,17 @@ export default async function MissionWorkshop({params,searchParams}:Props) {
         <section className="workshop-panel" id="livrable">
           <div className="workshop-panel-head"><div><span className="journey-overline">LIVRABLE FINAL</span><h2>Remettre mon projet</h2></div></div>
           <p className="workshop-deliverable">{mission.deliverable}</p>
-          {recent?.feedback && <div className="workshop-feedback"><strong>Retour du formateur {recent.score!==null?"· "+recent.score+"/100":""}</strong><p>{recent.feedback}</p></div>}
+          {recent?.feedback && <div className="workshop-feedback">
+            <strong>Retour du formateur {recent.score!==null?"· "+recent.score+"/100":""}</strong>
+            <p>{recent.feedback}</p>
+            {earnedCriteria.length===4 && <div className="workshop-assessment-breakdown">
+              <h3>Détail de la notation</h3>
+              {rubric.map((criterion,index)=><div key={index}>
+                <span>{criterion}</span><strong>{earnedCriteria[index]}/25</strong>
+              </div>)}
+              <div className="assessment-total"><span>Total certifié</span><strong>{assessment?.total_score}/100</strong></div>
+            </div>}
+          </div>}
           {canSubmit ? <form action={submitMission} className="form workshop-submit-form">
             <input type="hidden" name="missionId" value={id}/><input type="hidden" name="source" value="atelier"/>
             <label>Lien public de ton projet<input type="url" name="url" required maxLength={800} placeholder="https://github.com/... ou https://..." /></label>

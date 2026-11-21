@@ -468,3 +468,86 @@ button,a,input,textarea,select { -webkit-tap-highlight-color:transparent; }
 .trainer-evaluation-rubric ul {list-style:none;margin:0;padding:0;display:grid;gap:8px;}
 .trainer-evaluation-rubric li {position:relative;padding-left:17px;color:#6e849f;font-size:10px;line-height:1.6;}
 .trainer-evaluation-rubric li:before {content:"✓";position:absolute;left:0;color:#44a9a1;font-weight:900;}
+
+
+/* Coach-led 56-day schedule, skill mastery, and evidence-based rubric scoring */
+.study-calendar,.skills-overview{margin:24px 0;background:#fff;border:1px solid #e4ecf7;border-radius:19px;padding:23px;box-shadow:0 9px 24px #375d9910;}
+.study-calendar-header,.skills-head{display:flex;align-items:flex-start;justify-content:space-between;gap:15px;margin-bottom:18px;}
+.study-calendar-header h2,.skills-head h2{font-size:21px;color:#2d4363;margin:8px 0 5px;letter-spacing:-.5px;}
+.study-calendar-header p,.skills-head p{font-size:11px;color:#7f93ae;line-height:1.7;max-width:570px;margin:0;}
+.study-calendar-state{display:grid;gap:3px;background:#eff6ff;border-radius:12px;padding:10px 13px;min-width:155px;color:#4684ce;}
+.study-calendar-state strong{color:#345878;font-size:12px;}
+.study-calendar-state small{font-size:9px;color:#8297ac;}
+.study-calendar-form{display:flex;align-items:flex-end;flex-wrap:wrap;gap:10px;padding:13px 15px;background:#f6f9fe;border:1px solid #e5eef7;border-radius:12px;margin:14px 0;}
+.study-calendar-form label{font-size:11px;color:#58779a;font-weight:800;}
+.study-calendar-form input{border:1px solid #d7e4f3;background:white;padding:9px;border-radius:8px;color:#425875;font-size:11px;}
+.study-calendar-form button{background:#4387e9;color:#fff;border:0;border-radius:9px;padding:10px 14px;font-size:11px;font-weight:800;cursor:pointer;}
+.study-calendar-form button:hover{background:#296dd0;}
+.study-calendar-form>span{font-size:10px;color:#899aad;line-height:1.5;flex-basis:100%;}
+.study-calendar-notice{display:flex;align-items:center;gap:8px;font-size:10px;color:#6484a9;padding:12px;background:#f3f8ff;border-radius:10px;}
+.study-calendar-weeks{display:grid;gap:9px;}
+.study-calendar-week{overflow:hidden;border:1px solid #e4edf7;border-radius:12px;background:#fff;}
+.study-calendar-week.highlighted{border-color:#a9cff4;background:#f9fcff;}
+.study-calendar-week>summary{list-style:none;display:flex;align-items:center;gap:12px;cursor:pointer;padding:13px 15px;}
+.study-calendar-week>summary::-webkit-details-marker{display:none;}
+.study-calendar-week>summary:after{content:"+";font-size:18px;color:#6987aa;font-weight:600;}
+.study-calendar-week[open]>summary:after{content:"−";}
+.study-week-number{display:grid;place-items:center;flex:none;width:37px;height:35px;border-radius:9px;background:#eaf2ff;color:#4288db;font-size:11px;font-weight:900;}
+.study-calendar-week.highlighted .study-week-number{background:#418aeb;color:white;}
+.study-week-info{display:grid;gap:3px;flex:1;min-width:0;}
+.study-week-info strong{font-size:12px;color:#3a506b;line-height:1.4;}
+.study-week-info small{font-size:10px;color:#899caf;line-height:1.5;}
+.study-week-dates{white-space:nowrap;color:#6e90ac;font-size:10px;font-weight:700;}
+.study-week-count{white-space:nowrap;font-size:9px;padding:6px 9px;background:#edf3f9;color:#7892ad;border-radius:7px;}
+.study-week-count.done{background:#ddf7eb;color:#328962;}
+.study-calendar-days{border-top:1px solid #e6eef7;background:#fbfdff;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 17px;padding:9px 16px;}
+.study-calendar-day{display:flex;align-items:flex-start;gap:10px;border-bottom:1px solid #edf2f7;padding:12px 2px;}
+.study-calendar-day.today{background:#f2f8ff;border-radius:8px;padding-left:8px;padding-right:8px;}
+.study-day-marker{width:29px;height:29px;flex:none;display:grid;place-items:center;background:#e9f1fb;color:#4c89cd;font-size:10px;font-weight:900;border-radius:8px;}
+.study-day-copy{display:grid;gap:4px;flex:1;min-width:0;}
+.study-day-copy strong{font-size:11px;color:#3d5472;}
+.study-day-copy p{font-size:10px;line-height:1.5;color:#8497ad;margin:0;}
+.study-day-copy a{font-size:9px;color:#357aca;font-weight:800;text-decoration:none;}
+.study-day-copy a:hover{text-decoration:underline;}
+.study-calendar-day>small{font-size:9px;color:#819ab5;white-space:nowrap;}
+.study-week-footer{display:flex;align-items:flex-start;gap:7px;padding:12px 18px;background:#edf7fa;color:#538e9d;font-size:10px;line-height:1.5;font-weight:700;}
+.study-week-footer svg{flex:none;}
+.study-calendar-caption{display:flex;align-items:flex-start;gap:7px;margin:14px 0 0;color:#8197ae;font-size:10px;line-height:1.65;}
+.study-calendar-caption svg{flex:none;color:#55a6b8;}
+.skills-total{background:#eaf4ff;padding:10px 14px;border-radius:12px;min-width:117px;}
+.skills-total strong{color:#3e86d6;font-weight:900;font-size:23px;display:block;}
+.skills-total strong span{font-size:12px;color:#95a9c1;}
+.skills-total small{font-size:9px;color:#8097ad;display:block;}
+.skills-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px;}
+.skills-item{border:1px solid #e8edf5;border-radius:12px;padding:14px;background:#fbfdff;}
+.skills-item.mastered{border-color:#bdebd8;background:#f7fefa;}
+.skills-title{display:flex;align-items:center;gap:9px;margin-bottom:10px;}
+.skills-title .skills-week{font-size:9px;color:#4c86cb;font-weight:900;padding:6px 8px;background:#eaf2ff;border-radius:6px;}
+.skills-title strong{font-size:11px;line-height:1.45;color:#425a78;flex:1;}
+.skills-title svg{color:#9cb0c4;}
+.skills-item.mastered .skills-title svg{color:#31ab78;}
+.skills-track{height:6px;border-radius:25px;background:#eaf0f7;overflow:hidden;}
+.skills-track span{display:block;background:linear-gradient(90deg,#488ce8,#4fc7ba);border-radius:25px;height:100%;}
+.skills-bottom{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:9px;}
+.skills-bottom span{font-size:9px;color:#8ba0b7;line-height:1.5;}
+.skills-bottom b{color:#5084b8;font-size:10px;white-space:nowrap;}
+.cohort-skills{display:grid;grid-template-columns:repeat(4,26px);gap:4px;}
+.cohort-skills span{font-size:9px;font-weight:800;text-align:center;padding:5px 2px;background:#eff2f8;color:#90a1b7;border-radius:5px;}
+.cohort-skills span.partial{background:#e5f1ff;color:#3a83d9;}
+.cohort-skills span.complete{background:#ddf6e9;color:#2a9d6f;}
+.trainer-criteria-form{border:1px solid #dfebf7;background:#f9fcff;border-radius:11px;padding:12px 13px;display:grid;gap:10px;}
+.trainer-criteria-form legend{font-size:10px;font-weight:900;color:#527aa6;padding:0 5px;}
+.trainer-criteria-form label{display:flex;align-items:center;gap:9px;color:#5d7695;font-size:10px;line-height:1.5;}
+.trainer-criteria-form label span{flex:1;}
+.trainer-criteria-form input{width:64px;min-width:64px;padding:8px;border:1px solid #d2e2f3;border-radius:8px;background:#fff;color:#3b5d7e;font-size:12px;font-weight:900;text-align:center;}
+.trainer-criteria-form small{color:#8e9eb2;font-size:10px;}
+.trainer-criteria-form p{margin:2px 0;font-size:9px;line-height:1.5;color:#8299af;}
+.workshop-assessment-breakdown{margin-top:15px;border-top:1px solid #dceaf6;padding-top:12px;display:grid;gap:9px;}
+.workshop-assessment-breakdown h3{font-size:11px;color:#3a729f;margin:0 0 2px;}
+.workshop-assessment-breakdown>div{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;font-size:10px;color:#557d9f;}
+.workshop-assessment-breakdown>div strong{white-space:nowrap;font-size:11px;color:#3e7db7;}
+.workshop-assessment-breakdown>div.assessment-total{padding-top:8px;border-top:1px solid #deebf6;font-weight:900;}
+@media(max-width:950px){.study-calendar-days{grid-template-columns:1fr;}}
+@media(max-width:680px){.study-calendar,.skills-overview{padding:15px;}.study-calendar-header,.skills-head{flex-direction:column;}.study-calendar-state,.skills-total{min-width:0;}.study-calendar-week>summary{flex-wrap:wrap;gap:8px;padding:11px;}.study-week-dates{margin-left:45px;}.study-calendar-days{padding:8px 12px;}.skills-grid{grid-template-columns:1fr;}.trainer-criteria-form label{align-items:flex-start;flex-wrap:wrap;}.trainer-criteria-form label span{flex-basis:100%;}}
+
+.study-day-mission{font-size:9px;color:#5c88b3;font-weight:800;line-height:1.4;}

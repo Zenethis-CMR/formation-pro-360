@@ -88,3 +88,22 @@ Contrôles avant publication :
 - [ ] Soumettre un projet depuis l'atelier accessible : la correction apparaît dans le tableau formateur.
 - [ ] Corriger à 85/100 : XP et badge attribués une seule fois.
 - [ ] Vérifier mobile, navigation clavier, absence de secrets dans l'application.
+
+
+## Calendrier, compétences et correction critériée
+
+Migration `007_training_calendar_rubric.sql` :
+- Table `training_settings` : la date de début **reste vide** tant que le formateur ne l'a pas explicitement définie ; mise à jour réservée aux formateurs par RLS.
+- Plan intensif de **56 journées** : sept journées thématiques par semaine, chacune reliée à des objectifs d'ateliers. Les dates réelles sont calculées depuis la date choisie.
+- Un jour écoulé ne crée pas d'XP, ne débloque pas les prérequis et ne change pas le statut pédagogique.
+- L'apprenant voit huit blocs de compétences et leur progression, déterminée uniquement par les missions réellement validées dans `xp_ledger`.
+- Le formateur voit la progression de ces huit blocs pour chaque apprenant.
+
+Correction structurée :
+- `submission_assessments` stocke quatre notes détaillées entre 0 et 25 et leur total pour chaque projet corrigé avec un atelier guidé.
+- Le RPC `review_submission_with_rubric` vérifie les permissions du formateur, les 4 critères et chaque note, puis appelle la correction transactionnelle existante. L'attribution d'XP reste conditionnée à une note finale d'au moins 80/100, sans doublon.
+- Le formateur saisit une note pour chacun des 4 critères, puis son commentaire ; l'apprenant retrouve les points et les critères avec son retour pédagogique dans son atelier.
+- Les missions créées sans atelier guidé conservent la notation classique sur 100.
+- Les apprenants n'ont aucun droit d'écriture sur les notes enregistrées.
+
+À vérifier avec deux utilisateurs avant une montée en charge : calendrier daté après la saisie par le formateur ; sécurité RLS ; soumission, échec de mission, nouveau livrable, note détaillée et attribution unique d'XP.
