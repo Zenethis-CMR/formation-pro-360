@@ -3,7 +3,7 @@
 ## État réel
 
 - Projet Supabase : **Formation Pro 360** (référence `llwuukoqwlwpefgipvgc`), région Paris.
-- PostgreSQL actif avec les migrations `001_initial.sql` à `004_verified_badges_practice.sql`.
+- PostgreSQL actif avec les migrations `001_initial.sql` à `005_restrict_client_writes.sql`.
 - **16 missions publiées** sur huit semaines, avec prérequis progressifs. La validation d'une mission attribue des XP une seule fois.
 - Les huit tables applicatives sont protégées par RLS : profils, missions, prérequis, soumissions, XP, badges, badges acquis et séances de pratique.
 - Vercel possède les variables d'environnement publiques requises (URL, clé publishable, URL du site).
@@ -65,3 +65,7 @@ Le formateur accède au programme, au nombre de comptes apprenants et au total d
 - L'attribution est automatique à chaque nouvel XP certifié en base, sans possibilité pour un navigateur d'écrire directement un badge.
 - Un défi de pratique différent chaque jour de la semaine. La séance est déclarée par l'apprenant, sans XP, et stockée par jour au fuseau Africa/Douala.
 - Statistiques apprenant et suivi de cohorte formateur, basés sur Supabase. Aucun XP n'est attribué par simple clic sur « séance terminée ».
+
+## Contrôles de permissions
+
+La migration `005_restrict_client_writes.sql` révoque explicitement à `authenticated` les écritures directes sur les rôles et les XP. Les clients peuvent toujours enregistrer une pratique quotidienne et soumettre une mission selon les politiques RLS. Les fonctions de validation côté serveur restent seules responsables de la création des récompenses après évaluation.
