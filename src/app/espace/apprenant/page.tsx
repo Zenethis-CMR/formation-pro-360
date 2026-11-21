@@ -6,6 +6,7 @@ import { isSupabaseConfigured } from "@/lib/supabase/server";
 import { CurriculumRoadmap } from "@/components/curriculum-roadmap";
 import { curriculumWeeks } from "@/lib/curriculum";
 import { TechnologyBadge, technologiesForMission, displayDomain } from "@/components/technology-badge";
+import { LearningAchievements, type Badge, type EarnedBadge, type PracticeCheckin } from "@/components/learning-achievements";
 
 type Params = { error?: string; success?: string };
 type Mission = { id:string; title:string; domain:string; description:string; week:number;
@@ -15,13 +16,16 @@ export default async function LearnerSpace({searchParams}:{searchParams:Promise<
   if (!isSupabaseConfigured()) redirect("/espace");
   const {supabase,user} = await requireRole("learner");
   const params = await searchParams;
-  const [{data:rawMissions,error:missionError},{data:rawSubs,error:subsError},{data:rawXp,error:xpError},{data:rawDeps,error:depsError}] = await Promise.all([
+  const [{data:rawMissions,error:missionError},{data:rawSubs,error:subsError},{data:rawXp,error:xpError},{data:rawDeps,error:depsError},{data:badgeCatalog,error:badgeError},{data:myBadges,error:earnedError},{data:practice,error:practiceError}] = await Promise.all([
     supabase.from("missions").select("id,title,domain,description,week,deliverable,objectives,duration,xp").eq("published",true).order("week"),
     supabase.from("submissions").select("id,mission_id,status,score,feedback,created_at").eq("learner_id",user.id).order("created_at",{ascending:false}),
     supabase.from("xp_ledger").select("mission_id,xp").eq("learner_id",user.id),
-    supabase.from("mission_prerequisites").select("mission_id,prerequisite_id")
+    supabase.from("mission_prerequisites").select("mission_id,prerequisite_id"),
+    supabase.from("badges").select("slug,title,description,icon,required_missions").order("required_missions"),
+    supabase.from("learner_badges").select("badge_slug,awarded_at").eq("learner_id",user.id),
+    supabase.from("practice_checkins").select("practice_date").eq("learner_id",user.id).order("practice_date",{ascending:false}).limit(45)
   ]);
-  if(missionError || subsError || xpError || depsError) return <main className="page"><p className="alert danger">Impossible de charger le parcours. Vérifie que les migrations SQL sont appliquées.</p></main>;
+  if(missionError || subsError || xpError || depsError || badgeError || earnedError || practiceError) return <main className="page"><p className="alert danger">Impossible de charger le parcours. Vérifie que les migrations SQL sont appliquées.</p></main>;
   const missions = (rawMissions || []) as Mission[];
   const submissions = (rawSubs || []) as Submission[];
   const approved = new Set((rawXp || []).map(x => x.mission_id as string));
@@ -29,6 +33,8 @@ export default async function LearnerSpace({searchParams}:{searchParams:Promise<
   const level = Math.floor(xp/300)+1;
   const deps = (rawDeps || []) as {mission_id:string;prerequisite_id:string}[];
   const activeWeek = curriculumWeeks.find(w => missions.some(m => m.week===w.week && !approved.has(m.id)))?.week ?? 8;
+  const currentMission = missions.find(m => !approved.has(m.id) &&
+    !deps.some(d => d.mission_id===m.id && !approved.has(d.prerequisite_id)));
   return <main className="page">
     <section className="page-hero"><div><span className="eyebrow">ESPACE APPRENANT · COMPTE SÉCURISÉ</span><h1>Progression <span>réelle.</span></h1>
       <p>Tes missions sont conservées dans la base de données. Le formateur valide les livrables avant l’attribution des XP.</p></div></section>
@@ -36,8 +42,9 @@ export default async function LearnerSpace({searchParams}:{searchParams:Promise<
     <div className="stats-grid"><div className="stat-card"><span>NIVEAU</span><strong>{level}</strong></div>
       <div className="stat-card"><span>EXPÉRIENCE</span><strong>{xp} <em>XP</em></strong></div>
       <div className="stat-card"><span>MISSIONS VALIDÉES</span><strong>{approved.size}<em> / {missions.length}</em></strong></div></div>
-    {params.success && <p className="alert success">Livrable enregistré. Il attend maintenant la correction du formateur.</p>}
-    {params.error && <p className="alert danger">Impossible d’enregistrer cette soumission. Vérifie les informations et les prérequis.</p>}
+    {params.success && <p className="alert success">{params.success==="practice"?"Séance de pratique enregistrée pour aujourd’hui.": "Livrable enregistré. Il attend maintenant la correction du formateur."}</p>}
+    {params.error && <p className="alert danger">{params.error==="practice"?"Impossible d’enregistrer la séance. Essaie à nouveau.":"Impossible d’enregistrer cette soumission. Vérifie les informations et les prérequis."}</p>}
+    <LearningAchievements catalog={(badgeCatalog||[]) as Badge[]} earned={(myBadges||[]) as EarnedBadge[]} practice={(practice||[]) as PracticeCheckin[]} validatedCount={approved.size} currentMission={currentMission ? {id:currentMission.id,title:currentMission.title} : null}/>
     <CurriculumRoadmap missions={missions} approved={approved}/>
     <div className="section-head" id="missions"><h2>Programme et missions</h2><span className="counter">Seuil : 80/100</span></div>
     <div className="curriculum-mission-list">{curriculumWeeks.map(w=>{
