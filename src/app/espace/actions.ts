@@ -79,3 +79,12 @@ export async function publishMission(formData: FormData) {
   revalidatePath(learnerPath);
   redirect(trainerPath+"?success=published");
 }
+
+export async function completeDailyPractice() {
+  const {supabase,user}=await requireRole("learner");
+  // The database sets the date using Africa/Douala and rejects forged past/future days.
+  const {error}=await supabase.from("practice_checkins").insert({learner_id:user.id});
+  if(error && error.code !== "23505") redirect(learnerPath+"?error=practice");
+  revalidatePath(learnerPath);
+  redirect(learnerPath+"?success=practice");
+}
