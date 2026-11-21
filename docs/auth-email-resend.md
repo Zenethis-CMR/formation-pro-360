@@ -11,16 +11,16 @@ Resend SMTP documentation: https://resend.com/docs/send-with-smtp
 
 ## Sender and domain
 
-Use a **sending-only subdomain** now: `auth.zenithis.tech`.
+Sending domain verified by the project owner: `zenithis.tech`.
 
-Suggested sender: `Formation Pro 360 <no-reply@auth.zenithis.tech>`.
+Configured sender: `Formation Pro 360 <formation@zenithis.tech>`.
 
-This is separate from the future application URL `formation.zenithis.tech`. Activating the sender now does not move the website or change callback URLs.
+The only supported application URL is `https://formation-pro-360.vercel.app`.
 
 ## One-time operator setup
 
 1. Open https://resend.com and create/choose the account that will own the production mail delivery. Review the provider's current free-plan limits and billing settings.
-2. In Resend, add `auth.zenithis.tech` under **Domains**.
+2. In Resend, use the verified domain `zenithis.tech` under **Domains**.
 3. In the DNS dashboard for `zenithis.tech`, add the **exact DNS records displayed by Resend** (normally DKIM and SPF, plus DMARC as recommended). Do not invent or reuse values from another domain. Wait until Resend reports **Verified**.
 4. In Resend, create a scoped API key for **sending only**. Store it in a secrets manager. Do not share it in screenshots, chat, GitHub, or Vercel public variables.
 5. Open https://supabase.com/dashboard/project/llwuukoqwlwpefgipvgc/auth/providers and find the current **SMTP Settings** under Supabase Auth (menu wording may vary). Enable **Custom SMTP**.
@@ -29,7 +29,7 @@ This is separate from the future application URL `formation.zenithis.tech`. Acti
    - Port: `465` (TLS) or `587` (STARTTLS)
    - Username: `resend`
    - Password: the Resend API key from step 4 (enter directly in Supabase).
-   - Sender e-mail: `no-reply@auth.zenithis.tech`
+   - Sender e-mail: `formation@zenithis.tech`
    - Sender name: `Formation Pro 360`
 7. Save. In **Authentication > Rate Limits**, check the configured hourly e-mail cap. Supabase initially sets 30 per hour after enabling a custom SMTP. Increase it gradually only if your Resend plan and traffic justify it.
 8. Test a single magic link from an independent learner e-mail address. Check receipt, correct callback host, successful login, and delivery logs in Resend. Test again on a phone.
@@ -50,9 +50,9 @@ Never paste the SMTP password or API key into the application's browser interfac
 - [ ] Custom SMTP enabled in Supabase
 - [ ] Supabase hourly limit reviewed
 - [ ] Magic-link e-mail delivered to an external learner inbox
-- [ ] Auth callback works on the Vercel preview URL
+- [ ] Auth callback works on `https://formation-pro-360.vercel.app/auth/callback`
 - [ ] Sign-in retested without unnecessary duplicate requests
 
 ## Later, when the app is ready
 
-Point `formation.zenithis.tech` to Vercel, update `NEXT_PUBLIC_SITE_URL`, and add its `/auth/callback` to Supabase redirect allow-list. This site-domain change is **not required** for SMTP.
+Keep the official application domain unchanged and remove obsolete preview callback URLs from Supabase after production verification.
