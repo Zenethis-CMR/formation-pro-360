@@ -10,21 +10,24 @@ import { CohortProgress } from "@/components/cohort-progress";
 type Params={error?:string;success?:string};
 type Submission={id:string;mission_id:string;learner_id:string;url:string;note:string;created_at:string};
 type Mission={id:string;title:string;domain:string;xp:number;published:boolean;week:number};
+type MissionRubric={mission_id:string;rubric:string[]};
 export default async function TrainerSpace({searchParams}:{searchParams:Promise<Params>}) {
   if(!isSupabaseConfigured()) redirect("/espace");
   const {supabase} = await requireRole("trainer");
   const params=await searchParams;
-  const [{data:submissions,error:se},{data:missions,error:me},{data:learners,error:le},{data:awards,error:ae},{data:allSubmissions,error:allSe},{data:practice,error:pe}] = await Promise.all([
+  const [{data:submissions,error:se},{data:missions,error:me},{data:learners,error:le},{data:awards,error:ae},{data:allSubmissions,error:allSe},{data:practice,error:pe},{data:guides,error:ge}] = await Promise.all([
     supabase.from("submissions").select("id,mission_id,learner_id,url,note,created_at").eq("status","pending").order("created_at"),
     supabase.from("missions").select("id,title,domain,xp,published,week").order("week"),
     supabase.from("profiles").select("id").eq("role","learner"),
     supabase.from("xp_ledger").select("learner_id,mission_id,xp"),
     supabase.from("submissions").select("learner_id,status,created_at"),
-    supabase.from("practice_checkins").select("learner_id,practice_date")
+    supabase.from("practice_checkins").select("learner_id,practice_date"),
+    supabase.from("mission_guides").select("mission_id,rubric")
   ]);
-  if(se||me||le||ae||allSe||pe)return <main className="page"><p className="alert danger">Erreur de chargement. Vérifie les migrations SQL et les droits du compte.</p></main>;
+  if(se||me||le||ae||allSe||pe||ge)return <main className="page"><p className="alert danger">Erreur de chargement. Vérifie les migrations SQL et les droits du compte.</p></main>;
   const pending=(submissions||[]) as Submission[], catalog=(missions||[]) as Mission[];
   const byId = new Map(catalog.map(m=>[m.id,m]));
+  const rubricById = new Map(((guides||[]) as MissionRubric[]).map(g=>[g.mission_id,g.rubric]));
   return <main className="page">
     <section className="page-hero"><div><span className="eyebrow">ESPACE FORMATEUR · AUTORISATION VÉRIFIÉE</span>
       <h1>Évaluer pour <span>faire progresser.</span></h1><p>Les évaluations sont enregistrées dans PostgreSQL ; les XP sont attribués par une opération sécurisée et contrôlée.</p></div></section>
@@ -42,7 +45,12 @@ export default async function TrainerSpace({searchParams}:{searchParams:Promise<
       :<div className="review-list">{pending.map(s=><article className="review-card" key={s.id}>
         <div><span className="week">MISSION · {displayDomain(byId.get(s.mission_id)?.domain||"")}</span><h3>{byId.get(s.mission_id)?.title||"Mission"}</h3>
           <p className="muted">Apprenant : {s.learner_id.slice(0,8)}…</p><p className="muted">{s.note}</p>
-          <a href={s.url} className="external-link" target="_blank" rel="noopener noreferrer">Consulter le livrable ↗</a></div>
+          <a href={s.url} className="external-link" target="_blank" rel="noopener noreferrer">Consulter le livrable ↗</a>
+          {(rubricById.get(s.mission_id)||[]).length>0 && <div className="trainer-evaluation-rubric">
+            <strong>Grille de vérification</strong>
+            <ul>{(rubricById.get(s.mission_id)||[]).map((criterion,index)=><li key={index}>{criterion}</li>)}</ul>
+          </div>}
+        </div>
         <form action={reviewMission} className="form">
           <input type="hidden" name="submissionId" value={s.id}/>
           <label>Note /100<input type="number" name="score" required min={0} max={100} step={1}/></label>
