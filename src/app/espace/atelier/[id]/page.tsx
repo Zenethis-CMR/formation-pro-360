@@ -42,9 +42,16 @@ export default async function MissionWorkshop({params,searchParams}:Props) {
   if(missionError || guideError || depsError || xpError || subError || stepError){
     return <main className="page"><p className="alert danger">L'atelier ne peut pas être chargé pour le moment. Réessaie depuis ton parcours.</p><Link href="/espace/apprenant">Retour aux missions</Link></main>;
   }
-  if(!rawMission || !rawGuide) notFound();
+  if(!rawMission) notFound();
   const mission=rawMission as Mission;
-  const guide=rawGuide as Guide;
+  const hasGuide=Boolean(rawGuide);
+  // A trainer may publish a custom mission before supplying a guided workshop.
+  // Keep the brief, rubric-free grading and project submission usable in that case.
+  const guide:Guide=rawGuide ? rawGuide as Guide : {
+    brief:mission.description,steps:[],rubric:[],
+    hint:"Relis les objectifs et vérifie ton livrable avant l'envoi.",
+    resource_url:""
+  };
   const deps=(rawDeps||[]) as Requirement[];
   const acquired=new Set((xp||[]).map(x=>x.mission_id));
   const missing=deps.filter(d=>!acquired.has(d.prerequisite_id));
@@ -68,7 +75,7 @@ export default async function MissionWorkshop({params,searchParams}:Props) {
   return <main className="page workshop-page">
     <Link className="workshop-back" href="/espace/apprenant"><ArrowLeft size={15}/> Mon parcours</Link>
     <header className="workshop-intro">
-      <span className="eyebrow"><BookOpen size={14}/> ATELIER PRATIQUE · SEMAINE {mission.week}</span>
+      <span className="eyebrow"><BookOpen size={14}/> {hasGuide?"ATELIER PRATIQUE":"MISSION PERSONNALISÉE"} · SEMAINE {mission.week}</span>
       <h1>{mission.title}</h1>
       <p>{guide.brief}</p>
       <div className="workshop-info">
@@ -95,9 +102,10 @@ export default async function MissionWorkshop({params,searchParams}:Props) {
     <div className="workshop-layout">
       <div className="workshop-main">
         <section className="workshop-panel">
-          <div className="workshop-panel-head"><div><span className="journey-overline">CONSTRUIRE PAR LA PRATIQUE</span><h2>Ton plan de réalisation</h2></div><span className="workshop-step-count">{finished} / {steps.length} étapes</span></div>
-          <div className="workshop-progress" role="progressbar" aria-label="Étapes de réalisation terminées" aria-valuemin={0} aria-valuemax={100} aria-valuenow={percentage}><span style={{width:percentage+"%"}}/></div>
-          <p className="workshop-support-text">Ces étapes guident ton travail. Elles sont distinctes de la validation du formateur et ne rapportent pas d'XP à elles seules.</p>
+          <div className="workshop-panel-head"><div><span className="journey-overline">CONSTRUIRE PAR LA PRATIQUE</span><h2>{hasGuide?"Ton plan de réalisation":"Consignes du formateur"}</h2></div>{hasGuide&&<span className="workshop-step-count">{finished} / {steps.length} étapes</span>}</div>
+          {hasGuide && <div className="workshop-progress" role="progressbar" aria-label="Étapes de réalisation terminées" aria-valuemin={0} aria-valuemax={100} aria-valuenow={percentage}><span style={{width:percentage+"%"}}/></div>}
+          {hasGuide && <p className="workshop-support-text">Ces étapes guident ton travail. Elles sont distinctes de la validation du formateur et ne rapportent pas d'XP à elles seules.</p>}
+          {!hasGuide && <div className="workshop-notice">Cette mission a été créée par ton formateur sans étapes détaillées. Consulte la description, les compétences attendues et le livrable, puis soumets ton projet ci-dessous.</div>}
           <div className="workshop-steps">{steps.map((step,index)=>{
             const done=checked.has(index+1);
             return <article className={"workshop-step"+(done?" is-complete":"")} key={index}>
@@ -115,7 +123,8 @@ export default async function MissionWorkshop({params,searchParams}:Props) {
         </section>
         <section className="workshop-panel">
           <div className="workshop-panel-head"><div><span className="journey-overline">VALIDATION PÉDAGOGIQUE</span><h2>Ce que le formateur va évaluer</h2></div></div>
-          <ul className="workshop-rubric">{rubric.map((criterion,index)=><li key={index}><BadgeCheck size={18}/><span>{criterion}</span></li>)}</ul>
+          {hasGuide?<ul className="workshop-rubric">{rubric.map((criterion,index)=><li key={index}><BadgeCheck size={18}/><span>{criterion}</span></li>)}</ul>
+            : <p className="workshop-support-text">Pour cette mission personnalisée, le formateur attribuera une note globale sur 100, accompagnée d'un commentaire pédagogique.</p>}
           <p className="workshop-support-text">Le seuil de réussite est fixé à 80/100. La décision et les commentaires sont enregistrés par ton formateur.</p>
         </section>
         <section className="workshop-panel" id="livrable">
@@ -149,7 +158,7 @@ export default async function MissionWorkshop({params,searchParams}:Props) {
         <div className="workshop-aside-card">
           <span className="journey-overline">RESSOURCE DE RÉFÉRENCE</span>
           <p>Consulte la documentation pendant ton projet. L'objectif est de comprendre et refaire, pas de recopier sans réfléchir.</p>
-          <a href={guide.resource_url} target="_blank" rel="noopener noreferrer">Ouvrir la documentation <ExternalLink size={14}/></a>
+          {hasGuide && <a href={guide.resource_url} target="_blank" rel="noopener noreferrer">Ouvrir la documentation <ExternalLink size={14}/></a>}
         </div>
         <Link className="workshop-return" href="/espace/apprenant"><ArrowLeft size={14}/> Retour au programme</Link>
       </aside>
