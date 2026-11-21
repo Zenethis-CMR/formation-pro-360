@@ -226,3 +226,35 @@ button,a,input,textarea,select { -webkit-tap-highlight-color:transparent; }
 .academy-content .external-link{display:inline-flex;align-items:center;gap:5px}
 .academy-content .empty-state>span{display:inline-flex}
 .sidebar-ad a>svg{flex:none}
+
+
+/* Professional identity for technology skills and learning milestones */
+.feature-tech-logos { display:inline-flex; align-items:center; padding:3px 8px 3px 2px; gap:0; border-radius:999px; background:#ffffff2b; border:1px solid #ffffff54; flex:none; }
+.feature-tech-logos .technology-badge { width:27px; height:27px; padding:4px; margin-left:5px; display:grid;place-items:center; background:#ffffff; box-shadow:0 3px 9px #19477b21; border-radius:50%; border:1px solid #ffffff; }
+.feature-tech-logos .technology-badge img { width:18px; height:18px; object-fit:contain; }
+.technology-badge { display:inline-flex; align-items:center; gap:6px; padding:4px 8px 4px 5px; background:#f1f6fd; color:#59708d; border:1px solid #e0e9f7; border-radius:999px; font-size:9px; font-weight:800; line-height:1; white-space:nowrap; }
+.technology-badge img { width:15px; height:15px; object-fit:contain; }
+.mission-tech-tags { margin-top:7px; display:flex; flex-wrap:wrap; gap:5px; }
+.feature-art-caption { display:flex; align-items:center; gap:10px; position:absolute; bottom:22px; right:16px; border-radius:14px; padding:12px 15px; background:#ffffffef; box-shadow:0 9px 30px #0a37666b; color:#2b4b6c; max-width:215px; }
+.feature-art-caption .feature-art-icon { width:33px; height:33px; display:grid; place-items:center; flex:none; background:#e2f2ff; color:#2c86eb; border-radius:10px; }
+.feature-art-caption strong { display:block; font-size:10px; line-height:1.4; }
+.feature-art-caption small { display:block; color:#889bb2; font-size:8px; margin-top:3px; }
+.profile-avatar-pro { display:grid; place-items:center; background:linear-gradient(145deg,#e6f0ff 0%,#e0f4f7 100%); color:#3e88e8; border:5px solid #f2f6ff; }
+.academy-milestone { margin-top:18px; padding:15px 19px; display:flex; align-items:center; gap:13px; background:#fff; border:1px solid #e8eef9; border-radius:15px; box-shadow:0 6px 18px #5475a80c; }
+.milestone-marker { width:40px; height:40px; display:grid; place-items:center; border-radius:12px; background:#e8f8ee; color:#3db287; flex:none; }
+.academy-milestone>div:nth-child(2) { flex:1; min-width:0; }
+.academy-milestone>div:nth-child(2)>span { display:block; font-size:9px; color:#48a58b; font-weight:900; letter-spacing:1px; }
+.academy-milestone strong { display:block; margin-top:4px; color:#30445d; font-size:12px; }
+.academy-milestone p { margin:4px 0 0; font-size:10px; color:#91a0b5; }
+.academy-milestone>a { width:31px; height:31px; border-radius:10px; display:grid; place-items:center; color:#438aee; background:#eaf3ff; flex:none; }
+.academy-content .mission-type { display:flex; align-items:center; gap:6px; flex-wrap:wrap; }
+.academy-content .mission-type .technology-badge { text-transform:none; letter-spacing:0; font-weight:800; }
+.academy-content .mission-type .technology-badge img { width:14px; height:14px; }
+@media(max-width:600px){
+  .feature-art-caption { display:none; }
+  .academy-milestone { padding:14px 12px; gap:10px; }
+  .academy-milestone strong { font-size:11px; }
+  .academy-milestone p { font-size:9px; }
+  .feature-tech-logos .technology-badge { width:24px; height:24px; }
+  .feature-tech-logos .technology-badge img { width:16px; height:16px; }
+}
