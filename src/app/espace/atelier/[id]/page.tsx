@@ -35,7 +35,7 @@ export default async function MissionWorkshop({params,searchParams}:Props) {
     supabase.from("mission_guides").select("brief,steps,rubric,hint,resource_url").eq("mission_id",id).maybeSingle(),
     supabase.from("mission_prerequisites").select("mission_id,prerequisite_id").eq("mission_id",id),
     supabase.from("xp_ledger").select("mission_id").eq("learner_id",user.id),
-    supabase.from("submissions").select("id,status,score,feedback,url,created_at").eq("learner_id",user.id).eq("mission_id",id).order("created_at",{ascending:false}).limit(1),
+    supabase.from("submissions").select("id,status,score,feedback,url,created_at").eq("learner_id",user.id).eq("mission_id",id).order("created_at",{ascending:false}).limit(20),
     supabase.from("workshop_steps").select("step_number").eq("learner_id",user.id).eq("mission_id",id),
     supabase.from("missions").select("id,title").eq("published",true)
   ]);
@@ -57,10 +57,13 @@ export default async function MissionWorkshop({params,searchParams}:Props) {
   const missing=deps.filter(d=>!acquired.has(d.prerequisite_id));
   const blocked=missing.length>0;
   const validated=acquired.has(id);
-  const recent=((rawSubs||[]) as Submission[])[0];
-  const {data:assessment,error:assessmentError}=recent
+  const history=(rawSubs||[]) as Submission[];
+  const recent=history[0];
+  // Keep the previous review visible after a student submits a corrected version.
+  const lastReviewed=history.find(x=>x.status!=="pending" && x.feedback);
+  const {data:assessment,error:assessmentError}=lastReviewed
     ? await supabase.from("submission_assessments")
-        .select("criterion_scores,total_score").eq("submission_id",recent.id).maybeSingle()
+        .select("criterion_scores,total_score").eq("submission_id",lastReviewed.id).maybeSingle()
     : {data:null,error:null};
   if(assessmentError) return <main className="page"><p className="alert danger">Impossible de charger la correction détaillée.</p></main>;
   const earnedCriteria=assessment && Array.isArray(assessment.criterion_scores)
@@ -130,9 +133,9 @@ export default async function MissionWorkshop({params,searchParams}:Props) {
         <section className="workshop-panel" id="livrable">
           <div className="workshop-panel-head"><div><span className="journey-overline">LIVRABLE FINAL</span><h2>Remettre mon projet</h2></div></div>
           <p className="workshop-deliverable">{mission.deliverable}</p>
-          {recent?.feedback && <div className="workshop-feedback">
-            <strong>Retour du formateur {recent.score!==null?"· "+recent.score+"/100":""}</strong>
-            <p>{recent.feedback}</p>
+          {lastReviewed?.feedback && <div className="workshop-feedback">
+            <strong>Dernier retour du formateur {lastReviewed.score!==null?"· "+lastReviewed.score+"/100":""}</strong>
+            <p>{lastReviewed.feedback}</p>
             {earnedCriteria.length===4 && <div className="workshop-assessment-breakdown">
               <h3>Détail de la notation</h3>
               {rubric.map((criterion,index)=><div key={index}>
