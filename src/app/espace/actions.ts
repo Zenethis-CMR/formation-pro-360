@@ -98,12 +98,14 @@ export async function createMission(formData: FormData) {
   const xp = Number(formData.get("xp"));
   if (title.length < 3 || title.length > 110 || domain.length < 2 || domain.length > 80 ||
       description.length < 10 || description.length > 1500 || deliverable.length < 3 || deliverable.length > 500 ||
-      !Number.isInteger(week) || week < 1 || week > 52 || !Number.isInteger(xp) || xp < 10 || xp > 1000) {
+      !Number.isInteger(week) || week < 1 || week > 8 || !Number.isInteger(xp) || xp < 10 || xp > 1000) {
     redirect(trainerPath+"?error=invalid");
   }
-  const {error} = await supabase.from("missions").insert({
-    title, domain, description, deliverable, week, xp, published:false,
-    objectives:[], duration:"À définir"
+  const rawPrerequisite=String(formData.get("prerequisiteId")||"");
+  if(rawPrerequisite&&!idPattern.test(rawPrerequisite)) redirect(trainerPath+"?error=invalid");
+  const {error} = await supabase.rpc("create_trainer_mission",{
+    p_title:title,p_domain:domain,p_description:description,p_deliverable:deliverable,
+    p_week:week,p_xp:xp,p_prerequisite_id:rawPrerequisite||null
   });
   if (error) redirect(trainerPath+"?error=create");
   revalidatePath(trainerPath);
@@ -167,4 +169,38 @@ export async function postCoachMessage(formData:FormData) {
   revalidatePath(trainerPath);
   revalidatePath(learnerPath);
   redirect(trainerPath+"?success=message");
+}
+
+export async function saveDraftGuide(formData: FormData) {
+  const {supabase}=await requireRole("trainer");
+  const missionId=String(formData.get("missionId")||"");
+  const backPath=idPattern.test(missionId)?"/espace/formateur/atelier/"+missionId:trainerPath;
+  if(!idPattern.test(missionId)) redirect(trainerPath+"?error=invalid");
+  const brief=String(formData.get("brief")||"").trim();
+  const hint=String(formData.get("hint")||"").trim();
+  const resource=String(formData.get("resourceUrl")||"").trim();
+  const steps=[0,1,2,3].map(i=>({
+    title:String(formData.get("stepTitle"+i)||"").trim(),
+    instruction:String(formData.get("stepInstruction"+i)||"").trim(),
+    deliverable:String(formData.get("stepDeliverable"+i)||"").trim()
+  }));
+  const rubric=[0,1,2,3].map(i=>String(formData.get("rubric"+i)||"").trim());
+  if(brief.length<40||brief.length>1200||hint.length<10||hint.length>400||
+    steps.some(x=>x.title.length<3||x.title.length>100||x.instruction.length<15||x.instruction.length>500||
+      x.deliverable.length<5||x.deliverable.length>250)||
+    rubric.some(x=>x.length<10||x.length>220)) redirect(backPath+"?error=invalid");
+  let url:URL;
+  try {url=new URL(resource);} catch {redirect(backPath+"?error=invalid");}
+  if(url.protocol!=="https:"||resource.length>600) redirect(backPath+"?error=invalid");
+  const {data:mission,error:missionError}=await supabase.from("missions")
+    .select("id").eq("id",missionId).eq("published",false).maybeSingle();
+  if(missionError||!mission) redirect(backPath+"?error=published");
+  const {error}=await supabase.from("mission_guides").upsert({
+    mission_id:missionId,brief,steps,rubric,hint,resource_url:resource,
+    updated_at:new Date().toISOString()
+  },{onConflict:"mission_id"});
+  if(error) redirect(backPath+"?error=save");
+  revalidatePath(backPath);
+  revalidatePath(trainerPath);
+  redirect(backPath+"?saved=1");
 }

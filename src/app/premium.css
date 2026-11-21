@@ -615,3 +615,57 @@ button,a,input,textarea,select { -webkit-tap-highlight-color:transparent; }
 @media(max-width:1080px){.trainer-coach-grid{grid-template-columns:1fr;}}
 @media(max-width:870px){.coach-learner-grid{grid-template-columns:1fr;}}
 @media(max-width:650px){.coach-learner-panel,.trainer-coaching-panel{padding:15px;}.coach-panel-head{flex-direction:column;}.coach-panel-head h2{font-size:19px;}.trainer-coach-metrics{grid-template-columns:1fr;}.coach-focus{padding:17px;}.coach-focus h3{font-size:18px;}.trainer-coach-person{padding:14px;}}
+
+
+/* Operational readiness checks are based on real database state. */
+.workshop-notice{border:1px solid #dceaf6;background:#f5f9ff;border-radius:10px;padding:14px;margin:14px 0;color:#6c829c;font-size:11px;line-height:1.7;}
+.launch-audit{margin:24px 0;padding:24px;background:#fff;border:1px solid #e3ecf8;border-radius:19px;box-shadow:0 8px 25px #365f9811;}
+.launch-audit-head{display:flex;justify-content:space-between;align-items:flex-start;gap:17px;margin-bottom:20px;}
+.launch-audit-head h2{font-size:20px;color:#344b69;letter-spacing:-.4px;margin:7px 0 6px;}
+.launch-audit-head p{font-size:11px;line-height:1.6;color:#7b92ac;margin:0;max-width:560px;}
+.launch-audit-counter{min-width:135px;padding:11px 13px;background:#eff6ff;border-radius:12px;}
+.launch-audit-counter>strong{display:block;font-weight:900;font-size:25px;color:#4384d2;letter-spacing:-.5px;}
+.launch-audit-counter>strong span{font-size:12px;color:#90a6bf;}
+.launch-audit-counter>small{display:block;font-size:9px;line-height:1.4;color:#7f98b2;}
+.launch-audit-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin-bottom:22px;}
+.launch-audit-row{display:flex;align-items:center;gap:9px;border:1px solid #e8eef7;border-radius:11px;background:#fafcff;padding:12px;min-width:0;}
+.launch-audit-row>svg{flex:none;}
+.launch-audit-row .launch-yes{color:#39a879;}
+.launch-audit-row .launch-pending{color:#9cafc3;}
+.launch-audit-row>div{min-width:0;flex:1;}
+.launch-audit-row strong{display:block;color:#48627e;font-size:11px;line-height:1.4;}
+.launch-audit-row small{display:block;color:#859ab1;font-size:9px;margin-top:4px;line-height:1.5;}
+.launch-audit-row>span{white-space:nowrap;font-size:9px;font-weight:900;border-radius:7px;padding:6px 7px;}
+.launch-done{color:#2d9771;background:#e6f7ee;}
+.launch-todo{color:#7b93ab;background:#edf2f9;}
+.launch-manual{padding:18px;border:1px solid #e7edf7;border-radius:13px;background:#f8fbff;}
+.launch-manual h3{font-size:13px;color:#425a77;margin:0 0 13px;}
+.launch-manual-item{display:flex;align-items:flex-start;gap:10px;border-top:1px solid #e9f0f7;padding:12px 2px;}
+.launch-manual-item>svg{flex:none;color:#6299d2;}
+.launch-manual-item>div{flex:1;}
+.launch-manual-item strong{color:#4f6986;font-size:11px;}
+.launch-manual-item p{color:#869cb3;font-size:10px;margin:4px 0 0;line-height:1.6;}
+.launch-manual-item>span{font-size:9px;font-weight:800;color:#9bacbd;border:1px solid #dde7f2;border-radius:6px;padding:5px;}
+.launch-audit-footer{display:flex;align-items:center;gap:9px;margin-top:16px;font-size:10px;color:#788da5;line-height:1.5;}
+.launch-audit-footer>svg{color:#58a8b0;flex:none;}
+.launch-audit-footer>span{flex:1;}
+.launch-audit-footer a{display:inline-flex;align-items:center;gap:4px;color:#4387d5;font-weight:900;text-decoration:none;white-space:nowrap;}
+@media(max-width:860px){.launch-audit-list{grid-template-columns:1fr;}}
+@media(max-width:600px){.launch-audit{padding:15px;}.launch-audit-head{flex-direction:column;}.launch-audit-footer{flex-wrap:wrap;}.launch-audit-footer a{width:100%;}}
+
+
+/* Trainer authoring of real guided lessons, prior to publication */
+.authoring-page{max-width:1100px!important;}
+.authoring-form{display:grid;gap:17px;max-width:840px;margin-top:18px;}
+.authoring-form>.workshop-panel{display:grid;gap:14px;}
+.authoring-form .workshop-panel h2{font-size:19px;color:#354d6b;margin:0;}
+.authoring-form label{display:grid;gap:7px;color:#526c8c;font-size:11px;font-weight:800;}
+.authoring-form input,.authoring-form textarea{display:block;width:100%;border:1px solid #dce6f4;border-radius:9px;background:#f9fbff;color:#415a77;padding:11px 12px;font:inherit;font-size:11px;line-height:1.5;resize:vertical;}
+.authoring-form :is(input,textarea):focus-visible{outline:2px solid #569de7;outline-offset:1px;}
+.authoring-step{display:grid;gap:12px;padding:17px 15px;border:1px solid #e7edf7;border-radius:12px;background:#fcfdff;}
+.authoring-step legend{color:#4689cf;font-size:11px;font-weight:900;padding:0 8px;}
+.authoring-save{display:inline-flex;align-items:center;justify-content:center;gap:9px;justify-self:start;}
+.authoring-guide-link{display:inline-block;margin-top:8px;color:#397fcf;font-size:10px;font-weight:900;text-decoration:underline;text-underline-offset:3px;line-height:1.5;}
+.form select{width:100%;background:#fff;border:1px solid #dce6f4;border-radius:8px;padding:11px;color:#425b77;font-size:11px;}
+.form label small{display:block;font-size:9px;font-weight:400;color:#879bb1;line-height:1.5;margin-top:5px;}
+@media(max-width:600px){.authoring-form .workshop-panel{padding:16px;}.authoring-step{padding:13px 10px;}}
