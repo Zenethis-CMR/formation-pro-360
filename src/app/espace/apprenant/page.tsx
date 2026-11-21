@@ -46,10 +46,14 @@ export default async function LearnerSpace({searchParams}:{searchParams:Promise<
     {params.success && <p className="alert success">{params.success==="practice"?"Séance de pratique enregistrée pour aujourd’hui.": "Livrable enregistré. Il attend maintenant la correction du formateur."}</p>}
     {params.error && <p className="alert danger">{params.error==="practice"?"Impossible d’enregistrer la séance. Essaie à nouveau.":"Impossible d’enregistrer cette soumission. Vérifie les informations et les prérequis."}</p>}
     <LearningAchievements catalog={(badgeCatalog||[]) as Badge[]} earned={(myBadges||[]) as EarnedBadge[]} practice={(practice||[]) as PracticeCheckin[]} validatedCount={approved.size} currentMission={currentMission ? {id:currentMission.id,title:currentMission.title} : null}/>
-    <CurriculumRoadmap missions={missions} approved={approved}/>
+    <CurriculumRoadmap missions={missions} approved={approved} prerequisites={deps}/>
     <div className="section-head" id="missions"><h2>Programme et missions</h2><span className="counter">Seuil : 80/100</span></div>
     <div className="curriculum-mission-list">{curriculumWeeks.map(w=>{
-      const weekMissions = missions.filter(m=>m.week===w.week);
+      const weekMissions = missions.filter(m=>m.week===w.week).sort((a,b)=>{
+        if(deps.some(d=>d.mission_id===b.id&&d.prerequisite_id===a.id))return -1;
+        if(deps.some(d=>d.mission_id===a.id&&d.prerequisite_id===b.id))return 1;
+        return a.title.localeCompare(b.title,"fr");
+      });
       if(!weekMissions.length) return null;
       const completedThisWeek = weekMissions.filter(m=>approved.has(m.id)).length;
       return <details className="curriculum-week-group" key={w.week} open={w.week===activeWeek}>
