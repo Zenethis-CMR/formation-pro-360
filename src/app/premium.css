@@ -478,7 +478,7 @@ button,a,input,textarea,select { -webkit-tap-highlight-color:transparent; }
 .study-calendar-state{display:grid;gap:3px;background:#eff6ff;border-radius:12px;padding:10px 13px;min-width:155px;color:#4684ce;}
 .study-calendar-state strong{color:#345878;font-size:12px;}
 .study-calendar-state small{font-size:9px;color:#8297ac;}
-.study-calendar-form{display:flex;align-items:end;flex-wrap:wrap;gap:10px;padding:13px 15px;background:#f6f9fe;border:1px solid #e5eef7;border-radius:12px;margin:14px 0;}
+.study-calendar-form{display:flex;align-items:flex-end;flex-wrap:wrap;gap:10px;padding:13px 15px;background:#f6f9fe;border:1px solid #e5eef7;border-radius:12px;margin:14px 0;}
 .study-calendar-form label{font-size:11px;color:#58779a;font-weight:800;}
 .study-calendar-form input{border:1px solid #d7e4f3;background:white;padding:9px;border-radius:8px;color:#425875;font-size:11px;}
 .study-calendar-form button{background:#4387e9;color:#fff;border:0;border-radius:9px;padding:10px 14px;font-size:11px;font-weight:800;cursor:pointer;}
@@ -549,3 +549,5 @@ button,a,input,textarea,select { -webkit-tap-highlight-color:transparent; }
 .workshop-assessment-breakdown>div.assessment-total{padding-top:8px;border-top:1px solid #deebf6;font-weight:900;}
 @media(max-width:950px){.study-calendar-days{grid-template-columns:1fr;}}
 @media(max-width:680px){.study-calendar,.skills-overview{padding:15px;}.study-calendar-header,.skills-head{flex-direction:column;}.study-calendar-state,.skills-total{min-width:0;}.study-calendar-week>summary{flex-wrap:wrap;gap:8px;padding:11px;}.study-week-dates{margin-left:45px;}.study-calendar-days{padding:8px 12px;}.skills-grid{grid-template-columns:1fr;}.trainer-criteria-form label{align-items:flex-start;flex-wrap:wrap;}.trainer-criteria-form label span{flex-basis:100%;}}
+
+.study-day-mission{font-size:9px;color:#5c88b3;font-weight:800;line-height:1.4;}
