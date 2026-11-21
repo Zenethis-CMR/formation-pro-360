@@ -13,7 +13,7 @@ export default async function Login({searchParams}: {searchParams: Promise<Param
       {!configured ? <p className="alert danger">La base Supabase n’est pas encore configurée. Cet espace n’est pas disponible.</p> : <>
         {params.sent && <p className="alert success">Vérifie ta boîte mail. Si l’adresse est autorisée, un lien de connexion y a été envoyé.</p>}
         {params.error && <p className="alert danger" role="alert">
-          {params.error==="quota"?"Le service d’envoi a atteint sa limite temporaire. Patiente avant de redemander un e-mail. Notre équipe prépare un fournisseur SMTP dédié.":params.error==="unauthorized"?"Cette adresse n’est pas autorisée par le service d’e-mails de test Supabase. Un SMTP professionnel sera nécessaire pour ouvrir l’accès à tous les apprenants.":"La connexion n’a pas pu aboutir. Vérifie ton adresse puis réessaie plus tard."}
+          {params.error==="quota"?"Trop de demandes d’e-mails en peu de temps. Patiente avant de recommencer, puis vérifie ta boîte de réception et tes courriers indésirables.":params.error==="unauthorized"?"Le service d’envoi a refusé cette adresse. Contacte ton formateur afin de vérifier la configuration de la messagerie.":"La connexion n’a pas pu aboutir. Vérifie ton adresse puis réessaie plus tard."}
         </p>}
         <form className="form" action={sendMagicLink}>
           <label>Adresse e-mail<input type="email" name="email" required maxLength={254} autoComplete="email" placeholder="adresse@exemple.com"/></label>
