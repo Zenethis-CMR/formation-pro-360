@@ -1,6 +1,6 @@
 {
   "name": "formation-pro-360",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -12,7 +12,9 @@
     "next": "^15.5.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "lucide-react": "1.77.0"
+    "lucide-react": "1.77.0",
+    "@supabase/ssr": "^0.12.7",
+    "@supabase/supabase-js": "^2.49.0"
   },
   "devDependencies": {
     "@types/node": "^22.0.0",
