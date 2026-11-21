@@ -461,3 +461,10 @@ button,a,input,textarea,select { -webkit-tap-highlight-color:transparent; }
 @media(max-width:1100px) {.workshop-layout {grid-template-columns:minmax(0,1fr) 230px;}}
 @media(max-width:850px) {.workshop-layout {grid-template-columns:1fr;}.workshop-aside{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;}.workshop-return{grid-column:1/-1;}}
 @media(max-width:580px) {.workshop-intro{padding:18px 15px;}.workshop-panel{padding:18px 14px;}.workshop-panel-head h2{font-size:17px;}.workshop-aside{grid-template-columns:1fr;}.workshop-step{gap:10px;}.workshop-step-index{width:30px;height:30px;}.workshop-panel-head{align-items:flex-start;}.workshop-info{gap:6px;}}
+
+
+.trainer-evaluation-rubric {margin:14px 0 0;padding:12px 14px;border:1px solid #dfe9f6;border-radius:11px;background:#f7faff;}
+.trainer-evaluation-rubric>strong {display:block;color:#4078b6;font-size:11px;margin-bottom:9px;}
+.trainer-evaluation-rubric ul {list-style:none;margin:0;padding:0;display:grid;gap:8px;}
+.trainer-evaluation-rubric li {position:relative;padding-left:17px;color:#6e849f;font-size:10px;line-height:1.6;}
+.trainer-evaluation-rubric li:before {content:"✓";position:absolute;left:0;color:#44a9a1;font-weight:900;}
