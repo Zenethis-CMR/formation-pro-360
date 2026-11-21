@@ -106,7 +106,7 @@ function SecureShell({children}:{children:React.ReactNode}) {
         <Link href="/">Voir la démonstration</Link>
       </nav>
     </header>
-    <section className="secure-content">{children}</section>
+    <section className="academy-content secure-content">{children}</section>
     <footer className="secure-footer">Formation Pro 360 · Espace personnel protégé</footer>
   </div>;
 }
