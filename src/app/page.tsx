@@ -4,6 +4,7 @@ import { Search, ArrowRight, Sparkles, GraduationCap, TrendingUp, BadgeCheck, Co
 import { useMemo, useState } from "react";
 import { useDemo } from "@/context/demo-store";
 import { latestSubmission, missionState } from "@/lib/mission-engine";
+import { TechnologyBadge, technologiesForMission, displayDomain } from "@/components/technology-badge";
 
 export default function Home() {
   const { missions, submissions, xp, level, approvedCount }=useDemo();
@@ -26,14 +27,13 @@ export default function Home() {
     </header>
     <section className="academy-feature" aria-label="Formation à la une">
       <div className="feature-copy"><span className="feature-label"><Sparkles size={14} strokeWidth={2}/> PARCOURS À LA UNE</span>
-        <h2>Développement web<br/><span>de zéro à créateur.</span></h2>
+        <h2>Développement web<br/><span>du premier code au produit.</span></h2>
         <p>HTML, CSS, JavaScript, design et projets concrets.</p>
-        <div className="feature-meta"><span className="feature-avatars"><i>H</i><i>C</i><i>J</i></span><span>{missions.length} missions · Premier projet en 2 semaines</span></div>
+        <div className="feature-meta"><span className="feature-tech-logos"><TechnologyBadge name="HTML5" compact/><TechnologyBadge name="CSS3" compact/><TechnologyBadge name="JavaScript" compact/></span><span>{missions.length} missions · Premier projet en 2 semaines</span></div>
         <Link href="/apprenant" className="feature-action">Continuer mon parcours <ArrowRight size={16} strokeWidth={2} aria-hidden="true"/></Link>
       </div>
       <div className="feature-art" aria-label="Photo libre de droits d'un poste de programmation, Unsplash" role="img">
-        <div className="art-code-card"><div className="art-card-top"><i/><i/><i/></div><span><Code2 size={37} strokeWidth={2.1}/></span><div className="art-lines"><b/><b/><b/><b/></div></div>
-        <div className="art-float">100% <span>pratique</span></div>
+        <div className="feature-art-caption"><span className="feature-art-icon"><Code2 size={20} strokeWidth={2}/></span><span><strong>Atelier de développement</strong><small>Concevoir, coder et livrer</small></span></div>
       </div>
     </section>
     <section className="academy-metrics" aria-label="Tes indicateurs">
@@ -41,6 +41,7 @@ export default function Home() {
       <div className="metric"><div className="metric-icon purple"><TrendingUp size={20} strokeWidth={2.1}/></div><div><span>XP obtenus</span><strong>{xp}<em> / {plannedXp}</em></strong><small>Gagnés après validation</small></div></div>
       <div className="metric"><div className="metric-icon mint"><BadgeCheck size={20} strokeWidth={2.1}/></div><div><span>Missions validées</span><strong>{approvedCount}<em> / {missions.length}</em></strong><small>{inReview} soumission(s) en attente</small></div></div>
     </section>
+    <section className="academy-milestone"><div className="milestone-marker"><Target size={20} strokeWidth={2}/></div><div><span>OBJECTIF DES 2 PREMIÈRES SEMAINES</span><strong>Publier une mini-application qui fonctionne vraiment.</strong><p>Une mission à la fois. Chaque étape donne lieu à un livrable évalué.</p></div><Link href="/apprenant" aria-label="Voir le parcours des deux premières semaines"><ArrowRight size={20}/></Link></section>
     <div className="academy-content-grid">
       <section className="academy-class-section">
         <div className="academy-section-title"><div><h2>Continuer mes classes</h2><span>{missions.length} modules disponibles</span></div><Link href="/apprenant">Voir tout <ArrowRight size={16} strokeWidth={2} aria-hidden="true"/></Link></div>
@@ -52,7 +53,7 @@ export default function Home() {
             const sub=latestSubmission(m.id,submissions);
             return <Link className={"academy-class-item state-"+state} key={m.id} href="/apprenant">
               <span className="class-count">{String(i+1).padStart(2,"0")}</span>
-              <span className="class-main"><strong>{m.title}</strong><small>Semaine {m.week} · {m.domain}</small></span>
+              <span className="class-main"><strong>{m.title}</strong><small>Semaine {m.week} · {displayDomain(m.domain)}</small><span className="mission-tech-tags">{technologiesForMission(m).map(tech=><TechnologyBadge name={tech} key={tech}/>)}</span></span>
               <span className={"class-state "+state}>{state==="approved"?"Validée":state==="in_review"?"En correction":state==="locked"?"À débloquer":state==="changes_requested"?"À corriger":"Disponible"}</span>
               <span className="class-go"><ArrowRight size={16} strokeWidth={2} aria-hidden="true"/></span>
               {sub?.score!=null && <span className="sr-only">Note : {sub.score} sur 100</span>}
