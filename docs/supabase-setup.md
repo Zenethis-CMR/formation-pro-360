@@ -13,7 +13,7 @@
 Dans Supabase, sélectionner **Formation Pro 360**, puis Authentication > URL Configuration.
 1. Site URL : `https://formation-pro-360.vercel.app`
 2. Ajouter aux URL de redirection : `https://formation-pro-360.vercel.app/auth/callback`
-3. Ajouter uniquement les URL de prévisualisation de confiance nécessaires aux tests, puis les retirer à la fin.
+3. Pour tester la branche avant fusion, autoriser également `https://formation-pro-360-git-feat-li-487e0e-raymond-tampgueus-projects.vercel.app/auth/callback` dans les redirections. La variable Vercel `NEXT_PUBLIC_SITE_URL` est surchargée pour cette branche de prévisualisation. Retirer cette URL après les tests.
 4. Vérifier qu'un modèle d'e-mail de connexion OTP/magic link est activé. Pour des comptes réels, contrôler les restrictions d'inscription et les limites d'envoi. Ne pas envoyer des e-mails de test à des tiers sans consentement.
 
 ## Amorcer le premier compte formateur
