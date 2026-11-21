@@ -97,6 +97,24 @@ function AcademyLayout({children}:{children:React.ReactNode}) {
   </div>;
 }
 
+function SecureShell({children}:{children:React.ReactNode}) {
+  return <div className="secure-viewport">
+    <header className="secure-header">
+      <Link href="/" className="academy-brand"><span className="brand-flower"><GraduationCap size={23} strokeWidth={2.1}/></span><span>Formation <span>Pro 360</span></span></Link>
+      <nav className="secure-nav" aria-label="Navigation de l'espace privé">
+        <Link href="/espace">Mon espace</Link>
+        <Link href="/">Voir la démonstration</Link>
+      </nav>
+    </header>
+    <section className="academy-content secure-content">{children}</section>
+    <footer className="secure-footer">Formation Pro 360 · Espace personnel protégé</footer>
+  </div>;
+}
+
 export function AppShell({children}:{children:React.ReactNode}) {
-  return <DemoProvider><AcademyLayout>{children}</AcademyLayout></DemoProvider>;
+  const pathname = usePathname();
+  const isSecure = pathname.startsWith("/espace") || pathname.startsWith("/login");
+  return isSecure
+    ? <SecureShell>{children}</SecureShell>
+    : <DemoProvider><AcademyLayout>{children}</AcademyLayout></DemoProvider>;
 }

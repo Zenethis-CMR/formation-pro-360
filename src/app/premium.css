@@ -258,3 +258,213 @@ button,a,input,textarea,select { -webkit-tap-highlight-color:transparent; }
   .feature-tech-logos .technology-badge { width:24px; height:24px; }
   .feature-tech-logos .technology-badge img { width:16px; height:16px; }
 }
+
+
+/* Authenticated workspace with the same visual identity as the learning dashboard */
+.secure-viewport { padding:20px;max-width:1450px;min-height:100vh;margin:0 auto; }
+.secure-header { display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:18px;background:#fff;border:1px solid #e9eef8;border-radius:18px 18px 0 0;padding:20px 26px; }
+.secure-nav { display:flex;align-items:center;gap:10px;flex-wrap:wrap; }
+.secure-nav a { color:#5c7495;font-size:12px;font-weight:800;padding:10px 12px;border-radius:10px;background:#f4f7ff; }
+.secure-nav a:hover { color:#3784eb;background:#e6f1ff; }
+.secure-content { min-height:65vh;border-radius:0 0 18px 18px;border:1px solid #e9eef8;border-top:0; }
+.secure-content .page { max-width:1000px; }
+.secure-footer { color:#8294b1;text-align:center;padding:22px;font-size:11px; }
+.secure-content .form input:focus,.secure-content .form textarea:focus { outline:2px solid #71aff3;outline-offset:1px; }
+@media(max-width:640px) { .secure-viewport { padding:0; } .secure-header { border-radius:0;padding:15px; } .secure-content { border:0;border-radius:0; } .secure-nav { width:100%; } }
+
+
+/* Structured eight-week learning roadmap */
+.journey-panel { margin:26px 0 24px; padding:23px 22px 18px; border-radius:19px; border:1px solid #e4ecfa; background:linear-gradient(145deg,#f9fcff 0%,#fff 62%); box-shadow:0 12px 33px #365c9810; }
+.journey-heading { display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:18px; }
+.journey-heading h2 { margin:7px 0 6px; font-size:22px; color:#233a5d; line-height:1.28; letter-spacing:-.5px; }
+.journey-heading p { max-width:530px; color:#7b91ab; font-size:11px; line-height:1.65; margin:0; }
+.journey-overline { display:inline-flex;align-items:center;gap:6px; color:#3f91c5; font-size:9px; font-weight:900; letter-spacing:1.25px; }
+.journey-overview { min-width:122px; text-align:right; padding:8px 12px; background:#f0f7ff; border-radius:13px; }
+.journey-overview strong { display:block; color:#3a83dd; font-size:24px; font-weight:900; letter-spacing:-1px; line-height:1.3; }
+.journey-overview strong span { font-size:13px; color:#9bacc2; }
+.journey-overview small { display:block; color:#8297b0; font-size:9px; }
+.journey-week-grid { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:11px; }
+.journey-week { position:relative; display:flex;flex-direction:column;gap:9px;padding:16px 14px 13px;min-height:198px;background:#fff;border:1px solid #e8eef8;border-radius:13px;transition:border-color .2s ease,box-shadow .2s ease; }
+.journey-week:hover { border-color:#bed7f5; box-shadow:0 7px 20px #28599e10; }
+.journey-week.current { border-color:#85baf5; box-shadow:0 8px 24px #448af31a; background:linear-gradient(150deg,#fff,#f4f9ff); }
+.journey-week.completed { border-color:#bde9d4; background:#fcfffd; }
+.journey-week-top { display:flex;align-items:center;justify-content:space-between;gap:5px; }
+.journey-week-index { display:grid;place-items:center;min-width:37px;height:29px;padding:0 5px;border-radius:9px;background:#eaf1ff;color:#4176c8;font-size:10px;font-weight:900;letter-spacing:.5px; }
+.journey-week.current .journey-week-index { background:#397fe9;color:#fff; }
+.journey-week.completed .journey-week-index { background:#e1f7ec;color:#2da779; }
+.journey-week-state { display:inline-flex;align-items:center;gap:3px;font-size:9px;font-weight:700;color:#9aaabd; }
+.journey-week.current .journey-week-state { color:#3a8de7; }
+.journey-week.completed .journey-week-state { color:#309f74; }
+.journey-week strong { font-size:12px;line-height:1.35;color:#344968; }
+.journey-week p { flex:1; margin:0; color:#8699b1; font-size:10px; line-height:1.55; }
+.journey-skills { display:flex; flex-wrap:wrap; gap:4px; }
+.journey-skills span { background:#f3f6fb; border:1px solid #edf1f8; color:#8095b0; font-size:8px; font-weight:700; padding:4px 6px;border-radius:5px; }
+.journey-week-progress { height:5px;background:#eef3f9;border-radius:50px;overflow:hidden; }
+.journey-week-progress>span { display:block;height:100%;border-radius:inherit;background:linear-gradient(90deg,#428af1,#65cfbc); }
+.journey-week-link { display:inline-flex;align-items:center;gap:3px;color:#3f84d9;font-size:9px;font-weight:800;text-decoration:none; }
+.journey-week-link:hover { text-decoration:underline; }
+.journey-week-count { color:#879bb3;font-size:9px; }
+.journey-coach { display:flex;align-items:flex-start;gap:11px;margin-top:16px;padding:13px 15px;border-radius:12px;background:#edf8f7;border:1px solid #d8efeb; }
+.journey-coach-symbol { width:34px;height:34px;border-radius:10px;background:#d8f3ed;color:#35a994;flex:none;display:grid;place-items:center; }
+.journey-coach span { display:block;color:#3b9b87;letter-spacing:.8px;font-size:9px;font-weight:900;margin-bottom:5px; }
+.journey-coach strong { color:#477c75;font-weight:700;line-height:1.55;font-size:11px; }
+.curriculum-mission-list { display:flex;flex-direction:column;gap:12px;margin-top:14px; }
+.curriculum-week-group { padding:0;background:#fff;border:1px solid #e6eefa;border-radius:15px;overflow:hidden;box-shadow:0 5px 20px #4c6b9f0b; }
+.curriculum-week-group>summary { display:flex;align-items:center;justify-content:space-between;gap:15px;cursor:pointer;padding:16px 19px;list-style:none; }
+.curriculum-week-group>summary::-webkit-details-marker { display:none; }
+.curriculum-week-group>summary:after { content:"+";font-size:19px;color:#5785bf; font-weight:400; }
+.curriculum-week-group[open]>summary { border-bottom:1px solid #edf1f7;background:#f9fbff; }
+.curriculum-week-group[open]>summary:after { content:"−"; }
+.curriculum-week-name { display:flex;flex-wrap:wrap;gap:9px;align-items:center; }
+.curriculum-week-name>span { color:#397ed3;font-size:10px;letter-spacing:.5px;font-weight:900; }
+.curriculum-week-name>strong { font-size:12px;color:#34445e;font-weight:800; }
+.curriculum-week-total { margin-left:auto; white-space:nowrap;font-size:10px;color:#8298b2; }
+.curriculum-week-group>.mission-grid { padding:16px; margin:0; }
+.curriculum-week-group .mission-card { scroll-margin-top:24px; }
+.curriculum-week-group .mission-type { display:flex;align-items:center;gap:6px;flex-wrap:wrap; }
+@media(max-width:1250px) { .journey-week-grid { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+@media(max-width:700px) { .journey-panel{padding:16px 13px;} .journey-heading{flex-direction:column;} .journey-overview{text-align:left;} .journey-week-grid{grid-template-columns:1fr 1fr;gap:8px;} .journey-week{min-height:210px;padding:13px 10px;} .journey-week strong{font-size:11px;} .journey-week p{font-size:9px;} .journey-skills span{font-size:8px;} .curriculum-week-group>summary{padding:13px 11px;} .curriculum-week-name{gap:5px;} .curriculum-week-name>strong{font-size:11px;} .curriculum-week-total{font-size:9px;} }
+@media(max-width:430px) { .journey-week-grid{grid-template-columns:1fr;} .journey-week{min-height:0;} .journey-heading h2{font-size:20px;} .journey-week p{font-size:10px;} }
+
+
+/* Verified achievements, honest habit tracking, and trainer cohort insights */
+.gamification {margin:23px 0 25px; padding:23px; border:1px solid #e5edf8;border-radius:19px;background:linear-gradient(135deg,#fff 10%,#f8fbff 100%);box-shadow:0 9px 29px #385b920c}
+.gamification-top {display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:18px}
+.gamification-top h2 {margin:6px 0 5px;font-size:22px;letter-spacing:-.4px;color:#30455f}
+.gamification-top p {margin:0;max-width:500px;font-size:11px;line-height:1.6;color:#8596aa}
+.gamification-figures {display:flex;gap:9px;flex:none}
+.gamification-figures>div {background:#eff7ff;padding:10px 13px;border-radius:12px;min-width:85px}
+.gamification-figures strong {display:block;font-size:22px;color:#4184d8;font-weight:900;line-height:1.3}
+.gamification-figures strong small {font-size:11px;color:#9faec0}
+.gamification-figures>div>span {display:block;color:#8196af;font-size:9px;font-weight:700}
+.gamification-grid {display:grid;grid-template-columns:minmax(0,1.03fr) minmax(0,1fr);gap:13px}
+.daily-challenge {background:linear-gradient(148deg,#234c87 0%,#3477ca 66%,#419fbd 100%);color:white;padding:22px;border-radius:16px;min-width:0;box-shadow:0 13px 24px #2866ae22}
+.challenge-top {display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:9px}
+.challenge-top>span:first-child {display:inline-flex;gap:7px;align-items:center;font-size:9px;letter-spacing:1.2px;font-weight:900;color:#ccf3ff}
+.challenge-top>span:last-child {border-radius:20px;padding:5px 9px;font-size:9px;font-weight:800;background:#ffffff20;border:1px solid #ffffff42}
+.daily-challenge h3 {margin:21px 0 9px;font-size:21px;line-height:1.25;color:white;letter-spacing:-.3px}
+.daily-challenge>p {font-size:11px;line-height:1.7;color:#e1edff;margin:0 0 14px}
+.daily-challenge .challenge-mission {display:flex;align-items:center;justify-content:space-between;gap:9px;text-decoration:none;color:#fff;font-size:10px;line-height:1.4;font-weight:800;border-top:1px solid #ffffff38;padding:14px 0}
+.daily-challenge .challenge-mission:hover {color:#bcefff}
+.challenge-button {border:none;display:inline-flex;align-items:center;gap:10px;cursor:pointer;background:#fff;color:#2f6db0;padding:11px 15px;border-radius:10px;font-size:11px;font-weight:900;transition:transform .2s ease,box-shadow .2s ease}
+.challenge-button:hover {transform:translateY(-1px);box-shadow:0 6px 14px #1e447f44}
+.challenge-done {display:inline-flex;align-items:center;gap:8px;font-size:11px;font-weight:800;padding:11px 13px;color:#e2fff1;background:#ffffff24;border-radius:10px}
+.daily-challenge .challenge-disclaimer {font-size:9px;color:#c7dcf6;line-height:1.6;margin:15px 0 0}
+.badge-section {border:1px solid #edf1f8;border-radius:16px;background:#fff;padding:15px}
+.badge-heading {display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:13px}
+.badge-heading h3 {font-size:14px;color:#354865;margin:0}
+.badge-heading span {font-size:10px;color:#7f97ae}
+.badge-grid {display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.badge-tile {min-width:0;text-align:center;padding:12px 7px 10px;border-radius:12px;border:1px solid #e8eef7;background:#fafcff;display:flex;align-items:center;flex-direction:column;gap:7px;transition:transform .2s ease}
+.badge-tile:hover {transform:translateY(-1px)}
+.badge-tile .badge-symbol {width:36px;height:36px;display:grid;place-items:center;border-radius:11px;background:#ecf2fa;color:#a4b3c6}
+.badge-tile.badge-unlocked {border-color:#f6e7b7;background:linear-gradient(145deg,#fffef8,#fff9eb)}
+.badge-tile.badge-unlocked .badge-symbol {color:#d69a35;background:#fff0c9}
+.badge-tile strong {font-size:9px;line-height:1.4;color:#758aa4}
+.badge-tile.badge-unlocked strong {color:#6b572d}
+.badge-tile small {font-size:8px;color:#a5b2c2}
+.badge-tile.badge-unlocked small {color:#ab8746}
+.next-badge {margin:13px 0 0!important;display:flex;align-items:flex-start;gap:6px;color:#8b9caf;font-size:10px;line-height:1.5}
+.next-badge svg {flex:none;color:#dcac59}
+.cohort-panel .section-head {align-items:center}
+.cohort-panel .section-head h2 {margin:5px 0 0}
+.cohort-table-wrap {width:100%;overflow-x:auto;margin-top:15px}
+.cohort-table {border-collapse:collapse;width:100%;min-width:630px;text-align:left}
+.cohort-table th {font-size:9px;font-weight:900;letter-spacing:.35px;text-transform:uppercase;padding:10px 11px;color:#8397b0;background:#f3f7fc;white-space:nowrap}
+.cohort-table th svg {display:inline;vertical-align:middle;margin-right:3px}
+.cohort-table td {padding:14px 11px;border-bottom:1px solid #edf1f8;color:#6f849e;font-size:10px}
+.cohort-table td:first-child strong {font-size:11px;display:block;color:#3c4e68}
+.cohort-table td:first-child small {font-size:9px;display:block;color:#9badc1;margin-top:3px}
+.cohort-progress {min-width:130px}
+.cohort-progress>div:first-child {display:flex;align-items:center;justify-content:space-between;gap:9px}
+.cohort-progress strong {font-size:10px;color:#486483}
+.cohort-progress>div:first-child span {font-size:9px;color:#4a93d4}
+.cohort-track {height:6px;background:#e8eef6;border-radius:999px;overflow:hidden;margin-top:6px}
+.cohort-track>span {display:block;height:100%;background:linear-gradient(90deg,#4b8ef1,#5bd0b7);border-radius:inherit}
+.cohort-numeric {font-weight:800;color:#47627e!important}
+.cohort-note {font-size:9px;color:#91a3b7;line-height:1.5;margin:14px 0 0}
+.auth-send-button {display:inline-flex;align-items:center;justify-content:center;gap:9px}
+.auth-send-button:disabled {opacity:.65;cursor:wait;pointer-events:none}
+.auth-loader {animation:auth-spin 1s linear infinite}
+@keyframes auth-spin {to{transform:rotate(360deg)}}
+@media(max-width:1020px) {.gamification-grid{grid-template-columns:1fr}.gamification-figures>div{min-width:75px}}
+@media(max-width:560px) {.gamification{padding:14px}.gamification-top{flex-direction:column}.gamification-top h2{font-size:19px}.gamification-figures{width:100%}.gamification-figures>div{flex:1}.daily-challenge{padding:16px}.daily-challenge h3{font-size:18px}.badge-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+
+/* Guided workshops: concrete deliverables, clear checkpoints and transparent rubric */
+.mission-workshop-link {display:flex;align-items:center;gap:9px;min-height:43px;margin-top:16px;padding:11px 13px;border:1px solid #cfe1fa;background:#eff6ff;border-radius:10px;color:#367acb;text-decoration:none;font-size:11px;font-weight:900;transition:background .2s,border-color .2s;}
+.mission-workshop-link:hover {background:#e3f0ff;border-color:#9bc7f7;}
+.mission-workshop-link span {flex:1;}
+.mission-workshop-link.is-locked {background:#f7f9fc;border-color:#e5ebf3;color:#7e91a9;}
+.workshop-page {max-width:1200px!important;}
+.workshop-back {display:inline-flex;align-items:center;gap:8px;margin:0 0 19px;color:#6e86a6;font-size:11px;font-weight:800;text-decoration:none;}
+.workshop-back:hover {color:#337fdc;}
+.workshop-intro {padding:25px 27px 22px;border-radius:17px;border:1px solid #e3ebf7;background:linear-gradient(119deg,#fff 3%,#f3f8ff 100%);box-shadow:0 7px 22px #4265a010;margin-bottom:18px;}
+.workshop-intro>.eyebrow {display:inline-flex;align-items:center;gap:7px;color:#3582d9;font-size:10px;}
+.workshop-intro h1 {font-size:clamp(25px,3vw,34px);font-weight:900;letter-spacing:-1.1px;line-height:1.22;color:#2b3e59;margin:12px 0 11px;max-width:780px;}
+.workshop-intro>p {font-size:12px;line-height:1.8;color:#7589a1;max-width:700px;margin:0 0 18px;}
+.workshop-info {display:flex;align-items:center;flex-wrap:wrap;gap:9px;margin-bottom:9px;}
+.workshop-info>span {display:inline-flex;align-items:center;gap:6px;color:#6c82a0;background:#fff;border:1px solid #e5edf7;border-radius:20px;padding:8px 10px;font-size:10px;font-weight:800;}
+.workshop-info svg {color:#4489d4;}
+.workshop-tech {display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-top:13px;}
+.workshop-alert {display:flex;align-items:flex-start;gap:12px;border-radius:13px;border:1px solid #d9e8fb;padding:15px 16px;margin-bottom:15px;background:#f3f8ff;color:#467ab1;}
+.workshop-alert>svg {flex:none;margin-top:2px;}
+.workshop-alert strong {display:block;font-size:12px;margin-bottom:5px;}
+.workshop-alert p {font-size:11px;line-height:1.65;margin:0;color:inherit;}
+.workshop-alert.locked {background:#fff8ee;border-color:#f4dfbd;color:#a37430;}
+.workshop-alert.approved {background:#effbf5;border-color:#ccebdc;color:#388964;}
+.workshop-alert.pending {background:#f3f8ff;border-color:#d9e6f6;color:#4d7eaf;}
+.workshop-alert.revision {background:#fff7ef;border-color:#f5dfc9;color:#ad793d;}
+.workshop-prereqs {display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;}
+.workshop-prereqs a {display:inline-flex;align-items:center;gap:4px;font-size:10px;color:#986923;font-weight:800;text-decoration:underline;text-underline-offset:3px;}
+.workshop-layout {display:grid;grid-template-columns:minmax(0,1fr) 270px;align-items:start;gap:17px;}
+.workshop-main {display:flex;flex-direction:column;gap:16px;min-width:0;}
+.workshop-panel {padding:24px;background:#fff;border:1px solid #e7edf6;border-radius:17px;box-shadow:0 8px 25px #415d9910;}
+.workshop-panel-head {display:flex;align-items:center;justify-content:space-between;gap:12px;}
+.workshop-panel-head h2 {margin:7px 0 0;color:#354762;font-size:19px;letter-spacing:-.3px;}
+.workshop-step-count {white-space:nowrap;padding:8px 10px;background:#e9f3ff;border-radius:9px;color:#397ec9;font-size:10px;font-weight:900;}
+.workshop-progress {height:8px;overflow:hidden;border-radius:15px;background:#e8eff9;margin-top:17px;}
+.workshop-progress>span {display:block;height:100%;background:linear-gradient(90deg,#3f84e5,#47c4b5);border-radius:inherit;transition:width .25s;}
+.workshop-support-text {font-size:10px;line-height:1.7;color:#8b9bb0;margin:12px 0 18px;}
+.workshop-steps {display:flex;flex-direction:column;gap:0;margin-top:9px;}
+.workshop-step {display:flex;align-items:flex-start;gap:13px;padding:19px 0;border-top:1px solid #edf1f7;}
+.workshop-step-index {width:36px;height:36px;display:grid;place-items:center;border-radius:10px;background:#eaf2ff;color:#4487d8;font-size:11px;font-weight:900;flex:none;}
+.workshop-step.is-complete .workshop-step-index {background:#ddf6ea;color:#30a576;}
+.workshop-step-body {flex:1;min-width:0;}
+.workshop-step-body h3 {font-size:13px;color:#354862;margin:1px 0 7px;line-height:1.4;}
+.workshop-step-body>p {margin:0;color:#788da7;font-size:11px;line-height:1.8;}
+.workshop-expected {display:flex;align-items:flex-start;gap:7px;margin-top:11px;padding:9px 11px;background:#f6f9fd;border-radius:8px;color:#7189a7;font-size:10px;line-height:1.6;}
+.workshop-expected svg {flex:none;color:#509fc1;margin-top:1px;}
+.workshop-step-action {margin-top:13px;}
+.workshop-step-action button {display:inline-flex;align-items:center;gap:8px;border:1px solid #d4e6fb;background:#f0f7ff;border-radius:8px;padding:9px 11px;color:#377fce;cursor:pointer;font-size:10px;font-weight:800;}
+.workshop-step-action button:hover {background:#e2efff;border-color:#acd1fc;}
+.workshop-done {display:inline-flex;align-items:center;gap:6px;color:#3ba87b;background:#eafaf0;padding:7px 10px;border-radius:8px;font-size:10px;font-weight:800;margin-top:10px;}
+.workshop-rubric {list-style:none;margin:15px 0 0;padding:0;display:grid;gap:9px;}
+.workshop-rubric li {display:flex;align-items:flex-start;gap:10px;padding:12px;background:#f7faff;border:1px solid #eef2f9;border-radius:10px;color:#657d9a;font-size:11px;line-height:1.6;}
+.workshop-rubric svg {color:#478fd9;flex:none;margin-top:1px;}
+.workshop-deliverable {font-size:11px;line-height:1.65;color:#748ba4;margin:15px 0;}
+.workshop-submit-form {max-width:640px;}
+.workshop-submit-form label {font-size:11px;}
+.workshop-submit-form button {display:inline-flex;align-items:center;gap:9px;}
+.workshop-feedback {background:#f1f9ff;border:1px solid #ddecf8;border-radius:10px;padding:14px;margin:12px 0;}
+.workshop-feedback strong {font-size:12px;color:#377bb2;}
+.workshop-feedback p {font-size:11px;line-height:1.7;color:#6487a2;margin:8px 0 0;white-space:pre-wrap;}
+.workshop-aside {display:flex;flex-direction:column;gap:12px;}
+.workshop-aside-card {background:#fff;border:1px solid #e5ecf7;border-radius:15px;padding:17px;box-shadow:0 5px 16px #52628e0c;}
+.workshop-aside-card p {font-size:11px;line-height:1.7;color:#7b8fa9;margin:12px 0 0;}
+.workshop-aside-card ul {padding:0;list-style:none;margin:13px 0 0;display:grid;gap:11px;}
+.workshop-aside-card li {display:flex;align-items:flex-start;gap:8px;font-size:10px;line-height:1.55;color:#667f9c;}
+.workshop-aside-card li svg {color:#35ae91;flex:none;margin-top:2px;}
+.workshop-aside-card a {margin-top:12px;display:inline-flex;align-items:center;gap:7px;font-size:10px;font-weight:800;color:#3782d6;text-decoration:none;}
+.workshop-aside-card a:hover {text-decoration:underline;}
+.workshop-return {display:flex;align-items:center;gap:8px;color:#6f87a3;font-size:10px;font-weight:800;padding:8px;text-decoration:none;}
+@media(max-width:1100px) {.workshop-layout {grid-template-columns:minmax(0,1fr) 230px;}}
+@media(max-width:850px) {.workshop-layout {grid-template-columns:1fr;}.workshop-aside{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;}.workshop-return{grid-column:1/-1;}}
+@media(max-width:580px) {.workshop-intro{padding:18px 15px;}.workshop-panel{padding:18px 14px;}.workshop-panel-head h2{font-size:17px;}.workshop-aside{grid-template-columns:1fr;}.workshop-step{gap:10px;}.workshop-step-index{width:30px;height:30px;}.workshop-panel-head{align-items:flex-start;}.workshop-info{gap:6px;}}
+
+
+.trainer-evaluation-rubric {margin:14px 0 0;padding:12px 14px;border:1px solid #dfe9f6;border-radius:11px;background:#f7faff;}
+.trainer-evaluation-rubric>strong {display:block;color:#4078b6;font-size:11px;margin-bottom:9px;}
+.trainer-evaluation-rubric ul {list-style:none;margin:0;padding:0;display:grid;gap:8px;}
+.trainer-evaluation-rubric li {position:relative;padding-left:17px;color:#6e849f;font-size:10px;line-height:1.6;}
+.trainer-evaluation-rubric li:before {content:"✓";position:absolute;left:0;color:#44a9a1;font-weight:900;}
