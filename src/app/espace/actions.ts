@@ -149,3 +149,22 @@ export async function saveTrainingStartDate(formData:FormData) {
   revalidatePath(learnerPath);
   redirect(trainerPath+"?success=calendar");
 }
+
+export async function postCoachMessage(formData:FormData) {
+  const {supabase,user}=await requireRole("trainer");
+  const learnerId=String(formData.get("learnerId")||"");
+  const body=String(formData.get("body")||"").trim();
+  if(!idPattern.test(learnerId)||body.length<10||body.length>1200) {
+    redirect(trainerPath+"?error=message");
+  }
+  const {data:learner,error:lookupError}=await supabase.from("profiles")
+    .select("id").eq("id",learnerId).eq("role","learner").maybeSingle();
+  if(lookupError||!learner) redirect(trainerPath+"?error=message");
+  const {error}=await supabase.from("coach_messages").insert({
+    trainer_id:user.id,learner_id:learnerId,body
+  });
+  if(error) redirect(trainerPath+"?error=message");
+  revalidatePath(trainerPath);
+  revalidatePath(learnerPath);
+  redirect(trainerPath+"?success=message");
+}
