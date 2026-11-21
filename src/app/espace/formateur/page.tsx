@@ -8,6 +8,7 @@ import { displayDomain } from "@/components/technology-badge";
 import { CohortProgress } from "@/components/cohort-progress";
 import { TrainingSchedule } from "@/components/training-schedule";
 import { TrainerCoachingPanel } from "@/components/trainer-coaching-panel";
+import { LaunchReadiness } from "@/components/launch-readiness";
 import { learnerInsight, type CoachMessage } from "@/lib/coaching-insights";
 
 type Params={error?:string;success?:string};
@@ -18,7 +19,7 @@ export default async function TrainerSpace({searchParams}:{searchParams:Promise<
   if(!isSupabaseConfigured()) redirect("/espace");
   const {supabase} = await requireRole("trainer");
   const params=await searchParams;
-  const [{data:submissions,error:se},{data:missions,error:me},{data:learners,error:le},{data:awards,error:ae},{data:allSubmissions,error:allSe},{data:practice,error:pe},{data:guides,error:ge},{data:settings,error:settingsError},{data:deps,error:depsError},{data:steps,error:stepsError},{data:coachMessages,error:coachError}] = await Promise.all([
+  const [{data:submissions,error:se},{data:missions,error:me},{data:learners,error:le},{data:awards,error:ae},{data:allSubmissions,error:allSe},{data:practice,error:pe},{data:guides,error:ge},{data:settings,error:settingsError},{data:deps,error:depsError},{data:steps,error:stepsError},{data:coachMessages,error:coachError},{data:badgeAwards,error:badgeAwardsError}] = await Promise.all([
     supabase.from("submissions").select("id,mission_id,learner_id,url,note,created_at").eq("status","pending").order("created_at"),
     supabase.from("missions").select("id,title,domain,xp,published,week").order("week"),
     supabase.from("profiles").select("id").eq("role","learner").order("created_at"),
@@ -29,9 +30,10 @@ export default async function TrainerSpace({searchParams}:{searchParams:Promise<
     supabase.from("training_settings").select("start_date").eq("id",true).maybeSingle(),
     supabase.from("mission_prerequisites").select("mission_id,prerequisite_id"),
     supabase.from("workshop_steps").select("learner_id,mission_id,completed_at"),
-    supabase.from("coach_messages").select("id,trainer_id,learner_id,body,created_at").order("created_at",{ascending:false}).limit(200)
+    supabase.from("coach_messages").select("id,trainer_id,learner_id,body,created_at").order("created_at",{ascending:false}).limit(200),
+    supabase.from("learner_badges").select("badge_slug")
   ]);
-  if(se||me||le||ae||allSe||pe||ge||settingsError||depsError||stepsError||coachError)return <main className="page"><p className="alert danger">Erreur de chargement. Vérifie les migrations SQL et les droits du compte.</p></main>;
+  if(se||me||le||ae||allSe||pe||ge||settingsError||depsError||stepsError||coachError||badgeAwardsError)return <main className="page"><p className="alert danger">Erreur de chargement. Vérifie les migrations SQL et les droits du compte.</p></main>;
   const pending=(submissions||[]) as Submission[], catalog=(missions||[]) as Mission[];
   const byId = new Map(catalog.map(m=>[m.id,m]));
   const rubricById = new Map(((guides||[]) as MissionRubric[]).map(g=>[g.mission_id,g.rubric]));
@@ -50,6 +52,9 @@ export default async function TrainerSpace({searchParams}:{searchParams:Promise<
       <div className="stat-card"><span>APPRENANTS INSCRITS</span><strong>{(learners||[]).length}</strong></div>
       <div className="stat-card"><span>XP ATTRIBUÉS</span><strong>{(awards||[]).reduce((sum,x)=>sum+Number(x.xp),0)}</strong></div></div>
     <TrainerCoachingPanel learners={learners||[]} insights={insights} messages={(coachMessages||[]) as CoachMessage[]} startDate={settings?.start_date??null}/>
+    <LaunchReadiness publishedMissions={catalog.filter(m=>m.published).length} guidedMissions={(guides||[]).length}
+      learners={(learners||[]).length} submissions={(allSubmissions||[]).length} validatedMissions={(awards||[]).length}
+      awardedBadges={(badgeAwards||[]).length} startDate={settings?.start_date??null}/>
     <TrainingSchedule startDate={settings?.start_date??null} missions={catalog} variant="trainer"/>
     <CurriculumRoadmap missions={catalog} variant="trainer"/>
     <CohortProgress learners={learners||[]} awards={awards||[]} submissions={allSubmissions||[]} practice={practice||[]} missions={catalog.filter(m=>m.published)} missionCount={catalog.filter(m=>m.published).length}/>
