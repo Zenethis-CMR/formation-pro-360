@@ -71,7 +71,7 @@ export function TrainingSchedule({startDate,missions,approved=new Set(),variant=
           return <div key={i} className={"study-calendar-day"+(date===today?" today":"")}>
             <div className="study-day-marker">{String(i+1).padStart(2,"0")}</div>
             <div className="study-day-copy"><strong>{day.label}</strong><p>{day.detail}</p>
-              {mission && (i===1||i===3) && <Link href={"/espace/atelier/"+mission.id}>{mission.title}</Link>}
+              {mission && (i===1||i===3) && (trainer?<span className="study-day-mission">{mission.title}</span>:<Link href={"/espace/atelier/"+mission.id}>{mission.title}</Link>)}
             </div>
             <small>{date?shortDate(date):"Jour "+(i+1)}</small>
           </div>;
