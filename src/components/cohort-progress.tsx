@@ -17,7 +17,7 @@ export function CohortProgress({learners,awards,submissions,practice,missionCoun
     const approved=awards.filter(a=>a.learner_id===learner.id);
     const learnerSubs=submissions.filter(s=>s.learner_id===learner.id);
     const checkins=practice.filter(p=>p.learner_id===learner.id);
-    const latestSubmission=learnerSubs.map(s=>s.created_at).sort().at(-1)||null;
+    const latestSubmission=learnerSubs.map(s=>s.created_at).sort().slice(-1)[0]||null;
     const latestPractice=checkins.map(c=>c.practice_date).sort().at(-1)||null;
     const latest=latestSubmission && latestPractice
       ? (latestSubmission.slice(0,10)>latestPractice?latestSubmission.slice(0,10):latestPractice)
