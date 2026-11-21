@@ -59,7 +59,7 @@ function DashboardRail() {
   return <aside className="academy-rail" aria-label="Profil et progression">
     <div className="rail-heading"><span>Mon profil</span><span className="rail-heading-icon"><UIIcon name="bell" size={18}/></span></div>
     <div className="profile-card">
-      <div className="profile-avatar" aria-hidden="true"><div className="avatar-hair"/><div className="avatar-face"/><div className="avatar-body"/><span><Sparkles size={14}/></span></div>
+      <div className="profile-avatar profile-avatar-pro" aria-hidden="true"><GraduationCap size={37} strokeWidth={1.8}/></div>
       <h3>Mon parcours</h3>
       <p>Apprenant · Mode démonstration</p>
       <div className="profile-mini-grid">

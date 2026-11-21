@@ -3,6 +3,7 @@ import { useMemo, useState, type FormEvent } from "react";
 import { Sparkles, Check, Clock3 } from "lucide-react";
 import { useDemo } from "@/context/demo-store";
 import { latestSubmission, missionState, stateLabels } from "@/lib/mission-engine";
+import { TechnologyBadge, technologiesForMission, displayDomain } from "@/components/technology-badge";
 
 export default function Apprenant() {
   const { missions, submissions, xp, level, approvedCount, submit, ready } = useDemo();
@@ -35,7 +36,7 @@ export default function Apprenant() {
         const last = latestSubmission(mission.id, submissions);
         return <article className="mission-card" key={mission.id}>
           <div className="mission-head"><span className="week">SEMAINE {mission.week}</span><span className={"status "+status}>{stateLabels[status]}</span></div>
-          <div className="mission-type">{mission.domain}</div><h3>{mission.title}</h3><p>{mission.description}</p>
+          <div className="mission-type"><span>{displayDomain(mission.domain)}</span>{technologiesForMission(mission).map(tech=><TechnologyBadge name={tech} key={tech}/>)}</div><h3>{mission.title}</h3><p>{mission.description}</p>
           <ul className="objective-list">{mission.objectives.map((item) => <li key={item}><Check size={14} strokeWidth={2} aria-hidden="true"/>{item}</li>)}</ul>
           <div className="mission-meta"><span className="meta-duration"><Clock3 size={14} strokeWidth={1.8} aria-hidden="true"/>{mission.duration}</span><span className="xp">+{mission.xp} XP</span></div>
           {status === "locked" && <div className="helper">Prérequis : {mission.prerequisites.join(", ")}</div>}
