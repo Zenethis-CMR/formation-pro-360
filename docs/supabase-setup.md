@@ -3,9 +3,9 @@
 ## État réel
 
 - Projet Supabase : **Formation Pro 360** (référence `llwuukoqwlwpefgipvgc`), région Paris.
-- PostgreSQL actif avec les migrations `001_initial.sql` à `005_restrict_client_writes.sql`.
+- PostgreSQL actif avec les migrations `001_initial.sql` à `006_guided_workshops.sql`.
 - **16 missions publiées** sur huit semaines, avec prérequis progressifs. La validation d'une mission attribue des XP une seule fois.
-- Les huit tables applicatives sont protégées par RLS : profils, missions, prérequis, soumissions, XP, badges, badges acquis et séances de pratique.
+- Les dix tables applicatives sont protégées par RLS : profils, missions, prérequis, soumissions, XP, badges, badges acquis, séances de pratique, guides d'ateliers et étapes.
 - Vercel possède les variables d'environnement publiques requises (URL, clé publishable, URL du site).
 - Les pages de démonstration `/apprenant` et `/formateur` restent séparées des espaces réels protégés `/espace/apprenant` et `/espace/formateur`.
 
@@ -14,7 +14,7 @@
 Dans Supabase, sélectionner **Formation Pro 360**, puis Authentication > URL Configuration.
 1. Site URL : `https://formation-pro-360.vercel.app`
 2. Ajouter aux URL de redirection : `https://formation-pro-360.vercel.app/auth/callback`
-3. Pour tester la branche avant fusion, autoriser également `https://formation-pro-360-git-feat-li-487e0e-raymond-tampgueus-projects.vercel.app/auth/callback` dans les redirections. La variable Vercel `NEXT_PUBLIC_SITE_URL` est surchargée pour cette branche de prévisualisation. Retirer cette URL après les tests.
+3. Supprimer des redirections autorisées toutes les anciennes URL de prévisualisation après validation. Les utilisateurs accèdent uniquement au domaine public ci-dessus.
 4. Vérifier qu'un modèle d'e-mail de connexion OTP/magic link est activé. Pour des comptes réels, contrôler les restrictions d'inscription et les limites d'envoi. Ne pas envoyer des e-mails de test à des tiers sans consentement.
 
 ## Amorcer le premier compte formateur
@@ -30,9 +30,9 @@ where id=(select id from auth.users where email='EMAIL_DU_FORMATEUR');
 
 L'adresse doit être remplacée localement par celle du formateur réel. Vérifier la ligne modifiée avant de déclarer le compte prêt. Aucun accès formateur n'est accordé automatiquement sur simple indication d'un e-mail.
 
-## Tests avant passage en production
+## Tests de recette sur le domaine public
 
-- Déploiement Next.js en preview puis contrôle TypeScript et routes.
+- Déploiement Next.js sur `https://formation-pro-360.vercel.app` puis contrôle TypeScript, des routes et de l'absence d'authentification Vercel pour les visiteurs.
 - Essai de connexion par lien e-mail avec deux comptes distincts.
 - Vérifier qu'un apprenant ne peut pas consulter `/espace/formateur` ni les soumissions des autres.
 - Valider un livrable à 85/100 : apparition d'une seule ligne d'XP et déblocage du prérequis suivant.
@@ -54,10 +54,10 @@ Le formateur accède au programme, au nombre de comptes apprenants et au total d
 ## SMTP à configurer avant ouverture aux apprenants
 
 - Fournisseur retenu : **Resend via SMTP personnalisé**. Guide d'activation : [auth-email-resend.md](./auth-email-resend.md).
-- Activer et vérifier l'expéditeur `no-reply@auth.zenithis.tech` dès maintenant, indépendamment du site.
-- Domaine de l'application réservé à la fin du projet : `formation.zenithis.tech`. Mettre à jour les URL Vercel, Supabase et les redirections seulement après validation.
+- Domaine d'expédition Resend : `zenithis.tech`, vérifié. Expéditeur : `formation@zenithis.tech`.
+- Domaine unique utilisé pour l'application : `https://formation-pro-360.vercel.app`. Ne pas recommander d'autres URL pour accéder au site.
 - Aucune clé Resend ne doit être écrite dans GitHub, les composants React ou les variables publiques Vercel.
-- La limite de 2 e-mails/heure reste en place tant que le SMTP personnalisé n'est pas réellement activé.
+- SMTP personnalisé activé dans Supabase avec limite de 30 e-mails/heure selon la capture du tableau de bord. La délivrabilité externe doit encore être validée.
 
 ## Gamification en données réelles
 
