@@ -1,6 +1,7 @@
 import { signOut } from "@/app/auth/actions";
+import Link from "next/link";
+import { ArrowUpRight, BookOpen, LockKeyhole } from "lucide-react";
 import { redirect } from "next/navigation";
-import { submitMission } from "@/app/espace/actions";
 import { requireRole } from "@/lib/auth/require-role";
 import { isSupabaseConfigured } from "@/lib/supabase/server";
 import { CurriculumRoadmap } from "@/components/curriculum-roadmap";
@@ -65,12 +66,11 @@ export default async function LearnerSpace({searchParams}:{searchParams:Promise<
         <p className="muted">Livrable : {m.deliverable}</p><ul className="objective-list">{(m.objectives||[]).map(o=><li key={o}>✓ {o}</li>)}</ul>
         <div className="mission-meta"><span>◷ {m.duration}</span><span className="xp">+{m.xp} XP</span></div>
         {recent?.feedback && <p className="helper">{recent.score}/100 · {recent.feedback}</p>}
-        {canSubmit && <form action={submitMission} className="form" style={{marginTop:20}}>
-          <input type="hidden" name="missionId" value={m.id}/>
-          <label>Lien du livrable<input name="url" type="url" required maxLength={800} placeholder="https://github.com/…"/></label>
-          <label>Ce que tu as réalisé<textarea name="note" maxLength={1200} rows={2}/></label>
-          <button className="primary-btn" type="submit">Soumettre à la correction</button>
-        </form>}
+        <Link href={"/espace/atelier/"+m.id} className={"mission-workshop-link"+(blocked?" is-locked":"")}>
+          {blocked?<LockKeyhole size={16}/>:<BookOpen size={16}/>}
+          <span>{completed?"Revoir l'atelier":blocked?"Consulter les consignes":recent?.status==="pending"?"Suivre ma correction":canSubmit?"Ouvrir l'atelier guidé":"Voir l'atelier"}</span>
+          <ArrowUpRight size={16}/>
+        </Link>
       </article>;
     })}</div>
       </details>;
