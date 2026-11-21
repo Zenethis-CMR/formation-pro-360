@@ -3,7 +3,8 @@
 ## État réel
 
 - Projet Supabase : **Formation Pro 360** (référence `llwuukoqwlwpefgipvgc`), région Paris.
-- PostgreSQL actif et migré avec `001_initial.sql` puis `002_optimize_rls.sql`.
+- PostgreSQL actif avec `001_initial.sql`, `002_optimize_rls.sql` et `003_eight_week_curriculum.sql`.
+- **16 missions publiées** sur huit semaines, avec prérequis progressifs. La validation d'une mission attribue des XP une seule fois.
 - Les cinq tables sont protégées par RLS et quatre missions de départ sont publiées.
 - Vercel possède les variables d'environnement publiques requises (URL, clé publishable, URL du site).
 - Les pages de démonstration `/apprenant` et `/formateur` restent séparées des espaces réels protégés `/espace/apprenant` et `/espace/formateur`.
@@ -43,3 +44,16 @@ L'adresse doit être remplacée localement par celle du formateur réel. Vérifi
 Les fonctions `public.is_trainer` et `public.review_submission` sont des fonctions SECURITY DEFINER explicitement contrôlées : ce choix déclenche un avertissement du linter Supabase. Toute fonction de correction vérifie le rôle en base avant de modifier les résultats. Ne pas supprimer ces contrôles ni exposer une clé de service dans l'application.
 
 L'application n'utilise que la **clé publishable** autorisée dans le front-end. Aucune clé d'administration ni mot de passe ne doit être commité. La première version de production ne doit pas traiter de données sensibles avant tests complets.
+
+## Parcours pédagogique de 8 semaines
+
+L'apprenant visualise une carte des huit étapes, chaque semaine avec ses compétences et son livrable. Les missions sont regroupées dans des panneaux extensibles ; la semaine correspondant à la première mission non validée s'ouvre par défaut. Les futures étapes peuvent être consultées mais restent verrouillées par les prérequis contrôlés en base.
+
+Le formateur accède au programme, au nombre de comptes apprenants et au total des XP effectivement attribués. La feuille de route est décrite dans `src/lib/curriculum.ts` et les données réelles dans la migration `003_eight_week_curriculum.sql`. Les nouveaux exercices ajoutés via l'interface peuvent être créés en brouillon.
+
+## Domaine et e-mails (après finalisation)
+
+- Domaine souhaité à la fin du projet : `formation.zenithis.tech`.
+- À ce moment, ajouter `https://formation.zenithis.tech` comme URL du site et `https://formation.zenithis.tech/auth/callback` parmi les URL de redirection Supabase.
+- Configurer un fournisseur SMTP professionnel, vérifier l'expéditeur/DNS, puis tester la délivrabilité depuis un compte apprenant distinct. Sans SMTP personnalisé, les e-mails d'authentification Supabase sont fortement limités.
+- Ne pas modifier l'URL publique de production ni imposer ce domaine avant validation de tous les tests.
