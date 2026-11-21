@@ -130,3 +130,25 @@ Contrôles manuels avec deux comptes réels à terminer :
 3. Soumettre un projet, corriger à moins de 80, remettre une version améliorée et valider à 80 ou plus.
 4. Vérifier l'unicité des XP, des badges et la séparation des messages entre comptes.
 5. Vérifier l'envoi Resend sur un téléphone réel ; surveiller la délivrabilité avant une ouverture plus large.
+
+## Correctifs de recette et édition des nouvelles missions
+
+- Migration `010_normalize_workshop_steps.sql` : transformation sans perte des 64 étapes existantes en objets `{title,instruction,deliverable}`, format réellement attendu par le composant atelier. Toutes les missions initiales sont désormais lisibles.
+- Si une mission personnalisée n'a pas encore de guide, elle reste accessible : consigne, livrable et notation globale fonctionnent. L'apprenant n'est plus envoyé vers une page 404.
+- Après une nouvelle soumission, le dernier retour du formateur reste visible pour faciliter la correction.
+- Le tableau formateur présente les contrôles de lancement confirmés en base et identifie séparément les validations humaines restantes.
+- Tests unitaires du coaching dans `tests/coaching.test.cjs`, exécutés automatiquement par `npm run test:unit` avant `npm run build`.
+
+Migration `011_trainer_mission_authoring.sql` :
+- La création d'un brouillon et de son prérequis facultatif est **transactionnelle**, sous les politiques RLS du formateur. Le prérequis doit être une mission publiée de la même semaine ou d'une semaine antérieure.
+- Un formateur peut rédiger **quatre étapes pratiques et quatre critères sur 25** pour chaque brouillon via `/espace/formateur/atelier/[id]`.
+- Il peut modifier le guide tant que la mission n'a pas été publiée. Une fois publiée, la grille n'est plus éditable par le flux de création afin de préserver la cohérence pédagogique des corrections.
+- Les nouvelles missions sans guide conservent le fallback de notation globale sur 100.
+
+## Points non déclarés comme réussis sans participation réelle
+
+- Réception d'un lien de connexion Supabase/Resend sur un véritable appareil apprenant.
+- Envoi et correction d'un vrai livrable, preuve de score, XP et badge une seule fois.
+- Message formateur lu par l'apprenant et contrôles de cloisonnement entre les utilisateurs.
+- Audit de l'ergonomie sur téléphone et avec une connexion réseau limitée.
+- Activation éventuelle de la protection des mots de passe compromis dans Supabase Auth, si disponible pour le plan du projet.
