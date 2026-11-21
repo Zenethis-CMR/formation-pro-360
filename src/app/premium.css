@@ -652,3 +652,20 @@ button,a,input,textarea,select { -webkit-tap-highlight-color:transparent; }
 .launch-audit-footer a{display:inline-flex;align-items:center;gap:4px;color:#4387d5;font-weight:900;text-decoration:none;white-space:nowrap;}
 @media(max-width:860px){.launch-audit-list{grid-template-columns:1fr;}}
 @media(max-width:600px){.launch-audit{padding:15px;}.launch-audit-head{flex-direction:column;}.launch-audit-footer{flex-wrap:wrap;}.launch-audit-footer a{width:100%;}}
+
+
+/* Trainer authoring of real guided lessons, prior to publication */
+.authoring-page{max-width:1100px!important;}
+.authoring-form{display:grid;gap:17px;max-width:840px;margin-top:18px;}
+.authoring-form>.workshop-panel{display:grid;gap:14px;}
+.authoring-form .workshop-panel h2{font-size:19px;color:#354d6b;margin:0;}
+.authoring-form label{display:grid;gap:7px;color:#526c8c;font-size:11px;font-weight:800;}
+.authoring-form input,.authoring-form textarea{display:block;width:100%;border:1px solid #dce6f4;border-radius:9px;background:#f9fbff;color:#415a77;padding:11px 12px;font:inherit;font-size:11px;line-height:1.5;resize:vertical;}
+.authoring-form :is(input,textarea):focus-visible{outline:2px solid #569de7;outline-offset:1px;}
+.authoring-step{display:grid;gap:12px;padding:17px 15px;border:1px solid #e7edf7;border-radius:12px;background:#fcfdff;}
+.authoring-step legend{color:#4689cf;font-size:11px;font-weight:900;padding:0 8px;}
+.authoring-save{display:inline-flex;align-items:center;justify-content:center;gap:9px;justify-self:start;}
+.authoring-guide-link{display:inline-block;margin-top:8px;color:#397fcf;font-size:10px;font-weight:900;text-decoration:underline;text-underline-offset:3px;line-height:1.5;}
+.form select{width:100%;background:#fff;border:1px solid #dce6f4;border-radius:8px;padding:11px;color:#425b77;font-size:11px;}
+.form label small{display:block;font-size:9px;font-weight:400;color:#879bb1;line-height:1.5;margin-top:5px;}
+@media(max-width:600px){.authoring-form .workshop-panel{padding:16px;}.authoring-step{padding:13px 10px;}}
