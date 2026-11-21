@@ -98,8 +98,8 @@ export function learnerInsight(args:{
     }
   }
   const days=args.practices.filter(x=>x.learner_id===learnerId).map(x=>x.practice_date)
-    .concat(args.steps.filter(x=>x.learner_id===learnerId).map(x=>x.completed_at.slice(0,10)))
-    .concat(subs.map(x=>x.created_at.slice(0,10))).filter(Boolean).sort();
+    .concat(args.steps.filter(x=>x.learner_id===learnerId).map(x=>cameroonDay(new Date(x.completed_at))))
+    .concat(subs.map(x=>cameroonDay(new Date(x.created_at)))).filter(Boolean).sort();
   const lastActivity=days.length?days[days.length-1]:null;
   const daysWithoutActivity=started
     ? Math.max(0,daysBetween(lastActivity && lastActivity>=startDate! ? lastActivity : startDate!,today))
