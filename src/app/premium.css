@@ -258,3 +258,16 @@ button,a,input,textarea,select { -webkit-tap-highlight-color:transparent; }
   .feature-tech-logos .technology-badge { width:24px; height:24px; }
   .feature-tech-logos .technology-badge img { width:16px; height:16px; }
 }
+
+
+/* Authenticated workspace with the same visual identity as the learning dashboard */
+.secure-viewport { padding:20px;max-width:1450px;min-height:100vh;margin:0 auto; }
+.secure-header { display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:18px;background:#fff;border:1px solid #e9eef8;border-radius:18px 18px 0 0;padding:20px 26px; }
+.secure-nav { display:flex;align-items:center;gap:10px;flex-wrap:wrap; }
+.secure-nav a { color:#5c7495;font-size:12px;font-weight:800;padding:10px 12px;border-radius:10px;background:#f4f7ff; }
+.secure-nav a:hover { color:#3784eb;background:#e6f1ff; }
+.secure-content { min-height:65vh;border-radius:0 0 18px 18px;border:1px solid #e9eef8;border-top:0; }
+.secure-content .page { max-width:1000px; }
+.secure-footer { color:#8294b1;text-align:center;padding:22px;font-size:11px; }
+.secure-content .form input:focus,.secure-content .form textarea:focus { outline:2px solid #71aff3;outline-offset:1px; }
+@media(max-width:640px) { .secure-viewport { padding:0; } .secure-header { border-radius:0;padding:15px; } .secure-content { border:0;border-radius:0; } .secure-nav { width:100%; } }
