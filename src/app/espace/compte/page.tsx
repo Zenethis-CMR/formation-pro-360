@@ -3,6 +3,7 @@ import { ArrowLeft, CheckCircle2, KeyRound, LockKeyhole, ShieldCheck, UserRound 
 import { requireRole } from "@/lib/auth/require-role";
 import { AuthPasswordField } from "@/components/auth-password-field";
 import { AuthSubmitButton } from "@/components/auth-submit-button";
+import { GraduationCap, ArrowRight } from "lucide-react";
 import { updateAccountPassword } from "@/app/auth/actions";
 
 type Params={error?:string;success?:string};
@@ -22,6 +23,9 @@ export default async function AccountPage({searchParams}:{searchParams:Promise<P
         <div className="auth-account-detail"><span>Adresse e-mail</span><strong>{user.email||"Non renseignée"}</strong></div>
         <div className="auth-account-detail"><span>Type de compte</span><strong>{role==="trainer"?"Formateur":"Apprenant"}</strong></div>
         <p className="auth-account-note"><ShieldCheck size={16}/> Tes livrables, validations, XP et badges restent rattachés au même compte Supabase.</p>
+        {role==="learner"&&<Link href="/espace/bienvenue" className="auth-preferences-link">
+          <GraduationCap size={17}/><span>Personnaliser mon parcours pédagogique</span><ArrowRight size={16}/>
+        </Link>}
       </section>
       <section className="workshop-panel auth-account-card">
         <span className="journey-overline"><LockKeyhole size={15}/> IDENTIFIANTS</span>

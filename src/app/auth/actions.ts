@@ -49,7 +49,7 @@ export async function registerLearner(formData:FormData) {
     if(error.code==="user_already_exists"||error.code==="email_exists") redirect("/login?mode=inscription&sent=signup");
     redirect("/login?mode=inscription&error=signup");
   }
-  if(data.session) redirect("/espace");
+  if(data.session) redirect("/espace/bienvenue");
   redirect("/login?mode=inscription&sent=signup");
 }
 

@@ -12,8 +12,10 @@ import { SkillMastery } from "@/components/skill-mastery";
 import { TrainingSchedule } from "@/components/training-schedule";
 import { LearnerCoachingPanel } from "@/components/learner-coaching-panel";
 import { learnerInsight, type CoachMessage } from "@/lib/coaching-insights";
+import { LearnerWelcomeBanner } from "@/components/learner-welcome-banner";
+import { type LearnerPreferences } from "@/lib/learner-preferences";
 
-type Params = { error?: string; success?: string };
+type Params = { error?: string; success?: string; welcome?: string };
 type Mission = { id:string; title:string; domain:string; description:string; week:number;
   deliverable:string; objectives:string[]; duration:string; xp:number };
 type Submission = { id:string; mission_id:string; status:string; score:number|null; feedback:string|null; created_at:string };
@@ -21,7 +23,7 @@ export default async function LearnerSpace({searchParams}:{searchParams:Promise<
   if (!isSupabaseConfigured()) redirect("/espace");
   const {supabase,user} = await requireRole("learner");
   const params = await searchParams;
-  const [{data:rawMissions,error:missionError},{data:rawSubs,error:subsError},{data:rawXp,error:xpError},{data:rawDeps,error:depsError},{data:badgeCatalog,error:badgeError},{data:myBadges,error:earnedError},{data:practice,error:practiceError},{data:settings,error:settingsError},{data:coachMessages,error:messagesError},{data:workshopSteps,error:stepsError}] = await Promise.all([
+  const [{data:rawMissions,error:missionError},{data:rawSubs,error:subsError},{data:rawXp,error:xpError},{data:rawDeps,error:depsError},{data:badgeCatalog,error:badgeError},{data:myBadges,error:earnedError},{data:practice,error:practiceError},{data:settings,error:settingsError},{data:coachMessages,error:messagesError},{data:workshopSteps,error:stepsError},{data:rawPreferences,error:preferencesError}] = await Promise.all([
     supabase.from("missions").select("id,title,domain,description,week,deliverable,objectives,duration,xp").eq("published",true).order("week"),
     supabase.from("submissions").select("id,mission_id,status,score,feedback,created_at").eq("learner_id",user.id).order("created_at",{ascending:false}),
     supabase.from("xp_ledger").select("mission_id,xp").eq("learner_id",user.id),
@@ -31,9 +33,10 @@ export default async function LearnerSpace({searchParams}:{searchParams:Promise<
     supabase.from("practice_checkins").select("practice_date").eq("learner_id",user.id).order("practice_date",{ascending:false}).limit(45),
     supabase.from("training_settings").select("start_date").eq("id",true).maybeSingle(),
     supabase.from("coach_messages").select("id,trainer_id,learner_id,body,created_at").eq("learner_id",user.id).order("created_at",{ascending:false}).limit(8),
-    supabase.from("workshop_steps").select("learner_id,mission_id,completed_at").eq("learner_id",user.id)
+    supabase.from("workshop_steps").select("learner_id,mission_id,completed_at").eq("learner_id",user.id),
+    supabase.from("learner_preferences").select("learner_id,preferred_name,goal,experience,minutes_per_day").eq("learner_id",user.id).maybeSingle()
   ]);
-  if(missionError || subsError || xpError || depsError || badgeError || earnedError || practiceError || settingsError || messagesError || stepsError) return <main className="page"><p className="alert danger">Impossible de charger le parcours. Vérifie que les migrations SQL sont appliquées.</p></main>;
+  if(missionError || subsError || xpError || depsError || badgeError || earnedError || practiceError || settingsError || messagesError || stepsError || preferencesError) return <main className="page"><p className="alert danger">Impossible de charger le parcours. Vérifie que les migrations SQL sont appliquées.</p></main>;
   const missions = (rawMissions || []) as Mission[];
   const submissions = (rawSubs || []) as Submission[];
   const approved = new Set((rawXp || []).map(x => x.mission_id as string));
@@ -57,6 +60,8 @@ export default async function LearnerSpace({searchParams}:{searchParams:Promise<
     <div className="stats-grid"><div className="stat-card"><span>NIVEAU</span><strong>{level}</strong></div>
       <div className="stat-card"><span>EXPÉRIENCE</span><strong>{xp} <em>XP</em></strong></div>
       <div className="stat-card"><span>MISSIONS VALIDÉES</span><strong>{approved.size}<em> / {missions.length}</em></strong></div></div>
+    <LearnerWelcomeBanner preferences={rawPreferences as LearnerPreferences|null} mission={insight.nextMission}/>
+    {params.welcome && <p className="alert success" role="status">Tes préférences sont enregistrées. Tu peux maintenant commencer ton prochain atelier.</p>}
     {params.success && <p className="alert success">{params.success==="practice"?"Séance de pratique enregistrée pour aujourd’hui.": "Livrable enregistré. Il attend maintenant la correction du formateur."}</p>}
     {params.error && <p className="alert danger">{params.error==="practice"?"Impossible d’enregistrer la séance. Essaie à nouveau.":"Impossible d’enregistrer cette soumission. Vérifie les informations et les prérequis."}</p>}
     <LearnerCoachingPanel insight={insight} messages={(coachMessages||[]) as CoachMessage[]} startDate={settings?.start_date??null}/>

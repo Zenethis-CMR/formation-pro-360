@@ -9,6 +9,6 @@ export async function GET(request: NextRequest) {
   if (!code) return NextResponse.redirect(new URL("/login?error=callback", origin));
   const supabase = await createClient();
   const {error} = await supabase.auth.exchangeCodeForSession(code);
-  const destination = error ? "/login?error=callback" : flow==="recovery" ? "/auth/nouveau-mot-de-passe" : "/espace";
+  const destination = error ? "/login?error=callback" : flow==="recovery" ? "/auth/nouveau-mot-de-passe" : flow==="signup" ? "/espace/bienvenue" : "/espace";
   return NextResponse.redirect(new URL(destination, origin));
 }

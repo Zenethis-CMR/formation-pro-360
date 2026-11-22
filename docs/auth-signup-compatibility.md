@@ -49,3 +49,29 @@ Le compte existant est conservé, sans réinscription. Aucun e-mail n'est révé
 - [ ] Mot de passe oublié : reçoit un message Resend, suit le callback, crée un nouveau mot de passe.
 - [ ] Vérifier les mêmes écrans sur un téléphone et ne pas demander de compte Vercel.
 - [ ] Vérifier le nombre d'utilisateurs avant/après et s'assurer que les identifiants des cinq premiers comptes n'ont pas changé.
+
+## Étape suivante : accueil pédagogique facultatif
+
+Migration `012_learner_welcome_preferences.sql`, déjà appliquée dans Supabase :
+- Nouvelle table `learner_preferences`, distincte des profils d'authentification et des données d'apprentissage.
+- Préférences : nom d'usage, objectif de formation, niveau déclaré et minutes de pratique souhaitées. Valeurs contrôlées côté serveur et dans PostgreSQL.
+- Lecture/écriture par chaque apprenant sur **son seul profil** ; consultation de ces préférences par le formateur pour mieux accompagner la cohorte ; pas de suppression de comptes ni de privilège d'attribution de rôle.
+- Aucun profil des utilisateurs antérieurs n'est créé artificiellement. Les anciens utilisateurs peuvent ignorer cette étape, continuer leurs ateliers et compléter leurs préférences plus tard.
+
+Après une nouvelle inscription :
+- Session immédiate : redirection vers `/espace/bienvenue`.
+- E-mail de confirmation requis : le callback `?flow=signup` mène au même accueil.
+- Une connexion classique, par mot de passe ou lien magique d'un ancien utilisateur, mène toujours vers `/espace`, **sans écran obligatoire**.
+- L'apprenant peut sauter l'accueil, consulter sa première mission accessible, ou enregistrer les préférences. Un bandeau discret du tableau apprenant lui permet de revenir au formulaire.
+- L'espace **Mon compte** donne aussi un lien de modification.
+- Le formateur peut voir le nom choisi, l'objectif et le rythme demandé dans ses vues de suivi ; les utilisateurs n'ayant rien renseigné restent affichés comme « Apprenant 01 », etc.
+
+Les préférences ne modifient ni l'ordre des prérequis, ni la grille des missions, ni les XP/badges. La déclaration d'un rythme ne constitue pas un suivi du temps effectivement travaillé.
+
+### Recette spécifique de l'accueil
+- [ ] S'inscrire avec une nouvelle adresse, confirmer le compte et ouvrir l'accueil sur le même navigateur.
+- [ ] Tester le bouton « Passer cette étape », puis revenir depuis Mon compte.
+- [ ] Enregistrer un objectif, un niveau et un rythme, recharger la page et vérifier leur conservation.
+- [ ] Vérifier la visibilité du nom d'usage depuis le compte formateur.
+- [ ] Vérifier que l'apprenant ne peut pas consulter/modifier les préférences d'un autre compte.
+- [ ] Recontrôler les comptes déjà inscrits et la continuité de leur historique de missions.
