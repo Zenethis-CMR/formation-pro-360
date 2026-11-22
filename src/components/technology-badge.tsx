@@ -1,4 +1,3 @@
-import type { Mission } from "@/data/missions";
 
 export type Technology = "HTML5" | "CSS3" | "JavaScript" | "TypeScript" | "React" | "Next.js" | "Node.js" | "PostgreSQL";
 
@@ -23,7 +22,7 @@ export function TechnologyBadge({ name, compact = false }: { name: Technology; c
   );
 }
 
-export function technologiesForMission(mission: Pick<Mission, "id" | "title" | "domain">): Technology[] {
+export function technologiesForMission(mission: {id:string;title:string;domain:string}): Technology[] {
   if (mission.id === "M01") return ["HTML5"];
   if (mission.id === "M02") return ["HTML5", "CSS3"];
   if (mission.id === "M03" || mission.id === "M04") return ["JavaScript"];
