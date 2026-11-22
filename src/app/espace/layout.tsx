@@ -39,7 +39,7 @@ export default async function SecureWorkspaceLayout({children}:{children:React.R
       xp:(awardsR.data||[]).reduce((sum,a)=>sum+Number(a.xp),0),
       pending:submissions.filter(s=>s.status==="pending").length,
       nextTitle:next?.title??null,
-      nextHref:next?"/espace/atelier/"+next.id:"/espace/apprenant#missions"
+      nextHref:next?"/espace/atelier/"+next.id:"/espace/apprenant?onglet=missions"
     };
   }else{
     const [countR,missionR,subsR]=await Promise.all([
@@ -50,7 +50,7 @@ export default async function SecureWorkspaceLayout({children}:{children:React.R
     if(countR.error||missionR.error||subsR.error) throw new Error("Impossible de charger le suivi du formateur.");
     stats={...stats,learners:countR.count??0,missionCount:missionR.count??0,pending:subsR.count??0,
       nextTitle:(subsR.count??0)>0?(subsR.count??0)+" livrable(s) à corriger":"Aucune correction en attente",
-      nextHref:"/espace/formateur#evaluations"};
+      nextHref:"/espace/formateur?onglet=evaluations"};
   }
   return <SecureAcademyShell stats={stats}>{children}</SecureAcademyShell>;
 }

@@ -10,7 +10,7 @@ export function SecureTrainerOverview({pending,learners,missions,validatedXp}:{
         <h1>Pilotage de la cohorte<span className="academy-dot">.</span></h1>
         <p>Accompagne les apprenants, évalue les projets et pilote la progression.</p></div>
       <div className="head-actions"><span className="academy-date">Suivi pédagogique · 8 semaines</span>
-        <Link href="#evaluations" className="head-square-action" aria-label="Voir les évaluations"><Search size={18}/></Link></div>
+        <Link href="/espace/formateur?onglet=evaluations" className="head-square-action" aria-label="Voir les évaluations"><Search size={18}/></Link></div>
     </header>
     <section className="academy-feature" aria-label="Pilotage de la formation">
       <div className="feature-copy">
@@ -18,7 +18,7 @@ export function SecureTrainerOverview({pending,learners,missions,validatedXp}:{
         <h2>Former par la pratique.<br/><span>Évaluer pour faire progresser.</span></h2>
         <p>Des missions concrètes, une correction transparente et un accompagnement à chaque étape.</p>
         <div className="feature-meta"><span>{missions} missions publiées</span><span> · </span><span>{learners} apprenant(s) inscrit(s)</span></div>
-        <Link href={pending?"#evaluations":"#cohorte"} className="feature-action">
+        <Link href={pending?"/espace/formateur?onglet=evaluations":"/espace/formateur?onglet=apprenants"} className="feature-action">
           {pending?"Corriger les projets":"Suivre les apprenants"} <ArrowRight size={16}/>
         </Link>
       </div>
@@ -39,12 +39,12 @@ export function SecureTrainerOverview({pending,learners,missions,validatedXp}:{
       <div className="milestone-marker"><Target size={20}/></div>
       <div><span>OBJECTIF DU PROGRAMME</span><strong>Faire progresser chaque apprenant grâce à des projets vérifiables.</strong>
         <p>{validatedXp} XP réellement attribués. Aucune réussite fictive.</p></div>
-      <Link href="#programme" aria-label="Voir le programme"><ArrowRight size={20}/></Link>
+      <Link href="/espace/formateur?onglet=programme" aria-label="Voir le programme"><ArrowRight size={20}/></Link>
     </section>
     <div className="real-trainer-actions" aria-label="Actions rapides du formateur">
-      <Link href="#evaluations"><span><ClipboardCheck size={19}/></span><strong>Évaluer les livrables</strong><small>{pending} projet(s) en attente</small><ArrowRight size={17}/></Link>
-      <Link href="#cohorte"><span><Users size={19}/></span><strong>Suivre les apprenants</strong><small>Progression et accompagnement</small><ArrowRight size={17}/></Link>
-      <Link href="#creation"><span><CalendarDays size={19}/></span><strong>Créer une mission</strong><small>Programme et ateliers pratiques</small><ArrowRight size={17}/></Link>
+      <Link href="/espace/formateur?onglet=evaluations"><span><ClipboardCheck size={19}/></span><strong>Évaluer les livrables</strong><small>{pending} projet(s) en attente</small><ArrowRight size={17}/></Link>
+      <Link href="/espace/formateur?onglet=apprenants"><span><Users size={19}/></span><strong>Suivre les apprenants</strong><small>Progression et accompagnement</small><ArrowRight size={17}/></Link>
+      <Link href="/espace/formateur?onglet=programme#creation"><span><CalendarDays size={19}/></span><strong>Créer une mission</strong><small>Programme et ateliers pratiques</small><ArrowRight size={17}/></Link>
     </div>
   </div>;
 }

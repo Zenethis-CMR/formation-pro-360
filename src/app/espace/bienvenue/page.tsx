@@ -96,7 +96,7 @@ export default async function WelcomeLearner({searchParams}:Props) {
         </div>
         <div className="learner-welcome-guide"><h3><CalendarDays size={17}/> Pas de pression artificielle</h3>
           <p>Tu avances sur de vrais objectifs. Le calendrier de formation est fixé par ton formateur.</p>
-          <Link href="/espace/apprenant">Voir les huit semaines <ArrowRight size={15}/></Link>
+          <Link href="/espace/apprenant?onglet=programme">Voir les huit semaines <ArrowRight size={15}/></Link>
         </div>
       </aside>
     </div>

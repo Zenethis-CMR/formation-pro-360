@@ -8,7 +8,9 @@ const read=(p)=>fs.readFileSync(path.join(root,p),"utf8");
 test("authenticated pages use dedicated Academy shell rather than old secure top navbar",()=>{
  const app=read("src/components/app-shell.tsx");
  const layout=read("src/app/espace/layout.tsx");
- assert.match(app,/pathname\.startsWith\("\/espace"\)\) return <>{children}<\/\>/);
+ assert.doesNotMatch(app,/DemoProvider|useDemo|SecureShell/);
+ const home=read("src/app/page.tsx");
+ assert.match(home,/redirect\("\/espace"\)/);
  assert.match(layout,/SecureAcademyShell/);
  assert.doesNotMatch(layout,/DemoProvider|useDemo/);
 });
