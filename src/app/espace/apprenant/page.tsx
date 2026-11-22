@@ -55,7 +55,7 @@ export default async function LearnerSpace({searchParams}:{searchParams:Promise<
     steps:workshopSteps||[],startDate:settings?.start_date??null
   });
   return <main className="page secure-learner-page">
-    <SecureLearnerOverview missions={missions} submissions={submissions} approvedIds={[...approved]} xp={xp} level={level}/>
+    <SecureLearnerOverview missions={missions} submissions={submissions} approvedIds={[...approved]} dependencies={deps} xp={xp} level={level}/>
     <div className="secure-learner-alerts">
       {params.welcome && <p className="alert success" role="status">Tes préférences sont enregistrées. Tu peux maintenant continuer ton parcours.</p>}
       {params.success && <p className="alert success">{params.success==="practice"?"Séance de pratique enregistrée pour aujourd’hui.":"Livrable enregistré. Il attend maintenant la correction du formateur."}</p>}
