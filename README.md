@@ -59,8 +59,15 @@ npm run build
 
 Les tests sont exécutés automatiquement avant chaque build.
 
+## Lancement intensif et stratégie 360
+
+Les nouveaux apprenants choisissent **3 à 7 jours fixes**, des jours facultatifs, et **5, 6, 8 ou 10 heures** de pratique par jour. Cette disponibilité est distincte du calendrier pédagogique et ne donne aucun XP automatiquement. Les anciennes préférences sont conservées jusqu’à leur mise à jour.
+
+La feuille de route officielle de conception produit, 7 formations spécialisées, objectifs à 1 et 2 mois, architecture, UX/animations et audit Vercel/Proxmox se trouve dans **`docs/formation-pro-360-master-plan-v2.md`**.
+
 ## Documentation
 
+- `docs/formation-pro-360-master-plan-v2.md` : vision 360, 7 spécialisations, 8 semaines pratiques, performance et infrastructure
 - `docs/private-workspace-navigation.md` : accès privé, onglets des deux rôles et recette
 - `docs/auth-signup-compatibility.md` : comptes existants, inscription, récupération et confirmation des e-mails
 - `docs/supabase-setup.md` : base de données, migrations, rôles et règles de sécurité
