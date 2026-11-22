@@ -1,7 +1,8 @@
 import { AlertTriangle, CalendarClock, CheckCircle2, ClipboardCheck, Clock3, MessageSquareText, Send, Sparkles, UserRoundCheck } from "lucide-react";
 import type { LearnerInsight, CoachMessage } from "@/lib/coaching-insights";
 import { postCoachMessage } from "@/app/espace/actions";
-type Learner = {id:string};
+import { goalLabel } from "@/lib/learner-preferences";
+type Learner = {id:string;preferred_name?:string|null;goal?:string|null;minutes_per_day?:number|null};
 type Props={learners:Learner[];insights:LearnerInsight[];messages:CoachMessage[];startDate:string|null};
 function alertText(x:LearnerInsight){
   if(x.revisionCount) return x.revisionCount+" projet(s) à reprendre";
@@ -28,10 +29,12 @@ export function TrainerCoachingPanel({learners,insights,messages,startDate}:Prop
       if(!i)return null;
       const sent=messages.filter(m=>m.learner_id===l.id);
       return <article className="trainer-coach-person" key={l.id}>
-        <div className="trainer-coach-person-head"><div><span className="coach-avatar"><UserRoundCheck size={19}/></span><div><h3>Apprenant {String(index+1).padStart(2,"0")}</h3><small>Compte {l.id.slice(0,8)}…</small></div></div>
+        <div className="trainer-coach-person-head"><div><span className="coach-avatar"><UserRoundCheck size={19}/></span><div><h3>{l.preferred_name||"Apprenant "+String(index+1).padStart(2,"0")}</h3><small>Compte {l.id.slice(0,8)}…</small></div></div>
           <span className={"coach-severity "+(i.badge==="normal"?"success":i.badge==="evaluation"?"info":"warning")}>{alertText(i)}</span></div>
         <div className="trainer-coach-details">
           <span><CheckCircle2 size={14}/>{i.approvedCount} mission(s) validée(s)</span>
+          {l.goal&&<span><Sparkles size={14}/>{goalLabel(l.goal)}</span>}
+          {l.minutes_per_day&&<span><Clock3 size={14}/>{l.minutes_per_day} min de pratique souhaitées</span>}
           <span><Clock3 size={14}/>{i.daysWithoutActivity===null?"Rythme non planifié":i.daysWithoutActivity+" jour(s) depuis l'activité"}</span>
           {i.backlogWeeks.length>0&&<span><AlertTriangle size={14}/>{i.backlogWeeks.length} semaine(s) à rattraper</span>}
         </div>
