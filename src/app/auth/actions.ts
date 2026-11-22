@@ -59,12 +59,19 @@ export async function updateAccountPassword(formData:FormData) {
   if(!isValidPassword(password)) redirect(destination+"?error=password");
   if(password!==confirm) redirect(destination+"?error=mismatch");
   const token=String(formData.get("token")||"");
+  const currentPassword=String(formData.get("currentPassword")||"");
   const route=token?"reset-password":"change-password";
+  if(!token){
+    await requireRole();
+    if(!currentPassword||currentPassword.length>128) redirect("/espace/compte?error=current");
+  }
   const response=await backendRequest(`${authApi}/${route}`,{
-    method:"POST",body:JSON.stringify(token?{token,password}:{password})
+    method:"POST",body:JSON.stringify(token?{token,password}:{currentPassword,password})
   }).catch(()=>null);
-  if(!response?.ok) redirect(destination+"?error=update");
-  if(!token) await requireRole();
+  if(!response?.ok) {
+    if(!token&&response?.status===401) redirect("/espace/compte?error=current");
+    redirect(destination+"?error=update");
+  }
   revalidatePath("/espace");
   redirect(destination+"?success=1");
 }
