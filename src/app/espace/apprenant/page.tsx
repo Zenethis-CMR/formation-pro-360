@@ -36,7 +36,7 @@ export default async function LearnerSpace({searchParams}:{searchParams:Promise<
     supabase.from("training_settings").select("start_date").eq("id",true).maybeSingle(),
     supabase.from("coach_messages").select("id,trainer_id,learner_id,body,created_at").eq("learner_id",user.id).order("created_at",{ascending:false}).limit(8),
     supabase.from("workshop_steps").select("learner_id,mission_id,completed_at").eq("learner_id",user.id),
-    supabase.from("learner_preferences").select("learner_id,preferred_name,goal,experience,minutes_per_day").eq("learner_id",user.id).maybeSingle()
+    supabase.from("learner_preferences").select("learner_id,preferred_name,goal,experience,minutes_per_day,regular_days,optional_days").eq("learner_id",user.id).maybeSingle()
   ]);
   if(missionError || subsError || xpError || depsError || badgeError || earnedError || practiceError || settingsError || messagesError || stepsError || preferencesError) return <main className="page"><p className="alert danger">Impossible de charger le parcours. Vérifie que les migrations SQL sont appliquées.</p></main>;
   const missions = (rawMissions || []) as Mission[];

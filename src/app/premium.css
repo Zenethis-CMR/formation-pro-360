@@ -990,3 +990,47 @@ button,a,input,textarea,select { -webkit-tap-highlight-color:transparent; }
   .secure-academy-mobile-nav a{font-size:9px;letter-spacing:-.2px;}
   .secure-academy-mobile-nav a svg{width:19px;height:19px;}
 }
+
+
+/* Intensive weekly planning: 5-10 h sessions, 3-7 regular weekdays,
+   and optional reinforcement days. No single learner's pattern is preselected. */
+.schedule-card{gap:14px;}
+.schedule-card>p strong{color:#44749e;}
+.schedule-card>p>svg{display:inline;vertical-align:-2px;color:#5893cf;margin-right:3px;}
+.schedule-day-header{display:grid;grid-template-columns:minmax(120px,1fr) repeat(3,minmax(64px,92px));
+  gap:7px;color:#8fa2b7;font-size:9px;font-weight:900;letter-spacing:.5px;text-align:center;padding:0 4px;}
+.schedule-day-header span:first-child{text-align:left;}
+.schedule-days{display:grid;gap:6px;}
+.schedule-day-row{display:grid;grid-template-columns:minmax(120px,1fr) repeat(3,minmax(64px,92px));
+  gap:7px;align-items:center;padding:7px 9px;background:#f8fbff;border:1px solid #edf2fa;border-radius:10px;}
+.schedule-day-row>strong{font-size:11px;font-weight:850;color:#465d7b;}
+.schedule-day-option{position:relative;display:grid;place-items:center;cursor:pointer;}
+.schedule-day-option input{position:absolute;opacity:0;width:100%;height:100%;margin:0;cursor:pointer;}
+.schedule-day-option span{display:grid;place-items:center;border:1px solid #dae7f6;border-radius:9px;
+ background:#fff;color:#a8b8cb;width:100%;height:32px;font-size:15px;font-weight:900;}
+.schedule-day-option.is-selected span{border-color:#75b0ed;background:#e9f3ff;color:#3880d5;}
+.schedule-day-option:has(input[value="regular"]:checked) span{background:#e4f8ee;border-color:#85dbb4;color:#27966b;}
+.schedule-day-option:has(input[value="optional"]:checked) span{background:#edf3ff;border-color:#9bc0f8;color:#3c83df;}
+.schedule-day-option:has(input:focus-visible) span{outline:2px solid #3f84ed;outline-offset:2px;}
+.schedule-summary{display:flex;align-items:flex-start;gap:10px;background:#eaf8f0;border:1px solid #c8eedb;
+ padding:13px;border-radius:11px;color:#2a9a6f;}
+.schedule-summary.is-warning{background:#fff8e9;border-color:#f5dfb8;color:#aa7c3b;}
+.schedule-summary svg{flex:none;margin-top:2px;}
+.schedule-summary strong{display:block;font-size:12px;line-height:1.5;color:#365673;}
+.schedule-summary small{display:block;font-size:10px;line-height:1.6;margin-top:2px;color:#788ea7;}
+.schedule-duration-grid{grid-template-columns:repeat(4,minmax(0,1fr));}
+.schedule-hours-total{display:flex;align-items:flex-start;gap:12px;background:linear-gradient(105deg,#eef5ff,#e6f9f6);
+ border:1px solid #cee4f4;border-radius:12px;padding:15px;color:#4b86c7;}
+.schedule-hours-total svg{flex:none;margin-top:4px;}
+.schedule-hours-total span{font-size:9px;letter-spacing:.7px;font-weight:900;color:#568cca;}
+.schedule-hours-total strong{display:block;margin:5px 0;color:#304e6e;font-size:17px;line-height:1.35;}
+.schedule-hours-total small{display:block;font-size:10px;line-height:1.65;color:#7d98ae;}
+.learner-personal-side>div{min-width:0;}
+.learner-personal-side>div>strong{overflow-wrap:anywhere;}
+@media(max-width:610px){
+ .schedule-day-row,.schedule-day-header{grid-template-columns:minmax(82px,1fr) repeat(3,minmax(51px,63px));gap:4px;}
+ .schedule-day-row{padding:7px 6px;}
+ .schedule-day-row>strong{font-size:10px;}
+ .schedule-day-header{font-size:8px;letter-spacing:0;}
+ .schedule-duration-grid{grid-template-columns:repeat(2,minmax(0,1fr));}
+}

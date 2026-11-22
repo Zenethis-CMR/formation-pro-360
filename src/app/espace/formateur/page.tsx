@@ -35,7 +35,7 @@ export default async function TrainerSpace({searchParams}:{searchParams:Promise<
     supabase.from("workshop_steps").select("learner_id,mission_id,completed_at"),
     supabase.from("coach_messages").select("id,trainer_id,learner_id,body,created_at").order("created_at",{ascending:false}).limit(200),
     supabase.from("learner_badges").select("badge_slug"),
-    supabase.from("learner_preferences").select("learner_id,preferred_name,goal,minutes_per_day")
+    supabase.from("learner_preferences").select("learner_id,preferred_name,goal,minutes_per_day,regular_days,optional_days")
   ]);
   if(se||me||le||ae||allSe||pe||ge||settingsError||depsError||stepsError||coachError||badgeAwardsError||learningProfilesError)return <main className="page"><p className="alert danger">Erreur de chargement. Vérifie les migrations SQL et les droits du compte.</p></main>;
   const pending=(submissions||[]) as Submission[], catalog=(missions||[]) as Mission[];
@@ -44,7 +44,9 @@ export default async function TrainerSpace({searchParams}:{searchParams:Promise<
     ...l,
     preferred_name:preferencesById.get(l.id)?.preferred_name||null,
     goal:preferencesById.get(l.id)?.goal||null,
-    minutes_per_day:preferencesById.get(l.id)?.minutes_per_day||null
+    minutes_per_day:preferencesById.get(l.id)?.minutes_per_day||null,
+    regular_days:preferencesById.get(l.id)?.regular_days||null,
+    optional_days:preferencesById.get(l.id)?.optional_days||[]
   }));
   const byId = new Map(catalog.map(m=>[m.id,m]));
   const learnerNames=new Map(namedLearners.map((l,i)=>[l.id,l.preferred_name||"Apprenant "+String(i+1).padStart(2,"0")]));

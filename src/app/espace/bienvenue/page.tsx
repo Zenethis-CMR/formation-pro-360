@@ -3,7 +3,8 @@ import { redirect } from "next/navigation";
 import { ArrowLeft, ArrowRight, BookOpenCheck, CalendarDays, CheckCircle2, Clock3, GraduationCap, Rocket, ShieldCheck, Target } from "lucide-react";
 import { requireRole } from "@/lib/auth/require-role";
 import { saveLearnerPreferences } from "@/app/espace/actions";
-import { learnerGoals, learnerLevels, learnerDurations, type LearnerPreferences } from "@/lib/learner-preferences";
+import { learnerGoals, learnerLevels, type LearnerPreferences } from "@/lib/learner-preferences";
+import { IntensiveScheduleSelector } from "@/components/intensive-schedule-selector";
 
 type Props={searchParams:Promise<{error?:string}>};
 type Mission={id:string;title:string;week:number;description:string};
@@ -12,7 +13,7 @@ export default async function WelcomeLearner({searchParams}:Props) {
   const query=await searchParams;
   const [{data:preferences,error:preferencesError},{data:missions,error:missionsError},
     {data:dependencies,error:dependenciesError},{data:xp,error:xpError}]=await Promise.all([
-    supabase.from("learner_preferences").select("learner_id,preferred_name,goal,experience,minutes_per_day").maybeSingle(),
+    supabase.from("learner_preferences").select("learner_id,preferred_name,goal,experience,minutes_per_day,regular_days,optional_days").maybeSingle(),
     supabase.from("missions").select("id,title,week,description").eq("published",true).order("week").order("created_at"),
     supabase.from("mission_prerequisites").select("mission_id,prerequisite_id"),
     supabase.from("xp_ledger").select("mission_id")
@@ -31,7 +32,7 @@ export default async function WelcomeLearner({searchParams}:Props) {
     <header className="learner-welcome-hero">
       <span className="journey-overline"><GraduationCap size={15}/> TON POINT DE DÉPART</span>
       <h1>{current?"Fais évoluer ton parcours.":"Bienvenue dans ton atelier."}</h1>
-      <p>Dis-nous ce que tu souhaites apprendre. Ton programme reste fondé sur les missions et leur validation par le formateur : ces préférences servent uniquement à mieux t'accompagner.</p>
+      <p>Choisis ton objectif produit, tes jours disponibles et ton rythme intensif. La formation privilégie la conception et la pratique : 30 % pour comprendre et structurer, 70 % pour construire, tester et livrer.</p>
       <div className="learner-welcome-reassurance"><ShieldCheck size={16}/> Cette étape est facultative. Ton compte, tes travaux et tes XP sont conservés.</div>
     </header>
     <div className="learner-welcome-layout">
@@ -65,15 +66,8 @@ export default async function WelcomeLearner({searchParams}:Props) {
             </label>)}
           </div>
         </fieldset>
-        <fieldset className="learner-welcome-card">
-          <legend className="learner-welcome-step-label"><span>04</span> Ton rythme</legend>
-          <h2>Combien de temps peux-tu pratiquer chaque jour ?</h2>
-          <div className="learner-duration-grid">{learnerDurations.map((minutes)=><label className="learner-duration" key={minutes}>
-            <input type="radio" name="minutesPerDay" value={minutes} required defaultChecked={(current?.minutes_per_day??60)===minutes}/>
-            <span><Clock3 size={16}/>{minutes===120?"2 heures":minutes+" min"}</span>
-          </label>)}</div>
-          <p>C'est un repère personnel, pas une obligation. Les validations dépendent de la qualité de tes livrables.</p>
-        </fieldset>
+        <IntensiveScheduleSelector regularDays={current?.regular_days||null}
+          optionalDays={current?.optional_days||[]} initialMinutes={current?.minutes_per_day||300}/>
         <div className="learner-welcome-actions">
           <button type="submit" className="learner-welcome-submit"><CheckCircle2 size={18}/> Enregistrer et accéder à mon parcours <ArrowRight size={17}/></button>
           <Link href="/espace/apprenant">Passer cette étape pour le moment</Link>
@@ -94,8 +88,8 @@ export default async function WelcomeLearner({searchParams}:Props) {
           <div><span>2</span><p>Teste ton travail, puis remets le lien du livrable.</p></div>
           <div><span>3</span><p>Reçois une correction. Tes XP arrivent uniquement après validation.</p></div>
         </div>
-        <div className="learner-welcome-guide"><h3><CalendarDays size={17}/> Pas de pression artificielle</h3>
-          <p>Tu avances sur de vrais objectifs. Le calendrier de formation est fixé par ton formateur.</p>
+        <div className="learner-welcome-guide"><h3><CalendarDays size={17}/> Cadence exigeante, résultats concrets</h3>
+          <p>Planifie au moins trois jours fixes et cinq heures de travail par séance. Ton formateur vérifie surtout tes livrables : conception, UX, ingénierie, tests et déploiement.</p>
           <Link href="/espace/apprenant?onglet=programme">Voir les huit semaines <ArrowRight size={15}/></Link>
         </div>
       </aside>

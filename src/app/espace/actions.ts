@@ -212,7 +212,8 @@ export async function saveLearnerPreferences(formData:FormData) {
     name:String(formData.get("preferredName")||""),
     goal:String(formData.get("goal")||""),
     experience:String(formData.get("experience")||""),
-    minutes:String(formData.get("minutesPerDay")||"")
+    minutes:String(formData.get("minutesPerDay")||""),
+    dayChoices:Array.from({length:7},(_,i)=>String(formData.get("day"+(i+1))||"off"))
   });
   if(!parsed.valid) redirect("/espace/bienvenue?error=invalid");
   // The primary key is the existing Supabase Auth user ID. This updates only

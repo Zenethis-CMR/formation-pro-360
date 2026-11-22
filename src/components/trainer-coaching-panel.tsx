@@ -1,8 +1,8 @@
 import { AlertTriangle, CalendarClock, CheckCircle2, ClipboardCheck, Clock3, MessageSquareText, Send, Sparkles, UserRoundCheck } from "lucide-react";
 import type { LearnerInsight, CoachMessage } from "@/lib/coaching-insights";
 import { postCoachMessage } from "@/app/espace/actions";
-import { goalLabel } from "@/lib/learner-preferences";
-type Learner = {id:string;preferred_name?:string|null;goal?:string|null;minutes_per_day?:number|null};
+import { goalLabel, formatWeekdays } from "@/lib/learner-preferences";
+type Learner = {id:string;preferred_name?:string|null;goal?:string|null;minutes_per_day?:number|null;regular_days?:number[]|null;optional_days?:number[]};
 type Props={learners:Learner[];insights:LearnerInsight[];messages:CoachMessage[];startDate:string|null};
 function alertText(x:LearnerInsight){
   if(x.revisionCount) return x.revisionCount+" projet(s) à reprendre";
@@ -34,7 +34,9 @@ export function TrainerCoachingPanel({learners,insights,messages,startDate}:Prop
         <div className="trainer-coach-details">
           <span><CheckCircle2 size={14}/>{i.approvedCount} mission(s) validée(s)</span>
           {l.goal&&<span><Sparkles size={14}/>{goalLabel(l.goal)}</span>}
-          {l.minutes_per_day&&<span><Clock3 size={14}/>{l.minutes_per_day} min de pratique souhaitées</span>}
+          {l.regular_days?.length&&l.minutes_per_day&&l.minutes_per_day>=300&&<span><Clock3 size={14}/>{l.minutes_per_day/60} h/jour · {l.regular_days.length*l.minutes_per_day/60} h/semaine</span>}
+          {l.regular_days?.length&&<span><CalendarClock size={14}/>Jours fixes : {formatWeekdays(l.regular_days)}{l.optional_days?.length?" · Renfort : "+formatWeekdays(l.optional_days):""}</span>}
+          {l.minutes_per_day&&l.minutes_per_day<300&&<span><CalendarClock size={14}/>Ancien planning à actualiser</span>}
           <span><Clock3 size={14}/>{i.daysWithoutActivity===null?"Rythme non planifié":i.daysWithoutActivity+" jour(s) depuis l'activité"}</span>
           {i.backlogWeeks.length>0&&<span><AlertTriangle size={14}/>{i.backlogWeeks.length} semaine(s) à rattraper</span>}
         </div>
