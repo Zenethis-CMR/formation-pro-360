@@ -114,8 +114,12 @@ function SecureShell({children}:{children:React.ReactNode}) {
 
 export function AppShell({children}:{children:React.ReactNode}) {
   const pathname = usePathname();
-  const isSecure = pathname.startsWith("/espace") || pathname.startsWith("/login") || pathname.startsWith("/auth/nouveau-mot-de-passe");
-  return isSecure
+  // Secure workspace pages have their own server-authenticated Academy shell.
+  // Login/recovery still use the lightweight auth frame, while the public demo
+  // remains entirely separate and backed by DemoProvider.
+  if(pathname.startsWith("/espace")) return <>{children}</>;
+  const isAuth=pathname.startsWith("/login")||pathname.startsWith("/auth/nouveau-mot-de-passe");
+  return isAuth
     ? <SecureShell>{children}</SecureShell>
     : <DemoProvider><AcademyLayout>{children}</AcademyLayout></DemoProvider>;
 }

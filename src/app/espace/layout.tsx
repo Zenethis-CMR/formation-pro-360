@@ -1,0 +1,56 @@
+import { requireRole } from "@/lib/auth/require-role";
+import { SecureAcademyShell, type SecureWorkspaceStats } from "@/components/secure-academy-shell";
+
+type Mission={id:string;title:string};
+type Dependency={mission_id:string;prerequisite_id:string};
+type Submission={mission_id:string;status:string;created_at:string};
+export default async function SecureWorkspaceLayout({children}:{children:React.ReactNode}) {
+  const {role,supabase,user}=await requireRole();
+  let stats:SecureWorkspaceStats={
+    role,displayName:null,missionCount:0,approvedCount:0,xp:0,pending:0,learners:0,nextTitle:null,nextHref:null
+  };
+  if(role==="learner"){
+    const [missionsR,awardsR,subsR,depsR,prefsR]=await Promise.all([
+      supabase.from("missions").select("id,title").eq("published",true).order("week").order("created_at"),
+      supabase.from("xp_ledger").select("mission_id,xp").eq("learner_id",user.id),
+      supabase.from("submissions").select("mission_id,status,created_at").eq("learner_id",user.id).order("created_at",{ascending:false}),
+      supabase.from("mission_prerequisites").select("mission_id,prerequisite_id"),
+      supabase.from("learner_preferences").select("preferred_name").eq("learner_id",user.id).maybeSingle()
+    ]);
+    if(missionsR.error||awardsR.error||subsR.error||depsR.error||prefsR.error) {
+      throw new Error("Impossible de charger le profil sécurisé.");
+    }
+    const missions=(missionsR.data||[]) as Mission[];
+    const approved=new Set((awardsR.data||[]).map(a=>a.mission_id));
+    const submissions=(subsR.data||[]) as Submission[];
+    const deps=(depsR.data||[]) as Dependency[];
+    const latest=new Map<string,Submission>();
+    for(const s of submissions)if(!latest.has(s.mission_id))latest.set(s.mission_id,s);
+    const available=missions.find(m=>!approved.has(m.id)&&
+      !deps.some(d=>d.mission_id===m.id&&!approved.has(d.prerequisite_id))&&
+      latest.get(m.id)?.status!=="pending");
+    const awaiting=missions.find(m=>latest.get(m.id)?.status==="pending");
+    const next=available||awaiting;
+    stats={
+      ...stats,
+      displayName:prefsR.data?.preferred_name??null,
+      missionCount:missions.length,
+      approvedCount:approved.size,
+      xp:(awardsR.data||[]).reduce((sum,a)=>sum+Number(a.xp),0),
+      pending:submissions.filter(s=>s.status==="pending").length,
+      nextTitle:next?.title??null,
+      nextHref:next?"/espace/atelier/"+next.id:"/espace/apprenant#missions"
+    };
+  }else{
+    const [countR,missionR,subsR]=await Promise.all([
+      supabase.from("profiles").select("id",{head:true,count:"exact"}).eq("role","learner"),
+      supabase.from("missions").select("id",{head:true,count:"exact"}).eq("published",true),
+      supabase.from("submissions").select("id",{head:true,count:"exact"}).eq("status","pending")
+    ]);
+    if(countR.error||missionR.error||subsR.error) throw new Error("Impossible de charger le suivi du formateur.");
+    stats={...stats,learners:countR.count??0,missionCount:missionR.count??0,pending:subsR.count??0,
+      nextTitle:(subsR.count??0)>0?(subsR.count??0)+" livrable(s) à corriger":"Aucune correction en attente",
+      nextHref:"/espace/formateur#evaluations"};
+  }
+  return <SecureAcademyShell stats={stats}>{children}</SecureAcademyShell>;
+}

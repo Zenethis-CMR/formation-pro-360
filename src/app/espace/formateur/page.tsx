@@ -10,6 +10,7 @@ import { CohortProgress } from "@/components/cohort-progress";
 import { TrainingSchedule } from "@/components/training-schedule";
 import { TrainerCoachingPanel } from "@/components/trainer-coaching-panel";
 import { LaunchReadiness } from "@/components/launch-readiness";
+import { SecureTrainerOverview } from "@/components/secure-trainer-overview";
 import { learnerInsight, type CoachMessage } from "@/lib/coaching-insights";
 
 type Params={error?:string;success?:string};
@@ -52,24 +53,12 @@ export default async function TrainerSpace({searchParams}:{searchParams:Promise<
     deps:deps||[],awards:awards||[],submissions:allSubmissions||[],
     practices:practice||[],steps:steps||[],startDate:settings?.start_date??null
   }));
-  return <main className="page">
-    <section className="page-hero"><div><span className="eyebrow">ESPACE FORMATEUR · AUTORISATION VÉRIFIÉE</span>
-      <h1>Évaluer pour <span>faire progresser.</span></h1><p>Les évaluations sont enregistrées dans PostgreSQL ; les XP sont attribués par une opération sécurisée et contrôlée.</p></div></section>
-    <form action={signOut} style={{display:"flex",justifyContent:"flex-end"}}><button type="submit" className="text-btn">Se déconnecter</button></form>
-    <div className="stats-grid"><div className="stat-card"><span>SOUMISSIONS EN ATTENTE</span><strong>{pending.length}</strong></div>
-      <div className="stat-card"><span>MISSIONS PUBLIÉES</span><strong>{catalog.filter(m=>m.published).length}</strong></div>
-      <div className="stat-card"><span>APPRENANTS INSCRITS</span><strong>{(learners||[]).length}</strong></div>
-      <div className="stat-card"><span>XP ATTRIBUÉS</span><strong>{(awards||[]).reduce((sum,x)=>sum+Number(x.xp),0)}</strong></div></div>
-    <TrainerCoachingPanel learners={namedLearners} insights={insights} messages={(coachMessages||[]) as CoachMessage[]} startDate={settings?.start_date??null}/>
-    <LaunchReadiness publishedMissions={catalog.filter(m=>m.published).length} guidedMissions={(guides||[]).length}
-      learners={(learners||[]).length} submissions={(allSubmissions||[]).length} validatedMissions={(awards||[]).length}
-      awardedBadges={(badgeAwards||[]).length} startDate={settings?.start_date??null}/>
-    <TrainingSchedule startDate={settings?.start_date??null} missions={catalog} variant="trainer"/>
-    <CurriculumRoadmap missions={catalog} variant="trainer"/>
-    <CohortProgress learners={namedLearners} awards={awards||[]} submissions={allSubmissions||[]} practice={practice||[]} missions={catalog.filter(m=>m.published)} missionCount={catalog.filter(m=>m.published).length}/>
-    {params.success && <p className="alert success">{params.success==="message"?"Message pédagogique enregistré et visible dans l’espace apprenant.":"Modification enregistrée dans la base de données."}</p>}
-    {params.error && <p className="alert danger">Échec de l’opération. Vérifie les champs ou les droits d’accès.</p>}
-    <section className="panel"><div className="section-head"><h2>Soumissions à évaluer</h2><span className="counter">{pending.length} en attente</span></div>
+  return <main className="page secure-trainer-page">
+    <SecureTrainerOverview pending={pending.length} learners={(learners||[]).length}
+      missions={published.length} validatedXp={(awards||[]).reduce((sum,x)=>sum+Number(x.xp),0)}/>
+    {params.success&&<p className="alert success" role="status">{params.success==="message"?"Message pédagogique enregistré dans l'espace apprenant.":"Modification enregistrée dans la base de données."}</p>}
+    {params.error&&<p className="alert danger" role="alert">Échec de l'opération. Vérifie les champs ou les droits d'accès.</p>}
+    <section className="panel" id="evaluations"><div className="section-head"><h2>Soumissions à évaluer</h2><span className="counter">{pending.length} en attente</span></div>
       {!pending.length ? <div className="empty-state"><h3>Aucune soumission en attente</h3><p>Les livrables apparaîtront ici lorsqu’un apprenant les déposera.</p></div>
       :<div className="review-list">{pending.map(s=><article className="review-card" key={s.id}>
         <div><span className="week">MISSION · {displayDomain(byId.get(s.mission_id)?.domain||"")}</span><h3>{byId.get(s.mission_id)?.title||"Mission"}</h3>
@@ -98,6 +87,15 @@ export default async function TrainerSpace({searchParams}:{searchParams:Promise<
         </form>
       </article>)}</div>}
     </section>
+    <TrainerCoachingPanel learners={namedLearners} insights={insights} messages={(coachMessages||[]) as CoachMessage[]} startDate={settings?.start_date??null}/>
+    <LaunchReadiness publishedMissions={catalog.filter(m=>m.published).length} guidedMissions={(guides||[]).length}
+      learners={(learners||[]).length} submissions={(allSubmissions||[]).length} validatedMissions={(awards||[]).length}
+      awardedBadges={(badgeAwards||[]).length} startDate={settings?.start_date??null}/>
+    <div id="programme" className="secure-section-marker"/>
+    <TrainingSchedule startDate={settings?.start_date??null} missions={catalog} variant="trainer"/>
+    <CurriculumRoadmap missions={catalog} variant="trainer"/>
+    <div id="cohorte" className="secure-section-marker"/>
+    <CohortProgress learners={namedLearners} awards={awards||[]} submissions={allSubmissions||[]} practice={practice||[]} missions={catalog.filter(m=>m.published)} missionCount={catalog.filter(m=>m.published).length}/>
     <section className="panel"><div className="section-head"><h2>Brouillons à publier</h2><span className="counter">{catalog.filter(m=>!m.published).length} brouillon(s)</span></div>
       <div className="review-list">{catalog.filter(m=>!m.published).map(m=><div key={m.id} className="review-card">
         <div><span className="week">SEMAINE {m.week} · {displayDomain(m.domain)}</span><h3>{m.title}</h3>
@@ -108,7 +106,7 @@ export default async function TrainerSpace({searchParams}:{searchParams:Promise<
           <button type="submit" className="primary-btn">Publier la mission</button>
         </form></div>)}</div>
     </section>
-    <section className="panel" style={{maxWidth:660}}><span className="eyebrow">PROGRAMME</span><h2>Créer une mission</h2>
+    <section className="panel" id="creation" style={{maxWidth:660}}><span className="eyebrow">PROGRAMME</span><h2>Créer une mission</h2>
       <p className="muted">La mission est d’abord enregistrée en brouillon. Choisis éventuellement un prérequis, rédige ses étapes pédagogiques, puis publie-la.</p>
       <form action={createMission} className="form">
         <label>Titre<input name="title" required minLength={3} maxLength={110}/></label>

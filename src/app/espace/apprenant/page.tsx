@@ -13,6 +13,7 @@ import { TrainingSchedule } from "@/components/training-schedule";
 import { LearnerCoachingPanel } from "@/components/learner-coaching-panel";
 import { learnerInsight, type CoachMessage } from "@/lib/coaching-insights";
 import { LearnerWelcomeBanner } from "@/components/learner-welcome-banner";
+import { SecureLearnerOverview } from "@/components/secure-learner-overview";
 import { type LearnerPreferences } from "@/lib/learner-preferences";
 
 type Params = { error?: string; success?: string; welcome?: string };
@@ -53,20 +54,20 @@ export default async function LearnerSpace({searchParams}:{searchParams:Promise<
     practices:(practice||[]).map(x=>({learner_id:user.id,practice_date:x.practice_date})),
     steps:workshopSteps||[],startDate:settings?.start_date??null
   });
-  return <main className="page">
-    <section className="page-hero"><div><span className="eyebrow">ESPACE APPRENANT · COMPTE SÉCURISÉ</span><h1>Progression <span>réelle.</span></h1>
-      <p>Tes missions sont conservées dans la base de données. Le formateur valide les livrables avant l’attribution des XP.</p></div></section>
-    <form action={signOut} style={{display:"flex",justifyContent:"flex-end"}}><button type="submit" className="text-btn">Se déconnecter</button></form>
-    <div className="stats-grid"><div className="stat-card"><span>NIVEAU</span><strong>{level}</strong></div>
-      <div className="stat-card"><span>EXPÉRIENCE</span><strong>{xp} <em>XP</em></strong></div>
-      <div className="stat-card"><span>MISSIONS VALIDÉES</span><strong>{approved.size}<em> / {missions.length}</em></strong></div></div>
+  return <main className="page secure-learner-page">
+    <SecureLearnerOverview missions={missions} submissions={submissions} approvedIds={[...approved]} dependencies={deps} xp={xp} level={level}/>
+    <div className="secure-learner-alerts">
+      {params.welcome && <p className="alert success" role="status">Tes préférences sont enregistrées. Tu peux maintenant continuer ton parcours.</p>}
+      {params.success && <p className="alert success">{params.success==="practice"?"Séance de pratique enregistrée pour aujourd’hui.":"Livrable enregistré. Il attend maintenant la correction du formateur."}</p>}
+      {params.error && <p className="alert danger">{params.error==="practice"?"Impossible d’enregistrer la séance. Essaie à nouveau.":"Impossible d’enregistrer cette soumission. Vérifie les informations et les prérequis."}</p>}
+    </div>
     <LearnerWelcomeBanner preferences={rawPreferences as LearnerPreferences|null} mission={insight.nextMission}/>
-    {params.welcome && <p className="alert success" role="status">Tes préférences sont enregistrées. Tu peux maintenant commencer ton prochain atelier.</p>}
-    {params.success && <p className="alert success">{params.success==="practice"?"Séance de pratique enregistrée pour aujourd’hui.": "Livrable enregistré. Il attend maintenant la correction du formateur."}</p>}
-    {params.error && <p className="alert danger">{params.error==="practice"?"Impossible d’enregistrer la séance. Essaie à nouveau.":"Impossible d’enregistrer cette soumission. Vérifie les informations et les prérequis."}</p>}
+    <div id="evaluations" className="secure-section-marker"/>
     <LearnerCoachingPanel insight={insight} messages={(coachMessages||[]) as CoachMessage[]} startDate={settings?.start_date??null}/>
     <LearningAchievements catalog={(badgeCatalog||[]) as Badge[]} earned={(myBadges||[]) as EarnedBadge[]} practice={(practice||[]) as PracticeCheckin[]} validatedCount={approved.size} currentMission={currentMission ? {id:currentMission.id,title:currentMission.title} : null}/>
+    <div id="competences" className="secure-section-marker"/>
     <SkillMastery missions={missions} approved={approved}/>
+    <div id="programme" className="secure-section-marker"/>
     <TrainingSchedule startDate={settings?.start_date??null} missions={missions} approved={approved}/>
     <CurriculumRoadmap missions={missions} approved={approved} prerequisites={deps}/>
     <div className="section-head" id="missions"><h2>Programme et missions</h2><span className="counter">Seuil : 80/100</span></div>
