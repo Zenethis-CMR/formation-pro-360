@@ -2,6 +2,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { requireRole } from "@/lib/auth/require-role";
+import { parseLearnerPreferences } from "@/lib/learner-preferences";
 
 const idPattern = /^[a-f0-9]{8}-[a-f0-9]{4}-[1-8][a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/i;
 const learnerPath = "/espace/apprenant";
@@ -203,4 +204,25 @@ export async function saveDraftGuide(formData: FormData) {
   revalidatePath(backPath);
   revalidatePath(trainerPath);
   redirect(backPath+"?saved=1");
+}
+
+export async function saveLearnerPreferences(formData:FormData) {
+  const {supabase,user}=await requireRole("learner");
+  const parsed=parseLearnerPreferences({
+    name:String(formData.get("preferredName")||""),
+    goal:String(formData.get("goal")||""),
+    experience:String(formData.get("experience")||""),
+    minutes:String(formData.get("minutesPerDay")||"")
+  });
+  if(!parsed.valid) redirect("/espace/bienvenue?error=invalid");
+  // The primary key is the existing Supabase Auth user ID. This updates only
+  // optional learning preferences, never their profile role, missions or XP.
+  const {error}=await supabase.from("learner_preferences").upsert({
+    learner_id:user.id,...parsed.value,updated_at:new Date().toISOString()
+  },{onConflict:"learner_id"});
+  if(error) redirect("/espace/bienvenue?error=save");
+  revalidatePath("/espace/apprenant");
+  revalidatePath("/espace/bienvenue");
+  revalidatePath("/espace/formateur");
+  redirect("/espace/apprenant?welcome=1");
 }
