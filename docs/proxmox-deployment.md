@@ -29,6 +29,8 @@ Variables attendues :
 - `FORMATION_API_INTERNAL_URL=http://10.0.0.42:3000` : appels serveur à l'API dans le réseau privé.
 - `NEXT_PUBLIC_SITE_URL=https://formation.zenithis.tech` : liens de vérification et de récupération.
 
+Le modèle prêt à compléter est [`deploy/frontend.env.example`](../deploy/frontend.env.example). Il doit être copié en `/etc/formation-pro-360/frontend.env` avec les valeurs réelles, puis protégé par `chmod 0600`. Les valeurs d'exemple ne permettent pas au service de démarrer.
+
 Le cookie de session est `HttpOnly`, `Secure` en production et `SameSite=Lax`. Les pages Next transmettent ce cookie à l'API uniquement côté serveur.
 
 ## API et authentification
@@ -36,6 +38,8 @@ Le cookie de session est `HttpOnly`, `Secure` en production et `SameSite=Lax`. L
 L'API Fastify écoute sur `0.0.0.0:3000`, son unité systemd est `deploy/formation-pro-backend.service`. Elle utilise un utilisateur système `formationapi` et `/etc/formation-pro-360/backend.env` en mode `0600`.
 
 Variables sensibles attendues : `DATABASE_URL`, `SUPABASE_JWT_SECRET`, identifiants `SMTP_*` et `PUBLIC_APP_URL`. Ne jamais mettre leurs valeurs dans Git, une image ou les journaux. La clé JWT sert à émettre des jetons Supabase de courte durée avec l'identité du compte Node ; PostgREST continue ainsi d'appliquer les règles RLS existantes.
+
+Le modèle backend à compléter est [`deploy/backend.env.example`](https://github.com/Zenethis-CMR/formation-pro-backend/blob/main/deploy/backend.env.example). Il ne contient aucune valeur de production et ne doit pas être copié tel quel pour démarrer le service.
 
 Routes initiales :
 

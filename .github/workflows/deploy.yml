@@ -21,6 +21,20 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Check production configuration on CT 410
+        run: |
+          set -euo pipefail
+          key="$HOME/.ssh/formation-pro-deploy"
+          host="formation360@10.0.0.41"
+          ssh -i "$key" -o BatchMode=yes -o StrictHostKeyChecking=yes "$host" 'bash -s' <<'REMOTE'
+          set -euo pipefail
+          file=/etc/formation-pro-360/frontend.env
+          test -s "$file" || { echo "Frontend runtime configuration is missing; fill deploy/frontend.env.example on CT 410." >&2; exit 1; }
+          grep -q '^SUPABASE_URL=https://' "$file" && grep -q '^SUPABASE_PUBLISHABLE_KEY=.' "$file" || { echo "Supabase URL and publishable key are required for the application data layer." >&2; exit 1; }
+          grep -q '^FORMATION_API_INTERNAL_URL=http://10.0.0.42:3000$' "$file" || { echo "FORMATION_API_INTERNAL_URL must point to CT 420 port 3000." >&2; exit 1; }
+          grep -Eq 'example-project|sb_publishable_example|localhost' "$file" && { echo "Frontend runtime configuration still contains sample values." >&2; exit 1; } || true
+          REMOTE
+
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
