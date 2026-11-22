@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
-import { ArrowRight, BarChart3, Bell, BookOpen, CalendarDays, ClipboardCheck, GraduationCap, LayoutDashboard, LogOut, Settings2, Sparkles, Users } from "lucide-react";
+import { ArrowRight, BarChart3, BookOpen, CalendarDays, ClipboardCheck, GraduationCap, LayoutDashboard, LogOut, Settings2, Sparkles, Users } from "lucide-react";
 import { signOut } from "@/app/auth/actions";
 
 export type SecureWorkspaceStats={
@@ -111,8 +111,14 @@ export function SecureAcademyShell({children,stats}:{children:React.ReactNode;st
   </div>
   <nav className="academy-mobile-bottom secure-academy-mobile-nav" aria-label="Navigation mobile de l'espace personnel">
     <Link href={base} className={pathname===base&&currentTab==="dashboard"?"on":""}><LayoutDashboard size={19}/>Accueil</Link>
-    <Link href={trainer?base+"?onglet=programme":base+"?onglet=missions"} className={currentTab===(trainer?"programme":"missions")?"on":""}><BookOpen size={19}/>{trainer?"Programme":"Missions"}</Link>
-    <Link href={base+(trainer?"?onglet=evaluations":"?onglet=progression")} className={currentTab===(trainer?"evaluations":"progression")?"on":""}><BarChart3 size={19}/>{trainer?"Corrections":"Progrès"}</Link>
+    {trainer?<>
+      <Link href={base+"?onglet=evaluations"} className={pathname===base&&currentTab==="evaluations"?"on":""}><ClipboardCheck size={19}/>Corrections</Link>
+      <Link href={base+"?onglet=apprenants"} className={pathname===base&&currentTab==="apprenants"?"on":""}><Users size={19}/>Apprenants</Link>
+    </>:<>
+      <Link href={base+"?onglet=missions"} className={pathname===base&&currentTab==="missions"?"on":""}><BookOpen size={19}/>Missions</Link>
+      <Link href={base+"?onglet=progression"} className={pathname===base&&currentTab==="progression"?"on":""}><BarChart3 size={19}/>Progrès</Link>
+    </>}
+    <Link href={base+"?onglet=programme"} className={pathname===base&&currentTab==="programme"?"on":""}><CalendarDays size={19}/>Programme</Link>
     <Link href="/espace/compte" className={pathname==="/espace/compte"?"on":""}><Settings2 size={19}/>Compte</Link>
   </nav>
   </div>;
