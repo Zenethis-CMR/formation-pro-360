@@ -1,7 +1,6 @@
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { createMission, reviewMission, publishMission } from "@/app/espace/actions";
-import { signOut } from "@/app/auth/actions";
 import { requireRole } from "@/lib/auth/require-role";
 import { isSupabaseConfigured } from "@/lib/supabase/server";
 import { CurriculumRoadmap } from "@/components/curriculum-roadmap";
@@ -11,9 +10,10 @@ import { TrainingSchedule } from "@/components/training-schedule";
 import { TrainerCoachingPanel } from "@/components/trainer-coaching-panel";
 import { LaunchReadiness } from "@/components/launch-readiness";
 import { SecureTrainerOverview } from "@/components/secure-trainer-overview";
+import { WorkspaceTabHeading } from "@/components/workspace-tab-heading";
 import { learnerInsight, type CoachMessage } from "@/lib/coaching-insights";
 
-type Params={error?:string;success?:string};
+type Params={error?:string;success?:string;onglet?:string};
 type Submission={id:string;mission_id:string;learner_id:string;url:string;note:string;created_at:string};
 type Mission={id:string;title:string;domain:string;xp:number;published:boolean;week:number};
 type MissionRubric={mission_id:string;rubric:string[]};
@@ -21,12 +21,13 @@ export default async function TrainerSpace({searchParams}:{searchParams:Promise<
   if(!isSupabaseConfigured()) redirect("/espace");
   const {supabase} = await requireRole("trainer");
   const params=await searchParams;
+  const tab=(["evaluations","apprenants","programme"].includes(params.onglet||"") ? params.onglet : "dashboard")||"dashboard";
   const [{data:submissions,error:se},{data:missions,error:me},{data:learners,error:le},{data:awards,error:ae},{data:allSubmissions,error:allSe},{data:practice,error:pe},{data:guides,error:ge},{data:settings,error:settingsError},{data:deps,error:depsError},{data:steps,error:stepsError},{data:coachMessages,error:coachError},{data:badgeAwards,error:badgeAwardsError},{data:learningProfiles,error:learningProfilesError}] = await Promise.all([
     supabase.from("submissions").select("id,mission_id,learner_id,url,note,created_at").eq("status","pending").order("created_at"),
     supabase.from("missions").select("id,title,domain,xp,published,week").order("week"),
     supabase.from("profiles").select("id").eq("role","learner").order("created_at"),
     supabase.from("xp_ledger").select("learner_id,mission_id,xp"),
-    supabase.from("submissions").select("learner_id,mission_id,status,created_at"),
+    supabase.from("submissions").select("id,learner_id,mission_id,status,score,feedback,created_at").order("created_at",{ascending:false}).limit(500),
     supabase.from("practice_checkins").select("learner_id,practice_date"),
     supabase.from("mission_guides").select("mission_id,rubric"),
     supabase.from("training_settings").select("start_date").eq("id",true).maybeSingle(),
@@ -46,6 +47,8 @@ export default async function TrainerSpace({searchParams}:{searchParams:Promise<
     minutes_per_day:preferencesById.get(l.id)?.minutes_per_day||null
   }));
   const byId = new Map(catalog.map(m=>[m.id,m]));
+  const learnerNames=new Map(namedLearners.map((l,i)=>[l.id,l.preferred_name||"Apprenant "+String(i+1).padStart(2,"0")]));
+  const reviewed=(allSubmissions||[]).filter(s=>s.status!=="pending");
   const rubricById = new Map(((guides||[]) as MissionRubric[]).map(g=>[g.mission_id,g.rubric]));
   const published=catalog.filter(m=>m.published);
   const insights=(learners||[]).map(l=>learnerInsight({
@@ -54,15 +57,17 @@ export default async function TrainerSpace({searchParams}:{searchParams:Promise<
     practices:practice||[],steps:steps||[],startDate:settings?.start_date??null
   }));
   return <main className="page secure-trainer-page">
-    <SecureTrainerOverview pending={pending.length} learners={(learners||[]).length}
-      missions={published.length} validatedXp={(awards||[]).reduce((sum,x)=>sum+Number(x.xp),0)}/>
+    {tab!=="dashboard"&&<WorkspaceTabHeading role="trainer" tab={tab}/>}
+    {tab==="dashboard"&&<SecureTrainerOverview pending={pending.length} learners={(learners||[]).length}
+      missions={published.length} validatedXp={(awards||[]).reduce((sum,x)=>sum+Number(x.xp),0)}/>}
     {params.success&&<p className="alert success" role="status">{params.success==="message"?"Message pédagogique enregistré dans l'espace apprenant.":"Modification enregistrée dans la base de données."}</p>}
     {params.error&&<p className="alert danger" role="alert">Échec de l'opération. Vérifie les champs ou les droits d'accès.</p>}
+    {tab==="evaluations"&&<>
     <section className="panel" id="evaluations"><div className="section-head"><h2>Soumissions à évaluer</h2><span className="counter">{pending.length} en attente</span></div>
       {!pending.length ? <div className="empty-state"><h3>Aucune soumission en attente</h3><p>Les livrables apparaîtront ici lorsqu’un apprenant les déposera.</p></div>
       :<div className="review-list">{pending.map(s=><article className="review-card" key={s.id}>
         <div><span className="week">MISSION · {displayDomain(byId.get(s.mission_id)?.domain||"")}</span><h3>{byId.get(s.mission_id)?.title||"Mission"}</h3>
-          <p className="muted">Apprenant : {s.learner_id.slice(0,8)}…</p><p className="muted">{s.note}</p>
+          <p className="muted">Apprenant : {learnerNames.get(s.learner_id)||"Apprenant"}</p><p className="muted">{s.note}</p>
           <a href={s.url} className="external-link" target="_blank" rel="noopener noreferrer">Consulter le livrable ↗</a>
           {(rubricById.get(s.mission_id)||[]).length>0 && <div className="trainer-evaluation-rubric">
             <strong>Grille de vérification</strong>
@@ -87,15 +92,30 @@ export default async function TrainerSpace({searchParams}:{searchParams:Promise<
         </form>
       </article>)}</div>}
     </section>
+    <section className="panel" id="historique-evaluations">
+      <div className="section-head"><div><span className="eyebrow">HISTORIQUE PÉDAGOGIQUE</span><h2>Corrections précédentes</h2></div>
+        <span className="counter">{reviewed.length} évaluation(s)</span></div>
+      {reviewed.length===0
+        ?<div className="empty-state"><h3>Pas encore de correction</h3><p>Les évaluations réalisées et leurs commentaires apparaîtront ici.</p></div>
+        :<div className="workspace-review-history">{reviewed.map(s=><article key={s.id} className="workspace-history-item">
+          <div><span className="week">{learnerNames.get(s.learner_id)||"Apprenant"} · {byId.get(s.mission_id)?.domain||"Mission"}</span>
+            <h3>{byId.get(s.mission_id)?.title||"Mission"}</h3>
+            <p>{s.feedback||"Aucun commentaire pédagogique enregistré."}</p></div>
+          <div className="workspace-history-score"><strong>{s.score===null?"—":s.score+"/100"}</strong>
+            <span className={s.status==="approved"?"is-approved":"is-correction"}>{s.status==="approved"?"Validée":"Correction demandée"}</span>
+            <time dateTime={s.created_at}>{new Intl.DateTimeFormat("fr-FR",{timeZone:"Africa/Douala",dateStyle:"medium"}).format(new Date(s.created_at))}</time></div>
+        </article>)}</div>}
+    </section>
+    </>}
+    {tab==="apprenants"&&<>
     <TrainerCoachingPanel learners={namedLearners} insights={insights} messages={(coachMessages||[]) as CoachMessage[]} startDate={settings?.start_date??null}/>
-    <LaunchReadiness publishedMissions={catalog.filter(m=>m.published).length} guidedMissions={(guides||[]).length}
-      learners={(learners||[]).length} submissions={(allSubmissions||[]).length} validatedMissions={(awards||[]).length}
-      awardedBadges={(badgeAwards||[]).length} startDate={settings?.start_date??null}/>
+    <div id="cohorte" className="secure-section-marker"/>
+    <CohortProgress learners={namedLearners} awards={awards||[]} submissions={allSubmissions||[]} practice={practice||[]} missions={catalog.filter(m=>m.published)} missionCount={catalog.filter(m=>m.published).length}/>
+    </>}
+    {tab==="programme"&&<>
     <div id="programme" className="secure-section-marker"/>
     <TrainingSchedule startDate={settings?.start_date??null} missions={catalog} variant="trainer"/>
     <CurriculumRoadmap missions={catalog} variant="trainer"/>
-    <div id="cohorte" className="secure-section-marker"/>
-    <CohortProgress learners={namedLearners} awards={awards||[]} submissions={allSubmissions||[]} practice={practice||[]} missions={catalog.filter(m=>m.published)} missionCount={catalog.filter(m=>m.published).length}/>
     <section className="panel"><div className="section-head"><h2>Brouillons à publier</h2><span className="counter">{catalog.filter(m=>!m.published).length} brouillon(s)</span></div>
       <div className="review-list">{catalog.filter(m=>!m.published).map(m=><div key={m.id} className="review-card">
         <div><span className="week">SEMAINE {m.week} · {displayDomain(m.domain)}</span><h3>{m.title}</h3>
@@ -125,5 +145,9 @@ export default async function TrainerSpace({searchParams}:{searchParams:Promise<
         <button className="primary-btn" type="submit">Enregistrer comme brouillon</button>
       </form>
     </section>
+    <LaunchReadiness publishedMissions={catalog.filter(m=>m.published).length} guidedMissions={(guides||[]).length}
+      learners={(learners||[]).length} submissions={(allSubmissions||[]).length} validatedMissions={(awards||[]).length}
+      awardedBadges={(badgeAwards||[]).length} startDate={settings?.start_date??null}/>
+    </>}
   </main>;
 }
