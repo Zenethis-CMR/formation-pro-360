@@ -57,7 +57,9 @@ npm run lint
 npm run build
 ```
 
-Les tests unitaires et la compilation doivent réussir avant publication.
+Les tests unitaires et la compilation doivent réussir avant publication. Une CI dédiée aux pull requests doit aussi valider les changements avant fusion.
+
+**Migration des anciens comptes :** le fait que les workflows Proxmox soient au vert ne prouve pas que les identités et progressions de l'ancienne base sont présentes en PostgreSQL local. Un inventaire des comptes et des données, avec sauvegarde restaurable, doit précéder toute affirmation de reprise complète.
 
 ## Lancement intensif et stratégie 360
 
@@ -68,6 +70,7 @@ La feuille de route officielle de conception produit, 7 formations spécialisée
 ## Documentation
 
 - `docs/formation-pro-360-master-plan-v2.md` : vision 360, 7 spécialisations, 8 semaines pratiques, performance et infrastructure
+- `docs/v2-execution-cross-repo.md` : analyse des deux dépôts, chantiers priorisés, sécurité des comptes et performance
 - `docs/private-workspace-navigation.md` : accès privé, onglets des deux rôles et recette
 - `docs/auth-signup-compatibility.md` : parcours d'inscription Node, récupération et confirmation des e-mails
 - `docs/supabase-setup.md` : historique de l'ancienne architecture Supabase/Vercel
