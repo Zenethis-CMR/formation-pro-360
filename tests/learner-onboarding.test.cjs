@@ -67,12 +67,12 @@ test("weekly hours and weekdays are calculated from real selected recurring days
 test("fallback label remains safe",()=>{
   assert.equal(goalLabel("unknown"),"Construire un produit");
 });
-test("new registrations still preserve existing login accounts",()=>{
+test("new registrations and role checks use the application backend",()=>{
   const auth=fs.readFileSync(path.join(__dirname,"..","src","app","auth","actions.ts"),"utf8");
   const callback=fs.readFileSync(path.join(__dirname,"..","src","app","auth","callback","route.ts"),"utf8");
   const role=fs.readFileSync(path.join(__dirname,"..","src","lib","auth","require-role.ts"),"utf8");
-  assert.match(auth,/if\(data\.session\) redirect\("\/espace\/bienvenue"\)/);
-  assert.match(callback,/flow==="signup" \? "\/espace\/bienvenue"/);
-  assert.match(auth,/shouldCreateUser:false/);
+  assert.match(auth,/\/register/);
+  assert.match(auth,/setBackendSession/);
+  assert.match(callback,/\/espace\/bienvenue/);
   assert.match(role,/\.from\("profiles"\)/);
 });

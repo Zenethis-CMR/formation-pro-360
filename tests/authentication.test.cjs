@@ -28,11 +28,11 @@ test("new password requires at least ten characters including upper, lower, digi
 test("password length maximum does not allow oversized requests",()=>{
   assert.equal(isValidPassword("ValidPassword1"+"x".repeat(130)),false);
 });
-test("legacy sign-in explicitly prevents silent auto-signup",()=>{
+test("sign-in, registration and password recovery use the Node authentication API",()=>{
   const actions=fs.readFileSync(path.join(__dirname,"..","src","app","auth","actions.ts"),"utf8");
-  assert.match(actions,/shouldCreateUser:\s*false/);
   assert.match(actions,/signInWithPassword/);
-  assert.match(actions,/auth\.signUp/);
-  assert.match(actions,/resetPasswordForEmail/);
+  assert.match(actions,/\/register/);
+  assert.match(actions,/\/request-password-reset/);
+  assert.match(actions,/\/login/);
   assert.doesNotMatch(actions,/deleteUser\(/);
 });

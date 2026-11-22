@@ -25,11 +25,11 @@ Après un déploiement, chaque CT conserve cinq versions de l'application et net
 
 Variables attendues :
 
-- `SUPABASE_URL` et `SUPABASE_PUBLISHABLE_KEY` : accès serveur à l'API Supabase et aux politiques RLS. Ces variables ne sont pas incluses dans le bundle navigateur.
+- `SUPABASE_URL=http://10.0.0.42:3000` et `SUPABASE_PUBLISHABLE_KEY` : accès serveur à l'API PostgreSQL exposée par PostgREST derrière l'API Node et aux politiques RLS. Ces variables ne sont pas incluses dans le bundle navigateur.
 - `FORMATION_API_INTERNAL_URL=http://10.0.0.42:3000` : appels serveur à l'API dans le réseau privé.
 - `NEXT_PUBLIC_SITE_URL=https://formation.zenithis.tech` : liens de vérification et de récupération.
 
-Le modèle prêt à compléter est [`deploy/frontend.env.example`](../deploy/frontend.env.example). Il doit être copié en `/etc/formation-pro-360/frontend.env` avec les valeurs réelles, puis protégé par `chmod 0600`. Les valeurs d'exemple ne permettent pas au service de démarrer.
+Le modèle prêt à compléter est [`deploy/frontend.env.example`](../deploy/frontend.env.example). `SUPABASE_PUBLISHABLE_KEY` doit contenir le JWT `anon` signé avec `SUPABASE_JWT_SECRET` du CT 420; seule cette clé publique à privilèges limités va dans le frontend. Le secret de signature reste sur le CT backend. Le fichier doit être copié en `/etc/formation-pro-360/frontend.env` puis protégé par `chmod 0640` et le groupe `formation360`.
 
 Le cookie de session est `HttpOnly`, `Secure` en production et `SameSite=Lax`. Les pages Next transmettent ce cookie à l'API uniquement côté serveur.
 
@@ -37,7 +37,7 @@ Le cookie de session est `HttpOnly`, `Secure` en production et `SameSite=Lax`. L
 
 L'API Fastify écoute sur `0.0.0.0:3000`, son unité systemd est `deploy/formation-pro-backend.service`. Elle utilise un utilisateur système `formationapi` et `/etc/formation-pro-360/backend.env` en mode `0600`.
 
-Variables sensibles attendues : `DATABASE_URL`, `SUPABASE_JWT_SECRET`, identifiants `SMTP_*` et `PUBLIC_APP_URL`. Ne jamais mettre leurs valeurs dans Git, une image ou les journaux. La clé JWT sert à émettre des jetons Supabase de courte durée avec l'identité du compte Node ; PostgREST continue ainsi d'appliquer les règles RLS existantes.
+Variables sensibles attendues : `DATABASE_URL`, `SUPABASE_JWT_SECRET` et paramètres `SMTP_*`. Ne jamais mettre leurs valeurs dans Git, une image ou les journaux. La clé JWT est partagée avec PostgREST pour vérifier les jetons courts émis par l'API Node ; PostgREST applique les règles RLS existantes sur la base locale.
 
 Le modèle backend à compléter est [`deploy/backend.env.example`](https://github.com/Zenethis-CMR/formation-pro-backend/blob/main/deploy/backend.env.example). Il ne contient aucune valeur de production et ne doit pas être copié tel quel pour démarrer le service.
 
