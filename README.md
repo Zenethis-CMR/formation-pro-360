@@ -1,8 +1,8 @@
 # Formation Pro 360
 
-Plateforme privée de formation pratique, propulsée par **Next.js 15, React 19, TypeScript, Supabase et Vercel**.
+Plateforme privée de formation pratique. Le frontend utilise **Next.js 15, React 19 et TypeScript** ; l'architecture Proxmox ajoute une API **Node.js/Fastify** pour les comptes et l'authentification.
 
-**Site officiel :** https://formation-pro-360.vercel.app/
+**Site actuellement en production :** https://formation-pro-360.vercel.app/ (avant bascule Proxmox).
 
 ## Accès et profils
 
@@ -34,11 +34,11 @@ Tous les onglets sont des vues distinctes et adaptent leur présentation aux pet
 
 ## Données et sécurité
 
-- **Supabase Auth** gère les sessions, confirmations par e-mail et mots de passe. Les utilisateurs historiques conservent leurs comptes.
-- Les profils, les missions, les soumissions, les corrections, les séances, les badges et les XP sont persistants dans **PostgreSQL** et soumis à des **politiques RLS**.
+- Le backend Node gère les comptes, sessions, confirmations et récupération par SMTP. La procédure de migration conserve les UUID historiques.
+- Les profils, missions, soumissions, corrections, séances, badges et XP restent dans **PostgreSQL Supabase auto-hébergé** avec les **politiques RLS** ; les JWT courts de l'API conservent `auth.uid()`.
 - Seul un formateur authentifié peut corriger ou publier des missions. Une validation d'au moins **80/100** accorde les XP une fois, dans une transaction sécurisée.
 - Le moteur de données simulées en `localStorage` a été supprimé.
-- Les e-mails d'authentification sont envoyés par Supabase via le SMTP personnalisé Resend ; vérifier leur réception sur un appareil réel.
+- Les e-mails d'authentification sont envoyés par l'API avec le SMTP configuré ; vérifier leur réception sur un appareil réel.
 
 **Aucun secret, e-mail de compte, mot de passe, token, clé API ou résultat individuel ne doit être commité dans ce dépôt.**
 
@@ -71,6 +71,8 @@ La feuille de route officielle de conception produit, 7 formations spécialisée
 - `docs/private-workspace-navigation.md` : accès privé, onglets des deux rôles et recette
 - `docs/auth-signup-compatibility.md` : comptes existants, inscription, récupération et confirmation des e-mails
 - `docs/supabase-setup.md` : base de données, migrations, rôles et règles de sécurité
+- `docs/proxmox-deployment.md` : conteneurs, réseau, domaines NPM et services systemd
+- `docs/auth-migration.md` : sauvegarde préalable et import des comptes Node sans changer leurs UUID
 - `docs/programme.md` : objectifs du parcours pédagogique
 
 ## Validation avant lancement élargi

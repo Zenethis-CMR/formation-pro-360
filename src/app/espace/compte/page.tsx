@@ -32,10 +32,10 @@ export default async function AccountPage({searchParams}:{searchParams:Promise<P
         <h2>Définir ou modifier mon mot de passe</h2>
         <p className="muted">Pour les comptes créés avec un lien par e-mail, tu peux maintenant choisir un mot de passe sans te réinscrire.</p>
         {params.success&&<p className="auth-new-feedback success" role="status"><CheckCircle2 size={17}/> Ton mot de passe a été enregistré. Tu pourras l'utiliser lors de ta prochaine connexion.</p>}
-        {params.error&&<p className="auth-new-feedback danger" role="alert">{params.error==="mismatch"?"Les mots de passe ne correspondent pas.":params.error==="password"?"Utilise 10 caractères minimum, une majuscule, une minuscule et un chiffre.":"Le mot de passe n'a pas pu être enregistré. Réessaie."}</p>}
+        {params.error&&<p className="auth-new-feedback danger" role="alert">{params.error==="mismatch"?"Les mots de passe ne correspondent pas.":params.error==="password"?"Utilise 12 caractères minimum.":"Le mot de passe n'a pas pu être enregistré. Réessaie."}</p>}
         <form className="auth-new-form" action={updateAccountPassword}>
           <AuthPasswordField name="password" label="Nouveau mot de passe" autoComplete="new-password"/>
-          <p className="auth-password-rule">10 caractères minimum, une majuscule, une minuscule et un chiffre.</p>
+          <p className="auth-password-rule">12 caractères minimum.</p>
           <AuthPasswordField name="confirmPassword" label="Confirmer le nouveau mot de passe" autoComplete="new-password" confirm/>
           <AuthSubmitButton label="Enregistrer mon mot de passe" pendingLabel="Enregistrement…"/>
         </form>

@@ -113,7 +113,9 @@ La formation évolue selon les **jours de séance déclarés**, pas une obligati
 
 ## 6. Architecture cible : modularité avant microservices
 
-Conserver un **monolithe modulaire Next.js/TypeScript** au départ, avec PostgreSQL Supabase et des composants de formation découplés. Ne pas multiplier les microservices avant d'avoir des charges et des frontières métier documentées.
+**Décision confirmée le 22 novembre 2026** : séparer le frontend Next.js et l'API Node.js dans deux CT Proxmox (410 et 420), sans multiplier les services métier. Le backend Node/Fastify prend en charge l'authentification, les sessions et l'envoi d'e-mails via SMTP, à la place de Supabase Auth. La base PostgreSQL Formation Pro doit être identifiée avant sa migration ; l'instance Supabase du CT 550 ne contient pas les tables Formation Pro et n'est pas utilisée sans vérification. L'API conserve les UUID de `profiles` et signe des JWT Supabase très courts pour maintenir l'application des politiques RLS, sous réserve que le projet source expose une clé de signature compatible. La bascule est conditionnée par une sauvegarde restaurable, l'import des comptes et la validation des parcours.
+
+Le monolithe API reste modulaire ; ne pas multiplier les microservices avant d'avoir des charges et des frontières métier documentées.
 
 Modules :
 - Identités, rôles et droits ; comptes, organisations, cohor­t­es et droits de formation.
@@ -161,7 +163,7 @@ Intégration IA : tutorat socratique, revue d'architecture, aide UX, génératio
 | VM sous Proxmox + Supabase géré | Contrôle total des VM, snapshots, réseau et orchestration maison | Infrastructure hôte, disponibilité, Internet, PRA et maintenance à assumer |
 | VM Proxmox + base PostgreSQL auto-hébergée | Contrôle complet des données et du déploiement | Risque opérationnel nettement plus élevé : base, réplication, stockage, restore, secrets |
 
-**Proxmox VE est d'abord un hyperviseur, pas un « VPS » en soi.** La bonne première expérimentation est une **VM isolée** exécutant l'application derrière Caddy/Traefik et Docker/Compose, avec base Supabase gérée inchangée. Mesurer à trafic comparable ; ne migrer le domaine qu'après validation, observabilité, rollback documenté et restauration testée.
+**Proxmox VE est d'abord un hyperviseur, pas un « VPS » en soi.** Le déploiement choisi utilise deux CT isolés derrière Nginx Proxy Manager. Mesurer à trafic comparable ; maintenir Vercel comme retour arrière jusqu'à validation, observabilité et restauration testée.
 
 Une migration vers un serveur physiquement plus proche des apprenants peut accélérer les assets mais ralentir les requêtes vers une base distante : seule la mesure de bout en bout permet de trancher.
 

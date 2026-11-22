@@ -1,0 +1,77 @@
+name: Deploy Formation Pro 360
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: formation-pro-360-production
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: [self-hosted, Linux, X64]
+    if: github.ref == 'refs/heads/main'
+    timeout-minutes: 30
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci --no-audit --no-fund
+
+      - name: Build standalone frontend
+        run: |
+          node ./node_modules/next/dist/bin/next build
+          mkdir -p .next/standalone/.next
+          cp -a .next/static .next/standalone/.next/static
+          if [ -d public ]; then cp -a public .next/standalone/public; fi
+          mkdir -p .next/standalone/deploy
+          cp deploy/cleanup.sh .next/standalone/deploy/cleanup.sh
+          cp deploy/formation-pro-360.service .next/standalone/deploy/formation-pro-360.service
+          tar -czf "$RUNNER_TEMP/formation-pro-360.tar.gz" -C .next/standalone .
+
+      - name: Release to CT 410
+        env:
+          RELEASE_ID: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          key="$HOME/.ssh/formation-pro-deploy"
+          host="formation360@10.0.0.41"
+          ssh -i "$key" -o BatchMode=yes -o StrictHostKeyChecking=yes "$host" "mkdir -p /opt/formation-pro-360/releases/$RELEASE_ID"
+          scp -i "$key" -o BatchMode=yes -o StrictHostKeyChecking=yes "$RUNNER_TEMP/formation-pro-360.tar.gz" "$host:/opt/formation-pro-360/releases/$RELEASE_ID/release.tar.gz"
+          ssh -i "$key" -o BatchMode=yes -o StrictHostKeyChecking=yes "$host" "bash -s -- '$RELEASE_ID'" <<'REMOTE'
+          set -euo pipefail
+          release_id="$1"
+          app=/opt/formation-pro-360
+          cd "$app/releases/$release_id"
+          tar -xzf release.tar.gz
+          rm release.tar.gz
+          previous="$(readlink -f "$app/current" 2>/dev/null || true)"
+          sudo -n install -m 0644 "$app/releases/$release_id/deploy/formation-pro-360.service" /etc/systemd/system/formation-pro-360.service
+          sudo -n systemctl daemon-reload
+          ln -s "$app/releases/$release_id" "$app/current-$release_id"
+          mv -Tf "$app/current-$release_id" "$app/current"
+          if ! sudo -n systemctl restart formation-pro-360.service; then
+            if [ -n "$previous" ]; then
+              sudo -n install -m 0644 "$previous/deploy/formation-pro-360.service" /etc/systemd/system/formation-pro-360.service
+              sudo -n systemctl daemon-reload
+              ln -s "$previous" "$app/current-rollback"
+              mv -Tf "$app/current-rollback" "$app/current"
+              sudo -n systemctl restart formation-pro-360.service || true
+            fi
+            exit 1
+          fi
+          curl --fail --silent --show-error http://127.0.0.1:3000/ >/dev/null
+          bash "$app/current/deploy/cleanup.sh"
+          REMOTE

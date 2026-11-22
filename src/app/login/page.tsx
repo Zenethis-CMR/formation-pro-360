@@ -10,13 +10,15 @@ type Params={mode?:string;sent?:string;error?:string};
 const messages:Record<string,string>={
   setup:"La connexion est momentanément indisponible. Contacte le responsable de la plateforme.",
   email:"Entre une adresse e-mail valide pour continuer.",
-  credentials:"Adresse e-mail ou mot de passe incorrect. Si tu utilisais un lien de connexion auparavant, choisis « Connexion par e-mail ».",
+  credentials:"Adresse e-mail ou mot de passe incorrect. Si tu as déjà un compte, demande un lien pour réinitialiser son mot de passe.",
   confirm:"Confirme d'abord ton adresse depuis le message reçu, puis réessaie.",
-  password:"Choisis au moins 10 caractères, avec une majuscule, une minuscule et un chiffre.",
+  password:"Choisis au moins 12 caractères.",
   mismatch:"Les deux mots de passe ne correspondent pas.",
   quota:"Trop de tentatives ou d'e-mails demandés. Patiente avant de réessayer.",
   unauthorized:"L'envoi vers cette adresse a été refusé. Contacte ton formateur.",
   signup:"Impossible de créer le compte pour le moment. Vérifie les informations et réessaie.",
+  exists:"Cette adresse possède déjà un compte. Connecte-toi ou réinitialise son mot de passe.",
+  verification:"Ce lien de confirmation est invalide ou a expiré. Demande une nouvelle confirmation.",
   send:"Impossible d'envoyer le lien de connexion. Réessaie plus tard.",
   recovery:"Impossible d'envoyer les instructions de récupération pour le moment.",
   callback:"Le lien est invalide ou expiré. Demande un nouveau lien depuis cette page."
@@ -79,7 +81,7 @@ export default async function Login({searchParams}:{searchParams:Promise<Params>
             <label htmlFor="signup-email">Adresse e-mail</label>
             <input id="signup-email" name="email" type="email" autoComplete="email" placeholder="prenom@exemple.com" maxLength={254} required/>
             <AuthPasswordField name="password" label="Créer un mot de passe" autoComplete="new-password"/>
-            <p className="auth-password-rule">10 caractères minimum, avec une majuscule, une minuscule et un chiffre.</p>
+            <p className="auth-password-rule">12 caractères minimum.</p>
             <AuthPasswordField name="confirmPassword" label="Confirmer le mot de passe" autoComplete="new-password" confirm/>
             <AuthSubmitButton label="Créer mon compte apprenant" pendingLabel="Création du compte…"/>
             <p className="auth-new-legal">Un e-mail de confirmation peut être nécessaire pour activer le compte. Les rôles formateurs sont attribués uniquement par l'administration.</p>
@@ -102,7 +104,7 @@ export default async function Login({searchParams}:{searchParams:Promise<Params>
           <div><strong>Déjà inscrit avec un lien par e-mail ?</strong><p>Continue d'utiliser ton compte existant sans créer de nouveau profil.</p>
             <Link href="/login?mode=lien">Connexion sans mot de passe <ArrowRight size={14}/></Link></div>
         </div>}
-        <div className="auth-new-bottom"><span><ShieldCheck size={15}/> Authentification sécurisée avec Supabase</span><span>Accès réservé aux membres inscrits</span></div>
+        <div className="auth-new-bottom"><span><ShieldCheck size={15}/> Authentification sécurisée</span><span>Accès réservé aux membres inscrits</span></div>
       </section>
     </div>
   </main>;

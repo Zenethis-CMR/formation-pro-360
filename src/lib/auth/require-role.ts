@@ -1,12 +1,12 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { currentUser } from "@/lib/auth/backend";
 
 export type AppRole = "learner" | "trainer";
 export async function requireRole(expected?: AppRole) {
+  const user = await currentUser();
+  if (!user) redirect("/login");
   const supabase = await createClient();
-  // getUser verifies the session with the Supabase Auth server.
-  const {data: {user}, error} = await supabase.auth.getUser();
-  if (error || !user) redirect("/login");
   const {data: profile, error: profileError} = await supabase
     .from("profiles").select("id,role").eq("id",user.id).single();
   if (profileError || !profile) redirect("/login?error=profile");
