@@ -54,7 +54,7 @@ Le compte existant est conservé, sans réinscription. Aucun e-mail n'est révé
 
 Migration `012_learner_welcome_preferences.sql`, déjà appliquée dans Supabase :
 - Nouvelle table `learner_preferences`, distincte des profils d'authentification et des données d'apprentissage.
-- Préférences : nom d'usage, objectif de formation, niveau déclaré et minutes de pratique souhaitées. Valeurs contrôlées côté serveur et dans PostgreSQL.
+- Préférences : nom d'usage, objectif de formation, niveau déclaré et planning intensif (5–10 h/séance, au moins 3 jours fixes hebdomadaires, jours facultatifs). Valeurs contrôlées côté serveur et PostgreSQL.
 - Lecture/écriture par chaque apprenant sur **son seul profil** ; consultation de ces préférences par le formateur pour mieux accompagner la cohorte ; pas de suppression de comptes ni de privilège d'attribution de rôle.
 - Aucun profil des utilisateurs antérieurs n'est créé artificiellement. Les anciens utilisateurs peuvent ignorer cette étape, continuer leurs ateliers et compléter leurs préférences plus tard.
 
@@ -75,3 +75,6 @@ Les préférences ne modifient ni l'ordre des prérequis, ni la grille des missi
 - [ ] Vérifier la visibilité du nom d'usage depuis le compte formateur.
 - [ ] Vérifier que l'apprenant ne peut pas consulter/modifier les préférences d'un autre compte.
 - [ ] Recontrôler les comptes déjà inscrits et la continuité de leur historique de missions.
+
+### Disponibilité intensive et compatibilité des anciens profils
+La migration `013_intensive_weekly_availability.sql` ajoute des colonnes sans écraser les profils antérieurs. Lors de la première actualisation, un apprenant précise au moins trois jours fixes, éventuellement des jours de renfort, ainsi que 5, 6, 8 ou 10 heures par séance. Son ancienne préférence en minutes reste présente jusqu'à sa mise à jour, sans jours fictifs. Le formateur peut consulter les nouveaux jours choisis.
