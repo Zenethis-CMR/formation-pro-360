@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import { ArrowRight, BarChart3, Bell, BookOpen, CalendarDays, ClipboardCheck, GraduationCap, LayoutDashboard, LogOut, Settings2, Sparkles, Users } from "lucide-react";
 import { signOut } from "@/app/auth/actions";
 
@@ -26,24 +26,30 @@ function CircleStat({label,value,percent,color}:{label:string;value:string;perce
 }
 export function SecureAcademyShell({children,stats}:{children:React.ReactNode;stats:SecureWorkspaceStats}) {
   const pathname=usePathname();
+  const currentTab=useSearchParams().get("onglet")||"dashboard";
   const trainer=stats.role==="trainer";
   const base=trainer?"/espace/formateur":"/espace/apprenant";
   const detail=pathname.startsWith("/espace/atelier/")||pathname.includes("/atelier/")||
     pathname.startsWith("/espace/compte")||pathname.startsWith("/espace/bienvenue");
   const links=trainer?[
     {href:base,label:"Tableau de bord",icon:LayoutDashboard},
-    {href:base+"#evaluations",label:"Évaluations",icon:ClipboardCheck},
-    {href:base+"#cohorte",label:"Mes apprenants",icon:Users},
-    {href:base+"#programme",label:"Programme",icon:CalendarDays}
+    {href:base+"?onglet=evaluations",label:"Évaluations",icon:ClipboardCheck},
+    {href:base+"?onglet=apprenants",label:"Mes apprenants",icon:Users},
+    {href:base+"?onglet=programme",label:"Programme",icon:CalendarDays}
   ]:[
     {href:base,label:"Tableau de bord",icon:LayoutDashboard},
-    {href:base+"#missions",label:"Mes missions",icon:BookOpen},
-    {href:base+"#progression",label:"Ma progression",icon:BarChart3},
-    {href:base+"#programme",label:"Programme",icon:CalendarDays}
+    {href:base+"?onglet=missions",label:"Mes missions",icon:BookOpen},
+    {href:base+"?onglet=progression",label:"Ma progression",icon:BarChart3},
+    {href:base+"?onglet=programme",label:"Programme",icon:CalendarDays}
   ];
   const learningPercent=stats.missionCount?Math.round(stats.approvedCount/stats.missionCount*100):0;
   const profileName=stats.displayName|| (trainer?"Espace formateur":"Mon parcours");
-  const isActive=(href:string)=>href===pathname && !pathname.endsWith("/atelier");
+  const isActive=(href:string)=>{
+    const [path,query]=href.split("?");
+    if(path!==pathname)return false;
+    const tab=new URLSearchParams(query||"").get("onglet")||"dashboard";
+    return tab===currentTab;
+  };
   return <div className="academy-viewport secure-academy-viewport"><div className={"academy-frame secure-academy-frame"+(detail?" secure-academy-detail":"")}>
     <aside className="academy-sidebar">
       <Link href={base} className="academy-brand"><span className="brand-flower"><GraduationCap size={23} strokeWidth={2.1}/></span><span>Formation <span>Pro 360</span></span></Link>
@@ -63,7 +69,7 @@ export function SecureAcademyShell({children,stats}:{children:React.ReactNode;st
       <div className="sidebar-ad"><div className="sidebar-ad-icon"><Sparkles size={21}/></div>
         <b>{trainer?"Chaque correction compte.":"Chaque projet compte."}</b>
         <p>{trainer?"Un retour précis aide chaque apprenant à progresser.":"Apprends en réalisant de vrais projets."}</p>
-        <Link href={trainer?base+"#evaluations":base+"#missions"}>{trainer?"Voir les évaluations":"Découvrir les missions"} <ArrowRight size={16}/></Link>
+        <Link href={trainer?base+"?onglet=evaluations":base+"?onglet=missions"}>{trainer?"Voir les évaluations":"Découvrir les missions"} <ArrowRight size={16}/></Link>
       </div>
       <form action={signOut} className="secure-sidebar-signout"><button type="submit"><LogOut size={16}/> Se déconnecter</button></form>
       <div className="sidebar-footer">© Formation Pro 360<br/><small>Espace personnel sécurisé</small></div>
@@ -76,7 +82,7 @@ export function SecureAcademyShell({children,stats}:{children:React.ReactNode;st
       {children}
     </section>
     {!detail&&<aside className="academy-rail secure-academy-rail" aria-label="Profil et progression réelle">
-      <div className="rail-heading"><span>Mon profil</span><Link href="/espace/compte" className="rail-heading-icon" aria-label="Gérer mon profil"><Bell size={18}/></Link></div>
+      <div className="rail-heading"><span>Mon profil</span><Link href="/espace/compte" className="rail-heading-icon" aria-label="Gérer mon profil"><Settings2 size={18}/></Link></div>
       <div className="profile-card">
         <div className="profile-avatar profile-avatar-pro" aria-hidden="true"><GraduationCap size={37} strokeWidth={1.8}/></div>
         <h3>{profileName}</h3><p>{trainer?"Formateur":"Apprenant"} · Compte sécurisé</p>
@@ -104,9 +110,9 @@ export function SecureAcademyShell({children,stats}:{children:React.ReactNode;st
     </aside>}
   </div>
   <nav className="academy-mobile-bottom secure-academy-mobile-nav" aria-label="Navigation mobile de l'espace personnel">
-    <Link href={base} className={pathname===base?"on":""}><LayoutDashboard size={19}/>Accueil</Link>
-    <Link href={base+"#missions"}><BookOpen size={19}/>{trainer?"Programme":"Missions"}</Link>
-    <Link href={base+(trainer?"#evaluations":"#progression")}><BarChart3 size={19}/>{trainer?"Corrections":"Progrès"}</Link>
+    <Link href={base} className={pathname===base&&currentTab==="dashboard"?"on":""}><LayoutDashboard size={19}/>Accueil</Link>
+    <Link href={trainer?base+"?onglet=programme":base+"?onglet=missions"} className={currentTab===(trainer?"programme":"missions")?"on":""}><BookOpen size={19}/>{trainer?"Programme":"Missions"}</Link>
+    <Link href={base+(trainer?"?onglet=evaluations":"?onglet=progression")} className={currentTab===(trainer?"evaluations":"progression")?"on":""}><BarChart3 size={19}/>{trainer?"Corrections":"Progrès"}</Link>
     <Link href="/espace/compte" className={pathname==="/espace/compte"?"on":""}><Settings2 size={19}/>Compte</Link>
   </nav>
   </div>;
