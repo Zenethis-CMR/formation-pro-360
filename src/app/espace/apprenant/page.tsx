@@ -2,7 +2,7 @@ import Link from "next/link";
 import { ArrowUpRight, BookOpen, LockKeyhole } from "lucide-react";
 import { redirect } from "next/navigation";
 import { requireRole } from "@/lib/auth/require-role";
-import { isSupabaseConfigured } from "@/lib/supabase/server";
+import { isBackendConfigured } from "@/lib/database/server";
 import { CurriculumRoadmap } from "@/components/curriculum-roadmap";
 import { curriculumWeeks } from "@/lib/curriculum";
 import { TechnologyBadge, technologiesForMission, displayDomain } from "@/components/technology-badge";
@@ -21,22 +21,22 @@ type Mission = { id:string; title:string; domain:string; description:string; wee
   deliverable:string; objectives:string[]; duration:string; xp:number };
 type Submission = { id:string; mission_id:string; status:string; score:number|null; feedback:string|null; created_at:string };
 export default async function LearnerSpace({searchParams}:{searchParams:Promise<Params>}) {
-  if (!isSupabaseConfigured()) redirect("/espace");
-  const {supabase,user} = await requireRole("learner");
+  if (!isBackendConfigured()) redirect("/espace");
+  const {db,user} = await requireRole("learner");
   const params = await searchParams;
   const tab=(["missions","progression","programme"].includes(params.onglet||"") ? params.onglet : "dashboard")||"dashboard";
   const [{data:rawMissions,error:missionError},{data:rawSubs,error:subsError},{data:rawXp,error:xpError},{data:rawDeps,error:depsError},{data:badgeCatalog,error:badgeError},{data:myBadges,error:earnedError},{data:practice,error:practiceError},{data:settings,error:settingsError},{data:coachMessages,error:messagesError},{data:workshopSteps,error:stepsError},{data:rawPreferences,error:preferencesError}] = await Promise.all([
-    supabase.from("missions").select("id,title,domain,description,week,deliverable,objectives,duration,xp").eq("published",true).order("week"),
-    supabase.from("submissions").select("id,mission_id,status,score,feedback,created_at").eq("learner_id",user.id).order("created_at",{ascending:false}),
-    supabase.from("xp_ledger").select("mission_id,xp").eq("learner_id",user.id),
-    supabase.from("mission_prerequisites").select("mission_id,prerequisite_id"),
-    supabase.from("badges").select("slug,title,description,icon,required_missions").order("required_missions"),
-    supabase.from("learner_badges").select("badge_slug,awarded_at").eq("learner_id",user.id),
-    supabase.from("practice_checkins").select("practice_date").eq("learner_id",user.id).order("practice_date",{ascending:false}).limit(45),
-    supabase.from("training_settings").select("start_date").eq("id",true).maybeSingle(),
-    supabase.from("coach_messages").select("id,trainer_id,learner_id,body,created_at").eq("learner_id",user.id).order("created_at",{ascending:false}).limit(8),
-    supabase.from("workshop_steps").select("learner_id,mission_id,completed_at").eq("learner_id",user.id),
-    supabase.from("learner_preferences").select("learner_id,preferred_name,goal,experience,minutes_per_day,regular_days,optional_days").eq("learner_id",user.id).maybeSingle()
+    db.from("missions").select("id,title,domain,description,week,deliverable,objectives,duration,xp").eq("published",true).order("week"),
+    db.from("submissions").select("id,mission_id,status,score,feedback,created_at").eq("learner_id",user.id).order("created_at",{ascending:false}),
+    db.from("xp_ledger").select("mission_id,xp").eq("learner_id",user.id),
+    db.from("mission_prerequisites").select("mission_id,prerequisite_id"),
+    db.from("badges").select("slug,title,description,icon,required_missions").order("required_missions"),
+    db.from("learner_badges").select("badge_slug,awarded_at").eq("learner_id",user.id),
+    db.from("practice_checkins").select("practice_date").eq("learner_id",user.id).order("practice_date",{ascending:false}).limit(45),
+    db.from("training_settings").select("start_date").eq("id",true).maybeSingle(),
+    db.from("coach_messages").select("id,trainer_id,learner_id,body,created_at").eq("learner_id",user.id).order("created_at",{ascending:false}).limit(8),
+    db.from("workshop_steps").select("learner_id,mission_id,completed_at").eq("learner_id",user.id),
+    db.from("learner_preferences").select("learner_id,preferred_name,goal,experience,minutes_per_day,regular_days,optional_days").eq("learner_id",user.id).maybeSingle()
   ]);
   if(missionError || subsError || xpError || depsError || badgeError || earnedError || practiceError || settingsError || messagesError || stepsError || preferencesError) return <main className="page"><p className="alert danger">Impossible de charger le parcours. Vérifie que les migrations SQL sont appliquées.</p></main>;
   const missions = (rawMissions || []) as Mission[];

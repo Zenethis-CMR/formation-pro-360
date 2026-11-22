@@ -9,7 +9,7 @@ const learnerPath = "/espace/apprenant";
 const trainerPath = "/espace/formateur";
 
 export async function submitMission(formData: FormData) {
-  const {supabase, user} = await requireRole("learner");
+  const {db, user} = await requireRole("learner");
   const missionId = String(formData.get("missionId") || "");
   const source = String(formData.get("source") || "");
   const backTo = idPattern.test(missionId) && source==="atelier"
@@ -22,7 +22,7 @@ export async function submitMission(formData: FormData) {
   let link: URL;
   try { link = new URL(url); } catch { redirect(backTo+"?error=invalid"); }
   if (!["http:","https:"].includes(link.protocol)) redirect(backTo+"?error=invalid");
-  const {error} = await supabase.from("submissions").insert({
+  const {error} = await db.from("submissions").insert({
     mission_id: missionId, learner_id: user.id, url: link.href, note
   });
   if (error) redirect(backTo+"?error=submission");
@@ -32,14 +32,14 @@ export async function submitMission(formData: FormData) {
 }
 
 export async function completeWorkshopStep(formData: FormData) {
-  const {supabase,user}=await requireRole("learner");
+  const {db,user}=await requireRole("learner");
   const missionId=String(formData.get("missionId")||"");
   const stepText=String(formData.get("step")||"");
   if(!idPattern.test(missionId)|| !/^[1-8]$/.test(stepText)) {
     redirect(learnerPath+"?error=invalid");
   }
   const workshopPath="/espace/atelier/"+missionId;
-  const {error}=await supabase.from("workshop_steps").insert({
+  const {error}=await db.from("workshop_steps").insert({
     mission_id:missionId, learner_id:user.id, step_number:Number(stepText)
   });
   if(error && error.code!=="23505") redirect(workshopPath+"?error=step");
@@ -48,17 +48,17 @@ export async function completeWorkshopStep(formData: FormData) {
 }
 
 export async function reviewMission(formData: FormData) {
-  const {supabase} = await requireRole("trainer");
+  const {db} = await requireRole("trainer");
   const submissionId=String(formData.get("submissionId")||"");
   const feedback=String(formData.get("feedback")||"").trim();
   if(!idPattern.test(submissionId)||feedback.length<3||feedback.length>1500) {
     redirect(trainerPath+"?onglet=evaluations&error=invalid");
   }
-  const {data:submission,error:submissionError}=await supabase.from("submissions")
+  const {data:submission,error:submissionError}=await db.from("submissions")
     .select("mission_id").eq("id",submissionId).eq("status","pending").maybeSingle();
   if(submissionError||!submission) redirect(trainerPath+"?onglet=evaluations&error=review");
 
-  const {data:guide,error:guideError}=await supabase.from("mission_guides")
+  const {data:guide,error:guideError}=await db.from("mission_guides")
     .select("rubric").eq("mission_id",submission.mission_id).maybeSingle();
   if(guideError) redirect(trainerPath+"?onglet=evaluations&error=review");
 
@@ -68,7 +68,7 @@ export async function reviewMission(formData: FormData) {
       redirect(trainerPath+"?onglet=evaluations&error=invalid");
     }
     const scores=raw.map(Number);
-    const {error}=await supabase.rpc("review_submission_with_rubric",{
+    const {error}=await db.rpc("review_submission_with_rubric",{
       p_submission_id:submissionId,p_scores:scores,p_feedback:feedback
     });
     if(error) redirect(trainerPath+"?onglet=evaluations&error=review");
@@ -78,7 +78,7 @@ export async function reviewMission(formData: FormData) {
     if(!/^\d{1,3}$/.test(raw)||Number(raw)>100) {
       redirect(trainerPath+"?onglet=evaluations&error=invalid");
     }
-    const {error}=await supabase.rpc("review_submission",{
+    const {error}=await db.rpc("review_submission",{
       p_submission_id:submissionId,p_score:Number(raw),p_feedback:feedback
     });
     if(error) redirect(trainerPath+"?onglet=evaluations&error=review");
@@ -90,7 +90,7 @@ export async function reviewMission(formData: FormData) {
 }
 
 export async function createMission(formData: FormData) {
-  const {supabase} = await requireRole("trainer");
+  const {db} = await requireRole("trainer");
   const title = String(formData.get("title") || "").trim();
   const domain = String(formData.get("domain") || "").trim();
   const description = String(formData.get("description") || "").trim();
@@ -104,7 +104,7 @@ export async function createMission(formData: FormData) {
   }
   const rawPrerequisite=String(formData.get("prerequisiteId")||"");
   if(rawPrerequisite&&!idPattern.test(rawPrerequisite)) redirect(trainerPath+"?onglet=programme&error=invalid");
-  const {error} = await supabase.rpc("create_trainer_mission",{
+  const {error} = await db.rpc("create_trainer_mission",{
     p_title:title,p_domain:domain,p_description:description,p_deliverable:deliverable,
     p_week:week,p_xp:xp,p_prerequisite_id:rawPrerequisite||null
   });
@@ -115,10 +115,10 @@ export async function createMission(formData: FormData) {
 
 
 export async function publishMission(formData: FormData) {
-  const {supabase} = await requireRole("trainer");
+  const {db} = await requireRole("trainer");
   const missionId = String(formData.get("missionId") || "");
   if (!idPattern.test(missionId)) redirect(trainerPath+"?onglet=programme&error=invalid");
-  const {error} = await supabase.from("missions").update({published:true})
+  const {error} = await db.from("missions").update({published:true})
     .eq("id",missionId).eq("published",false);
   if (error) redirect(trainerPath+"?onglet=programme&error=publish");
   revalidatePath(trainerPath);
@@ -127,16 +127,16 @@ export async function publishMission(formData: FormData) {
 }
 
 export async function completeDailyPractice() {
-  const {supabase,user}=await requireRole("learner");
+  const {db,user}=await requireRole("learner");
   // The database sets the date using Africa/Douala and rejects forged past/future days.
-  const {error}=await supabase.from("practice_checkins").insert({learner_id:user.id});
+  const {error}=await db.from("practice_checkins").insert({learner_id:user.id});
   if(error && error.code !== "23505") redirect(learnerPath+"?onglet=progression&error=practice");
   revalidatePath(learnerPath);
   redirect(learnerPath+"?onglet=progression&success=practice");
 }
 
 export async function saveTrainingStartDate(formData:FormData) {
-  const {supabase,user}=await requireRole("trainer");
+  const {db,user}=await requireRole("trainer");
   const startDate=String(formData.get("startDate")||"");
   if(!/^\d{4}-\d{2}-\d{2}$/.test(startDate)) redirect(trainerPath+"?onglet=programme&error=date");
   const candidate=new Date(startDate+"T12:00:00Z");
@@ -144,7 +144,7 @@ export async function saveTrainingStartDate(formData:FormData) {
      startDate<"2024-01-01"||startDate>"2100-12-31") {
     redirect(trainerPath+"?onglet=programme&error=date");
   }
-  const {data,error}=await supabase.from("training_settings").update({
+  const {data,error}=await db.from("training_settings").update({
     start_date:startDate,updated_at:new Date().toISOString(),updated_by:user.id
   }).eq("id",true).select("id").single();
   if(error||!data) redirect(trainerPath+"?onglet=programme&error=date");
@@ -154,16 +154,16 @@ export async function saveTrainingStartDate(formData:FormData) {
 }
 
 export async function postCoachMessage(formData:FormData) {
-  const {supabase,user}=await requireRole("trainer");
+  const {db,user}=await requireRole("trainer");
   const learnerId=String(formData.get("learnerId")||"");
   const body=String(formData.get("body")||"").trim();
   if(!idPattern.test(learnerId)||body.length<10||body.length>1200) {
     redirect(trainerPath+"?onglet=apprenants&error=message");
   }
-  const {data:learner,error:lookupError}=await supabase.from("profiles")
+  const {data:learner,error:lookupError}=await db.from("profiles")
     .select("id").eq("id",learnerId).eq("role","learner").maybeSingle();
   if(lookupError||!learner) redirect(trainerPath+"?onglet=apprenants&error=message");
-  const {error}=await supabase.from("coach_messages").insert({
+  const {error}=await db.from("coach_messages").insert({
     trainer_id:user.id,learner_id:learnerId,body
   });
   if(error) redirect(trainerPath+"?onglet=apprenants&error=message");
@@ -173,7 +173,7 @@ export async function postCoachMessage(formData:FormData) {
 }
 
 export async function saveDraftGuide(formData: FormData) {
-  const {supabase}=await requireRole("trainer");
+  const {db}=await requireRole("trainer");
   const missionId=String(formData.get("missionId")||"");
   const backPath=idPattern.test(missionId)?"/espace/formateur/atelier/"+missionId:trainerPath;
   if(!idPattern.test(missionId)) redirect(trainerPath+"?error=invalid");
@@ -193,10 +193,10 @@ export async function saveDraftGuide(formData: FormData) {
   let url:URL;
   try {url=new URL(resource);} catch {redirect(backPath+"?error=invalid");}
   if(url.protocol!=="https:"||resource.length>600) redirect(backPath+"?error=invalid");
-  const {data:mission,error:missionError}=await supabase.from("missions")
+  const {data:mission,error:missionError}=await db.from("missions")
     .select("id").eq("id",missionId).eq("published",false).maybeSingle();
   if(missionError||!mission) redirect(backPath+"?error=published");
-  const {error}=await supabase.from("mission_guides").upsert({
+  const {error}=await db.from("mission_guides").upsert({
     mission_id:missionId,brief,steps,rubric,hint,resource_url:resource,
     updated_at:new Date().toISOString()
   },{onConflict:"mission_id"});
@@ -207,7 +207,7 @@ export async function saveDraftGuide(formData: FormData) {
 }
 
 export async function saveLearnerPreferences(formData:FormData) {
-  const {supabase,user}=await requireRole("learner");
+  const {db,user}=await requireRole("learner");
   const parsed=parseLearnerPreferences({
     name:String(formData.get("preferredName")||""),
     goal:String(formData.get("goal")||""),
@@ -216,9 +216,9 @@ export async function saveLearnerPreferences(formData:FormData) {
     dayChoices:Array.from({length:7},(_,i)=>String(formData.get("day"+(i+1))||"off"))
   });
   if(!parsed.valid) redirect("/espace/bienvenue?error=invalid");
-  // The primary key is the existing Supabase Auth user ID. This updates only
+  // The primary key is the existing Node-authenticated account ID. This updates only
   // optional learning preferences, never their profile role, missions or XP.
-  const {error}=await supabase.from("learner_preferences").upsert({
+  const {error}=await db.from("learner_preferences").upsert({
     learner_id:user.id,...parsed.value,updated_at:new Date().toISOString()
   },{onConflict:"learner_id"});
   if(error) redirect("/espace/bienvenue?error=save");

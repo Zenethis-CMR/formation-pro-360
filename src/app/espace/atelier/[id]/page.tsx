@@ -2,7 +2,7 @@ import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { ArrowLeft, ArrowUpRight, BadgeCheck, BookOpen, Check, CheckCircle2, Circle, Clock3, Code2, ExternalLink, Flag, Lightbulb, LockKeyhole, Send, ShieldCheck } from "lucide-react";
 import { requireRole } from "@/lib/auth/require-role";
-import { isSupabaseConfigured } from "@/lib/supabase/server";
+import { isBackendConfigured } from "@/lib/database/server";
 import { submitMission, completeWorkshopStep } from "@/app/espace/actions";
 import { displayDomain, technologiesForMission, TechnologyBadge } from "@/components/technology-badge";
 
@@ -17,11 +17,11 @@ type Submission={id:string;status:string;score:number|null;feedback:string|null;
 type Requirement={mission_id:string;prerequisite_id:string};
 
 export default async function MissionWorkshop({params,searchParams}:Props) {
-  if(!isSupabaseConfigured()) redirect("/espace");
+  if(!isBackendConfigured()) redirect("/espace");
   const {id}=await params;
   const query=await searchParams;
   if(!/^[a-f0-9-]{36}$/i.test(id)) notFound();
-  const {supabase,user}=await requireRole("learner");
+  const {db,user}=await requireRole("learner");
   const [
     {data:rawMission,error:missionError},
     {data:rawGuide,error:guideError},
@@ -31,13 +31,13 @@ export default async function MissionWorkshop({params,searchParams}:Props) {
     {data:rawChecked,error:stepError},
     {data:allMissions}
   ]=await Promise.all([
-    supabase.from("missions").select("id,title,domain,week,description,objectives,deliverable,duration,xp").eq("id",id).eq("published",true).maybeSingle(),
-    supabase.from("mission_guides").select("brief,steps,rubric,hint,resource_url").eq("mission_id",id).maybeSingle(),
-    supabase.from("mission_prerequisites").select("mission_id,prerequisite_id").eq("mission_id",id),
-    supabase.from("xp_ledger").select("mission_id").eq("learner_id",user.id),
-    supabase.from("submissions").select("id,status,score,feedback,url,created_at").eq("learner_id",user.id).eq("mission_id",id).order("created_at",{ascending:false}).limit(20),
-    supabase.from("workshop_steps").select("step_number").eq("learner_id",user.id).eq("mission_id",id),
-    supabase.from("missions").select("id,title").eq("published",true)
+    db.from("missions").select("id,title,domain,week,description,objectives,deliverable,duration,xp").eq("id",id).eq("published",true).maybeSingle(),
+    db.from("mission_guides").select("brief,steps,rubric,hint,resource_url").eq("mission_id",id).maybeSingle(),
+    db.from("mission_prerequisites").select("mission_id,prerequisite_id").eq("mission_id",id),
+    db.from("xp_ledger").select("mission_id").eq("learner_id",user.id),
+    db.from("submissions").select("id,status,score,feedback,url,created_at").eq("learner_id",user.id).eq("mission_id",id).order("created_at",{ascending:false}).limit(20),
+    db.from("workshop_steps").select("step_number").eq("learner_id",user.id).eq("mission_id",id),
+    db.from("missions").select("id,title").eq("published",true)
   ]);
   if(missionError || guideError || depsError || xpError || subError || stepError){
     return <main className="page"><p className="alert danger">L'atelier ne peut pas être chargé pour le moment. Réessaie depuis ton parcours.</p><Link href="/espace/apprenant">Retour aux missions</Link></main>;
@@ -62,7 +62,7 @@ export default async function MissionWorkshop({params,searchParams}:Props) {
   // Keep the previous review visible after a student submits a corrected version.
   const lastReviewed=history.find(x=>x.status!=="pending" && x.feedback);
   const {data:assessment,error:assessmentError}=lastReviewed
-    ? await supabase.from("submission_assessments")
+    ? await db.from("submission_assessments")
         .select("criterion_scores,total_score").eq("submission_id",lastReviewed.id).maybeSingle()
     : {data:null,error:null};
   if(assessmentError) return <main className="page"><p className="alert danger">Impossible de charger la correction détaillée.</p></main>;

@@ -5,17 +5,17 @@ type Mission={id:string;title:string};
 type Dependency={mission_id:string;prerequisite_id:string};
 type Submission={mission_id:string;status:string;created_at:string};
 export default async function SecureWorkspaceLayout({children}:{children:React.ReactNode}) {
-  const {role,supabase,user}=await requireRole();
+  const {role,db,user}=await requireRole();
   let stats:SecureWorkspaceStats={
     role,displayName:null,missionCount:0,approvedCount:0,xp:0,pending:0,learners:0,nextTitle:null,nextHref:null
   };
   if(role==="learner"){
     const [missionsR,awardsR,subsR,depsR,prefsR]=await Promise.all([
-      supabase.from("missions").select("id,title").eq("published",true).order("week").order("created_at"),
-      supabase.from("xp_ledger").select("mission_id,xp").eq("learner_id",user.id),
-      supabase.from("submissions").select("mission_id,status,created_at").eq("learner_id",user.id).order("created_at",{ascending:false}),
-      supabase.from("mission_prerequisites").select("mission_id,prerequisite_id"),
-      supabase.from("learner_preferences").select("preferred_name").eq("learner_id",user.id).maybeSingle()
+      db.from("missions").select("id,title").eq("published",true).order("week").order("created_at"),
+      db.from("xp_ledger").select("mission_id,xp").eq("learner_id",user.id),
+      db.from("submissions").select("mission_id,status,created_at").eq("learner_id",user.id).order("created_at",{ascending:false}),
+      db.from("mission_prerequisites").select("mission_id,prerequisite_id"),
+      db.from("learner_preferences").select("preferred_name").eq("learner_id",user.id).maybeSingle()
     ]);
     if(missionsR.error||awardsR.error||subsR.error||depsR.error||prefsR.error) {
       throw new Error("Impossible de charger le profil sécurisé.");
@@ -43,9 +43,9 @@ export default async function SecureWorkspaceLayout({children}:{children:React.R
     };
   }else{
     const [countR,missionR,subsR]=await Promise.all([
-      supabase.from("profiles").select("id",{head:true,count:"exact"}).eq("role","learner"),
-      supabase.from("missions").select("id",{head:true,count:"exact"}).eq("published",true),
-      supabase.from("submissions").select("id",{head:true,count:"exact"}).eq("status","pending")
+      db.from("profiles").select("id",{head:true,count:"exact"}).eq("role","learner"),
+      db.from("missions").select("id",{head:true,count:"exact"}).eq("published",true),
+      db.from("submissions").select("id",{head:true,count:"exact"}).eq("status","pending")
     ]);
     if(countR.error||missionR.error||subsR.error) throw new Error("Impossible de charger le suivi du formateur.");
     stats={...stats,learners:countR.count??0,missionCount:missionR.count??0,pending:subsR.count??0,

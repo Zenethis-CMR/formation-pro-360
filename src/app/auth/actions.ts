@@ -2,14 +2,14 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { isSupabaseConfigured } from "@/lib/supabase/server";
+import { isBackendConfigured } from "@/lib/database/server";
 import { requireRole } from "@/lib/auth/require-role";
 import { isValidEmail, isValidPassword } from "@/lib/auth/validation";
 import { authApi, authCookieName, backendRequest, setBackendSession } from "@/lib/auth/backend";
 import { cookies } from "next/headers";
 
 export async function signInWithPassword(formData:FormData) {
-  if(!isSupabaseConfigured()) redirect("/login?error=setup");
+  if(!isBackendConfigured()) redirect("/login?error=setup");
   const email=String(formData.get("email")||"").trim().toLowerCase();
   const password=String(formData.get("password")||"");
   if(!isValidEmail(email)||!password||password.length>128) redirect("/login?error=credentials");
@@ -25,7 +25,7 @@ export async function signInWithPassword(formData:FormData) {
 }
 
 export async function registerLearner(formData:FormData) {
-  if(!isSupabaseConfigured()) redirect("/login?mode=inscription&error=setup");
+  if(!isBackendConfigured()) redirect("/login?mode=inscription&error=setup");
   const email=String(formData.get("email")||"").trim().toLowerCase();
   const password=String(formData.get("password")||"");
   const confirm=String(formData.get("confirmPassword")||"");
@@ -41,12 +41,8 @@ export async function registerLearner(formData:FormData) {
   redirect("/login?mode=inscription&sent=signup");
 }
 
-export async function sendMagicLink(formData:FormData) {
-  redirect("/login?mode=recuperation");
-}
-
 export async function requestPasswordReset(formData:FormData) {
-  if(!isSupabaseConfigured()) redirect("/login?mode=recuperation&error=setup");
+  if(!isBackendConfigured()) redirect("/login?mode=recuperation&error=setup");
   const email=String(formData.get("email")||"").trim().toLowerCase();
   if(!isValidEmail(email)) redirect("/login?mode=recuperation&error=email");
   const response=await backendRequest(`${authApi}/request-password-reset`,{method:"POST",body:JSON.stringify({email})}).catch(()=>null);

@@ -31,7 +31,7 @@ export function LaunchReadiness({publishedMissions,guidedMissions,learners,submi
     <header className="launch-audit-head"><div>
       <span className="journey-overline"><ClipboardCheck size={14}/> RECETTE OPÉRATIONNELLE</span>
       <h2 id="launch-audit-title">Avant d'accueillir une promotion complète.</h2>
-      <p>État des contrôles observables dans Supabase. Les tests humains ne sont jamais déclarés réussis automatiquement.</p>
+      <p>État des contrôles observables dans la base de données. Les tests humains ne sont jamais déclarés réussis automatiquement.</p>
     </div><div className="launch-audit-counter"><strong>{completed}<span> / {checks.length}</span></strong><small>contrôles confirmés en base</small></div></header>
     <div className="launch-audit-list">{checks.map(x=><div className="launch-audit-row" key={x.label}>
       {x.ok?<CheckCircle2 size={18} className="launch-yes"/>:<CircleDashed size={18} className="launch-pending"/>}

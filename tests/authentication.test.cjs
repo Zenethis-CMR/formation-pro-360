@@ -36,3 +36,13 @@ test("sign-in, registration and password recovery use the Node authentication AP
   assert.match(actions,/\/login/);
   assert.doesNotMatch(actions,/deleteUser\(/);
 });
+
+test("database access uses a Node-issued JWT without Supabase Auth",()=>{
+  const database=fs.readFileSync(path.join(__dirname,"..","src","lib","database","server.ts"),"utf8");
+  const callback=fs.readFileSync(path.join(__dirname,"..","src","app","auth","callback","route.ts"),"utf8");
+  assert.match(database,/@supabase\/postgrest-js/);
+  assert.match(database,/databaseAccessToken/);
+  assert.match(database,/Authorization: `Bearer \$\{accessToken\}`/);
+  assert.doesNotMatch(database,/accessToken\s*:/);
+  assert.doesNotMatch(callback,/supabase\.auth|exchangeCodeForSession/);
+});

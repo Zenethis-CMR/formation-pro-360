@@ -1,3 +1,7 @@
+# ARCHIVE — ancienne architecture Supabase/Vercel
+
+> Ce guide décrit l'ancienne architecture et ses étapes Supabase Auth. Ne pas l'utiliser pour configurer la production actuelle : l'authentification est gérée par l'API Node.js et le déploiement s'effectue sur Proxmox depuis GitHub Actions. Voir [`proxmox-deployment.md`](./proxmox-deployment.md).
+
 # Formation Pro 360 : activation Supabase
 
 ## État réel

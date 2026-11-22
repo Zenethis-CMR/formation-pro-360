@@ -2,13 +2,13 @@
 
 Plateforme privée de formation pratique. Le frontend utilise **Next.js 15, React 19 et TypeScript** ; l'architecture Proxmox ajoute une API **Node.js/Fastify** pour les comptes et l'authentification.
 
-**Site actuellement en production :** https://formation-pro-360.vercel.app/ (avant bascule Proxmox).
+**Site en production :** https://formation.zenithis.tech/ (frontend CT410, API CT420).
 
 ## Accès et profils
 
-La démonstration publique a été supprimée. Les visiteurs doivent **s'inscrire ou se connecter** sur `/login`. Les anciens comptes continuent à utiliser leur lien magique, ou définissent un mot de passe depuis « Mon compte ».
+La démonstration publique a été supprimée. Les visiteurs doivent **s'inscrire ou se connecter** sur `/login`. La connexion, l'inscription et la récupération du mot de passe passent par l'API Node ; les anciens comptes sans mot de passe peuvent demander une réinitialisation par e-mail.
 
-La racine et les anciens chemins publics `/apprenant` et `/formateur` redirigent vers `/espace`, qui contrôle l'identité Supabase et le rôle. Seul un administrateur peut attribuer le rôle **formateur** ; tout nouveau compte est **apprenant** par défaut.
+La racine et les anciens chemins publics `/apprenant` et `/formateur` redirigent vers `/espace`, qui vérifie la session Node et le rôle dans PostgreSQL local. Seul un administrateur peut attribuer le rôle **formateur** ; tout nouveau compte est **apprenant** par défaut.
 
 ### Apprenant
 
@@ -34,8 +34,8 @@ Tous les onglets sont des vues distinctes et adaptent leur présentation aux pet
 
 ## Données et sécurité
 
-- Le backend Node gère les comptes, sessions, confirmations et récupération par SMTP. La procédure de migration conserve les UUID historiques.
-- Les profils, missions, soumissions, corrections, séances, badges et XP restent dans **PostgreSQL Supabase auto-hébergé** avec les **politiques RLS** ; les JWT courts de l'API conservent `auth.uid()`.
+- Le backend Node gère les comptes, sessions, confirmations et récupération par SMTP. Il signe les JWT courts utilisés par les règles RLS.
+- Les profils, missions, soumissions, corrections, séances, badges et XP résident dans le PostgreSQL local sur CT420 ; PostgREST applique les politiques RLS derrière le proxy Node. Supabase Auth n'est pas utilisé.
 - Seul un formateur authentifié peut corriger ou publier des missions. Une validation d'au moins **80/100** accorde les XP une fois, dans une transaction sécurisée.
 - Le moteur de données simulées en `localStorage` a été supprimé.
 - Les e-mails d'authentification sont envoyés par l'API avec le SMTP configuré ; vérifier leur réception sur un appareil réel.
@@ -49,7 +49,7 @@ npm install
 npm run dev
 ```
 
-Définir uniquement les variables Supabase autorisées dans l'environnement local ; ne jamais ajouter une clé de service côté navigateur.
+Configurer l'URL du backend pour le développement local. Les secrets d'application restent dans le `.env` du backend ; le frontend ne reçoit que des URL et ne contient aucune clé d'authentification.
 
 ```bash
 npm run test:unit
@@ -57,7 +57,7 @@ npm run lint
 npm run build
 ```
 
-Les tests sont exécutés automatiquement avant chaque build.
+Les tests unitaires et la compilation doivent réussir avant publication.
 
 ## Lancement intensif et stratégie 360
 
@@ -69,8 +69,8 @@ La feuille de route officielle de conception produit, 7 formations spécialisée
 
 - `docs/formation-pro-360-master-plan-v2.md` : vision 360, 7 spécialisations, 8 semaines pratiques, performance et infrastructure
 - `docs/private-workspace-navigation.md` : accès privé, onglets des deux rôles et recette
-- `docs/auth-signup-compatibility.md` : comptes existants, inscription, récupération et confirmation des e-mails
-- `docs/supabase-setup.md` : base de données, migrations, rôles et règles de sécurité
+- `docs/auth-signup-compatibility.md` : parcours d'inscription Node, récupération et confirmation des e-mails
+- `docs/supabase-setup.md` : historique de l'ancienne architecture Supabase/Vercel
 - `docs/proxmox-deployment.md` : conteneurs, réseau, domaines NPM et services systemd
 - `docs/auth-migration.md` : sauvegarde préalable et import des comptes Node sans changer leurs UUID
 - `docs/programme.md` : objectifs du parcours pédagogique

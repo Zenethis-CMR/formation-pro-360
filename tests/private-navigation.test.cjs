@@ -23,8 +23,8 @@ test("login remains available for both existing and new users without demo CTA",
   assert.match(login,/mode==="inscription"/);
   assert.match(login,/signInWithPassword/);
   assert.match(login,/registerLearner/);
-  assert.match(login,/sendMagicLink/);
   assert.match(login,/requestPasswordReset/);
+  assert.doesNotMatch(login,/sendMagicLink|magic.?link|supabase\.auth/i);
   assert.doesNotMatch(login,/Voir la démonstration|href="\/"/);
 });
 test("all roles have four distinct secure workspace views",()=>{

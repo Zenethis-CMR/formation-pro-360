@@ -2,7 +2,7 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import { createMission, reviewMission, publishMission } from "@/app/espace/actions";
 import { requireRole } from "@/lib/auth/require-role";
-import { isSupabaseConfigured } from "@/lib/supabase/server";
+import { isBackendConfigured } from "@/lib/database/server";
 import { CurriculumRoadmap } from "@/components/curriculum-roadmap";
 import { displayDomain } from "@/components/technology-badge";
 import { CohortProgress } from "@/components/cohort-progress";
@@ -18,24 +18,24 @@ type Submission={id:string;mission_id:string;learner_id:string;url:string;note:s
 type Mission={id:string;title:string;domain:string;xp:number;published:boolean;week:number};
 type MissionRubric={mission_id:string;rubric:string[]};
 export default async function TrainerSpace({searchParams}:{searchParams:Promise<Params>}) {
-  if(!isSupabaseConfigured()) redirect("/espace");
-  const {supabase} = await requireRole("trainer");
+  if(!isBackendConfigured()) redirect("/espace");
+  const {db} = await requireRole("trainer");
   const params=await searchParams;
   const tab=(["evaluations","apprenants","programme"].includes(params.onglet||"") ? params.onglet : "dashboard")||"dashboard";
   const [{data:submissions,error:se},{data:missions,error:me},{data:learners,error:le},{data:awards,error:ae},{data:allSubmissions,error:allSe},{data:practice,error:pe},{data:guides,error:ge},{data:settings,error:settingsError},{data:deps,error:depsError},{data:steps,error:stepsError},{data:coachMessages,error:coachError},{data:badgeAwards,error:badgeAwardsError},{data:learningProfiles,error:learningProfilesError}] = await Promise.all([
-    supabase.from("submissions").select("id,mission_id,learner_id,url,note,created_at").eq("status","pending").order("created_at"),
-    supabase.from("missions").select("id,title,domain,xp,published,week").order("week"),
-    supabase.from("profiles").select("id").eq("role","learner").order("created_at"),
-    supabase.from("xp_ledger").select("learner_id,mission_id,xp"),
-    supabase.from("submissions").select("id,learner_id,mission_id,status,score,feedback,created_at").order("created_at",{ascending:false}).limit(500),
-    supabase.from("practice_checkins").select("learner_id,practice_date"),
-    supabase.from("mission_guides").select("mission_id,rubric"),
-    supabase.from("training_settings").select("start_date").eq("id",true).maybeSingle(),
-    supabase.from("mission_prerequisites").select("mission_id,prerequisite_id"),
-    supabase.from("workshop_steps").select("learner_id,mission_id,completed_at"),
-    supabase.from("coach_messages").select("id,trainer_id,learner_id,body,created_at").order("created_at",{ascending:false}).limit(200),
-    supabase.from("learner_badges").select("badge_slug"),
-    supabase.from("learner_preferences").select("learner_id,preferred_name,goal,minutes_per_day,regular_days,optional_days")
+    db.from("submissions").select("id,mission_id,learner_id,url,note,created_at").eq("status","pending").order("created_at"),
+    db.from("missions").select("id,title,domain,xp,published,week").order("week"),
+    db.from("profiles").select("id").eq("role","learner").order("created_at"),
+    db.from("xp_ledger").select("learner_id,mission_id,xp"),
+    db.from("submissions").select("id,learner_id,mission_id,status,score,feedback,created_at").order("created_at",{ascending:false}).limit(500),
+    db.from("practice_checkins").select("learner_id,practice_date"),
+    db.from("mission_guides").select("mission_id,rubric"),
+    db.from("training_settings").select("start_date").eq("id",true).maybeSingle(),
+    db.from("mission_prerequisites").select("mission_id,prerequisite_id"),
+    db.from("workshop_steps").select("learner_id,mission_id,completed_at"),
+    db.from("coach_messages").select("id,trainer_id,learner_id,body,created_at").order("created_at",{ascending:false}).limit(200),
+    db.from("learner_badges").select("badge_slug"),
+    db.from("learner_preferences").select("learner_id,preferred_name,goal,minutes_per_day,regular_days,optional_days")
   ]);
   if(se||me||le||ae||allSe||pe||ge||settingsError||depsError||stepsError||coachError||badgeAwardsError||learningProfilesError)return <main className="page"><p className="alert danger">Erreur de chargement. Vérifie les migrations SQL et les droits du compte.</p></main>;
   const pending=(submissions||[]) as Submission[], catalog=(missions||[]) as Mission[];
@@ -85,7 +85,7 @@ export default async function TrainerSpace({searchParams}:{searchParams:Promise<
                 <input name={"criterion"+index} type="number" required min={0} max={25} step={1} defaultValue={20} aria-label={"Points sur 25 : "+criterion}/>
                 <small>/ 25</small>
               </label>)}
-              <p>La note totale sur 100 est calculée et validée dans Supabase. Minimum 80 pour réussir.</p>
+              <p>La note totale sur 100 est calculée et validée dans la base de données. Minimum 80 pour réussir.</p>
             </fieldset>
             : <label>Note /100<input type="number" name="score" required min={0} max={100} step={1}/></label>}
           <label>Commentaire pédagogique<textarea name="feedback" minLength={3} maxLength={1500} required rows={3}/></label>

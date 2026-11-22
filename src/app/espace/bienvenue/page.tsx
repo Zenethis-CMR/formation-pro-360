@@ -9,14 +9,14 @@ import { IntensiveScheduleSelector } from "@/components/intensive-schedule-selec
 type Props={searchParams:Promise<{error?:string}>};
 type Mission={id:string;title:string;week:number;description:string};
 export default async function WelcomeLearner({searchParams}:Props) {
-  const {supabase}=await requireRole("learner");
+  const {db}=await requireRole("learner");
   const query=await searchParams;
   const [{data:preferences,error:preferencesError},{data:missions,error:missionsError},
     {data:dependencies,error:dependenciesError},{data:xp,error:xpError}]=await Promise.all([
-    supabase.from("learner_preferences").select("learner_id,preferred_name,goal,experience,minutes_per_day,regular_days,optional_days").maybeSingle(),
-    supabase.from("missions").select("id,title,week,description").eq("published",true).order("week").order("created_at"),
-    supabase.from("mission_prerequisites").select("mission_id,prerequisite_id"),
-    supabase.from("xp_ledger").select("mission_id")
+    db.from("learner_preferences").select("learner_id,preferred_name,goal,experience,minutes_per_day,regular_days,optional_days").maybeSingle(),
+    db.from("missions").select("id,title,week,description").eq("published",true).order("week").order("created_at"),
+    db.from("mission_prerequisites").select("mission_id,prerequisite_id"),
+    db.from("xp_ledger").select("mission_id")
   ]);
   if(preferencesError||missionsError||dependenciesError||xpError) {
     return <main className="page"><p className="alert danger" role="alert">Ton espace d'accueil est momentanément indisponible. Tu peux toujours consulter tes missions.</p>

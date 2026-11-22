@@ -70,9 +70,11 @@ test("fallback label remains safe",()=>{
 test("new registrations and role checks use the application backend",()=>{
   const auth=fs.readFileSync(path.join(__dirname,"..","src","app","auth","actions.ts"),"utf8");
   const callback=fs.readFileSync(path.join(__dirname,"..","src","app","auth","callback","route.ts"),"utf8");
+  const verification=fs.readFileSync(path.join(__dirname,"..","src","app","auth","verify","route.ts"),"utf8");
   const role=fs.readFileSync(path.join(__dirname,"..","src","lib","auth","require-role.ts"),"utf8");
   assert.match(auth,/\/register/);
   assert.match(auth,/setBackendSession/);
-  assert.match(callback,/\/espace\/bienvenue/);
+  assert.match(verification,/\/v1\/auth\/verify-email/);
+  assert.doesNotMatch(callback,/supabase\.auth|exchangeCodeForSession/);
   assert.match(role,/\.from\("profiles"\)/);
 });

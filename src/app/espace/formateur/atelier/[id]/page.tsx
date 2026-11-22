@@ -12,13 +12,13 @@ type Props={
 };
 const uuid=/^[a-f0-9-]{36}$/i;
 export default async function EditWorkshopGuide({params,searchParams}:Props) {
-  const {supabase}=await requireRole("trainer");
+  const {db}=await requireRole("trainer");
   const {id}=await params;
   const notice=await searchParams;
   if(!uuid.test(id)) redirect("/espace/formateur?error=invalid");
   const [{data:mission,error:missionError},{data:guide,error:guideError}]=await Promise.all([
-    supabase.from("missions").select("id,title,description,week,published").eq("id",id).maybeSingle(),
-    supabase.from("mission_guides").select("brief,steps,rubric,hint,resource_url").eq("mission_id",id).maybeSingle()
+    db.from("missions").select("id,title,description,week,published").eq("id",id).maybeSingle(),
+    db.from("mission_guides").select("brief,steps,rubric,hint,resource_url").eq("mission_id",id).maybeSingle()
   ]);
   if(missionError||guideError||!mission) {
     return <main className="page"><p className="alert danger">Cette mission n'est pas accessible.</p>

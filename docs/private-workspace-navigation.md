@@ -7,7 +7,7 @@ La plateforme se consulte uniquement après inscription ou connexion sur
 
 Les anciennes routes publiques `/`, `/apprenant` et `/formateur` ne présentent
 plus de données de démonstration : elles dirigent vers `/espace`.
-Ce point d'entrée vérifie l'identité Supabase et le rôle puis ouvre
+Ce point d'entrée vérifie la session émise par l'API Node et le rôle puis ouvre
 `/espace/apprenant` ou `/espace/formateur`.
 
 Le parcours de connexion, l'inscription, le lien magique pour les anciens comptes,
@@ -48,7 +48,7 @@ L'accès aux ateliers se fait sur `/espace/atelier/[id]` avec contrôle du rôle
 Les actions serveur ramènent à **l'onglet approprié** après une correction,
 l'envoi d'un message, une modification de calendrier ou une publication.
 
-Les vues de l'apprenant et du formateur n'utilisent que les données Supabase.
+Les vues de l'apprenant et du formateur chargent les données depuis le backend Formation Pro.
 Le contrôle d'un rôle reste vérifié pour chaque requête sécurisée.
 
 ## Recette et limites des tests automatiques

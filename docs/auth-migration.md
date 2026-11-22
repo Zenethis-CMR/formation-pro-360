@@ -1,3 +1,7 @@
+# ARCHIVE — ancienne procédure de migration
+
+> Ce document décrit l'ancienne transition et contient des étapes qui ne doivent plus être suivies en production. L'authentification actuelle est déjà gérée par l'API Node.js. Utiliser [`proxmox-deployment.md`](./proxmox-deployment.md) pour l'architecture active.
+
 # Migration vers l'authentification Node.js
 
 ## Compatibilité des données

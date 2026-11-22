@@ -31,7 +31,7 @@ export function SecureTrainerOverview({pending,learners,missions,validatedXp}:{
       <div className="metric"><div className="metric-icon blue"><ClipboardCheck size={20}/></div>
         <div><span>À évaluer</span><strong>{pending}</strong><small>Soumissions en attente</small></div></div>
       <div className="metric"><div className="metric-icon purple"><Users size={20}/></div>
-        <div><span>Apprenants inscrits</span><strong>{learners}</strong><small>Comptes dans Supabase</small></div></div>
+        <div><span>Apprenants inscrits</span><strong>{learners}</strong><small>Comptes dans la base de données</small></div></div>
       <div className="metric"><div className="metric-icon mint"><GraduationCap size={20}/></div>
         <div><span>Missions publiées</span><strong>{missions}</strong><small>Accessibles selon les prérequis</small></div></div>
     </section>

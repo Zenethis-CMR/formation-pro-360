@@ -22,7 +22,7 @@ export default async function AccountPage({searchParams}:{searchParams:Promise<P
         <h2>Informations personnelles</h2>
         <div className="auth-account-detail"><span>Adresse e-mail</span><strong>{user.email||"Non renseignée"}</strong></div>
         <div className="auth-account-detail"><span>Type de compte</span><strong>{role==="trainer"?"Formateur":"Apprenant"}</strong></div>
-        <p className="auth-account-note"><ShieldCheck size={16}/> Tes livrables, validations, XP et badges restent rattachés au même compte Supabase.</p>
+        <p className="auth-account-note"><ShieldCheck size={16}/> Tes livrables, validations, XP et badges restent rattachés au même compte.</p>
         {role==="learner"&&<Link href="/espace/bienvenue" className="auth-preferences-link">
           <GraduationCap size={17}/><span>Personnaliser mon parcours pédagogique</span><ArrowRight size={16}/>
         </Link>}

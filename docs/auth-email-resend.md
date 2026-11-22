@@ -1,3 +1,7 @@
+# ARCHIVE — ancienne configuration d'e-mails Supabase Auth
+
+> Cette procédure n'est plus utilisée. La production envoie les e-mails transactionnels depuis le backend Node.js avec sa configuration SMTP privée. Voir [`proxmox-deployment.md`](./proxmox-deployment.md).
+
 # Transactional sign-in e-mails: Resend SMTP for Formation Pro 360
 
 ## Why this is required

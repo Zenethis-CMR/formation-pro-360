@@ -21,4 +21,4 @@ Le chargement de la photo utilise l'hébergement Unsplash ; l'interface contient
 
 ## Limitations
 - Les espaces de démo sur `/apprenant` et `/formateur` restent publics et enregistrent localement les données du navigateur.
-- Les véritables comptes, les rôles, la base PostgreSQL et la synchronisation sont développés séparément dans `feat/supabase-auth-db`, mais nécessitent un projet Supabase dédié avant d'être fusionnés.
+- Cette note décrit une ancienne piste de développement. La production utilise désormais les comptes, les rôles et la persistance via l'API Node.js ; voir [`proxmox-deployment.md`](./proxmox-deployment.md).

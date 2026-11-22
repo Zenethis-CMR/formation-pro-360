@@ -1,5 +1,5 @@
 /**
- * Deterministic coaching recommendations derived from verified Supabase records.
+ * Deterministic coaching recommendations derived from verified platform records.
  * No fictitious deadlines, fabricated XP or automatically sent messages.
  */
 export type CoachMission = {id:string;title:string;week:number};

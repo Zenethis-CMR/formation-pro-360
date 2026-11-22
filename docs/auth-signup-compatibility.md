@@ -1,3 +1,7 @@
+# ARCHIVE — ancien flux d'authentification Supabase
+
+> Ces instructions décrivent le flux historique et ne correspondent plus à la production. Connexion, inscription, e-mails de vérification et récupération passent maintenant par l'API Node.js. Consulter [`proxmox-deployment.md`](./proxmox-deployment.md).
+
 # Authentification des apprenants | Formation Pro 360
 
 ## Objectif et compatibilité
