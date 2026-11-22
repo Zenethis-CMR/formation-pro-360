@@ -33,7 +33,7 @@ export function SecureLearnerOverview({missions,submissions,approvedIds,dependen
         <h1>Mes classes<span className="academy-dot">.</span></h1>
         <p>Avance à ton rythme, transforme chaque leçon en réalisation.</p></div>
       <div className="head-actions"><span className="academy-date">Cycle pratique · 8 semaines</span>
-        <Link href="#missions" className="head-square-action" title="Mes missions" aria-label="Voir les missions"><Search size={18}/></Link>
+        <Link href="/espace/apprenant?onglet=missions" className="head-square-action" title="Mes missions" aria-label="Voir les missions"><Search size={18}/></Link>
       </div>
     </header>
     <section className="academy-feature" aria-label="Formation à la une">
@@ -45,7 +45,7 @@ export function SecureLearnerOverview({missions,submissions,approvedIds,dependen
           <span className="feature-tech-logos"><TechnologyBadge name="HTML5" compact/><TechnologyBadge name="CSS3" compact/><TechnologyBadge name="JavaScript" compact/></span>
           <span>{missions.length} missions · 8 semaines de pratique</span>
         </div>
-        <Link href={next?"/espace/atelier/"+next.id:"#missions"} className="feature-action">
+        <Link href={next?"/espace/atelier/"+next.id:"/espace/apprenant?onglet=missions"} className="feature-action">
           {pending&&!first?"Suivre mon évaluation":"Continuer mon parcours"} <ArrowRight size={16}/>
         </Link>
       </div>
@@ -65,13 +65,13 @@ export function SecureLearnerOverview({missions,submissions,approvedIds,dependen
     <section className="academy-milestone"><div className="milestone-marker"><Target size={20}/></div>
       <div><span>OBJECTIF DES 2 PREMIÈRES SEMAINES</span><strong>Publier une mini-application qui fonctionne vraiment.</strong>
         <p>Une mission à la fois. Chaque étape donne lieu à un livrable évalué.</p></div>
-      <Link href="#missions" aria-label="Voir le parcours"><ArrowRight size={20}/></Link>
+      <Link href="/espace/apprenant?onglet=missions" aria-label="Voir le parcours"><ArrowRight size={20}/></Link>
     </section>
     <div className="academy-content-grid real-overview-grid">
       <section className="academy-class-section" aria-label="Missions à poursuivre">
         <div className="academy-section-title"><div><h2>Continuer mes classes</h2>
           <span>{missions.length} modules disponibles</span></div>
-          <Link href="#missions">Voir tout <ArrowRight size={16}/></Link></div>
+          <Link href="/espace/apprenant?onglet=missions">Voir tout <ArrowRight size={16}/></Link></div>
         <label className="academy-search"><Search size={18}/>
           <input aria-label="Rechercher une mission" value={query} onChange={e=>setQuery(e.target.value)}
             placeholder="Rechercher une mission, une compétence…"/></label>
@@ -123,7 +123,7 @@ export function SecureLearnerOverview({missions,submissions,approvedIds,dependen
         </section>
         <section className="academy-goal-card"><div className="academy-goal-icon"><Target size={20}/></div>
           <div><strong>Un objectif, un projet.</strong><p>Savoir expliquer ce que tu as construit.</p></div>
-          <Link href="#missions" aria-label="Découvrir les missions"><ArrowRight size={19}/></Link>
+          <Link href="/espace/apprenant?onglet=missions" aria-label="Découvrir les missions"><ArrowRight size={19}/></Link>
         </section>
       </div>
     </div>
