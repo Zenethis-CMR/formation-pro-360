@@ -3,11 +3,11 @@
 ## État réel
 
 - Projet Supabase : **Formation Pro 360** (référence `llwuukoqwlwpefgipvgc`), région Paris.
-- PostgreSQL actif avec les migrations `001_initial.sql` à `006_guided_workshops.sql`.
+- PostgreSQL actif avec les migrations initiales, pédagogiques et d'authentification jusqu'à `012_learner_welcome_preferences.sql`.
 - **16 missions publiées** sur huit semaines, avec prérequis progressifs. La validation d'une mission attribue des XP une seule fois.
-- Les dix tables applicatives sont protégées par RLS : profils, missions, prérequis, soumissions, XP, badges, badges acquis, séances de pratique, guides d'ateliers et étapes.
+- Les tables applicatives sont protégées par RLS : profils, missions, prérequis, soumissions, XP, badges, séances, guides d'ateliers, suivi de formation, messagerie et préférences.
 - Vercel possède les variables d'environnement publiques requises (URL, clé publishable, URL du site).
-- Les pages de démonstration `/apprenant` et `/formateur` restent séparées des espaces réels protégés `/espace/apprenant` et `/espace/formateur`.
+- La démonstration publique est désactivée et son stockage local supprimé. La racine et les anciennes routes publiques redirigent vers l'espace sécurisé, qui impose une authentification et le contrôle du rôle. Voir [l'organisation des espaces privés](./private-workspace-navigation.md).
 
 ## Configuration Supabase Auth, action manuelle dans le tableau de bord
 
@@ -51,7 +51,7 @@ L'apprenant visualise une carte des huit étapes, chaque semaine avec ses compé
 
 Le formateur accède au programme, au nombre de comptes apprenants et au total des XP effectivement attribués. La feuille de route est décrite dans `src/lib/curriculum.ts` et les données réelles dans la migration `003_eight_week_curriculum.sql`. Les nouveaux exercices ajoutés via l'interface peuvent être créés en brouillon.
 
-## SMTP à configurer avant ouverture aux apprenants
+## SMTP Resend et vérification de la délivrabilité
 
 - Fournisseur retenu : **Resend via SMTP personnalisé**. Guide d'activation : [auth-email-resend.md](./auth-email-resend.md).
 - Domaine d'expédition Resend : `zenithis.tech`, vérifié. Expéditeur : `formation@zenithis.tech`.
