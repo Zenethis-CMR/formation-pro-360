@@ -1,6 +1,6 @@
 import { Activity, BookCheck, CalendarDays, Trophy } from "lucide-react";
 
-type Learner = {id:string};
+type Learner = {id:string;preferred_name?:string|null};
 type Mission = {id:string;week:number};
 type Award = {learner_id:string;mission_id:string;xp:number};
 type Submission = {learner_id:string;status:string;created_at:string};
@@ -26,7 +26,7 @@ export function CohortProgress({learners,awards,submissions,practice,missions,mi
       : (latestSubmission?.slice(0,10)||latestPractice);
     return {
       id:learner.id,
-      label:"Apprenant "+String(index+1).padStart(2,"0"),
+      label:learner.preferred_name||"Apprenant "+String(index+1).padStart(2,"0"),
       approved:approved.length,
       xp:approved.reduce((sum,a)=>sum+Number(a.xp),0),
       pending:learnerSubs.filter(s=>s.status==="pending").length,
