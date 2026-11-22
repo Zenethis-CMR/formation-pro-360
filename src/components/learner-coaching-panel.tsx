@@ -16,7 +16,7 @@ export function LearnerCoachingPanel({insight,messages,startDate}:Props){
         <span className="coach-focus-eyebrow"><Lightbulb size={15}/> À FAIRE MAINTENANT</span>
         <h3>{insight.focusTitle}</h3><p>{insight.focusDescription}</p>
         {focus?<Link href={"/espace/atelier/"+focus.id} className="coach-primary-link"><BookOpenCheck size={16}/>{focus.title}<ArrowRight size={16}/></Link>
-          :<Link href="/espace/apprenant#missions" className="coach-primary-link">Consulter mon programme <ArrowRight size={16}/></Link>}
+          :<Link href="/espace/apprenant?onglet=missions" className="coach-primary-link">Consulter mon programme <ArrowRight size={16}/></Link>}
         <div className="coach-status-row">
           {insight.revisionCount>0&&<span className="coach-notice amber">{insight.revisionCount} projet(s) à améliorer</span>}
           {insight.pendingCount>0&&<span className="coach-notice blue">{insight.pendingCount} correction(s) en attente</span>}
