@@ -5,7 +5,7 @@ import { isSupabaseConfigured } from "@/lib/supabase/server";
 export default async function Espace() {
   if (!isSupabaseConfigured()) {
     return <main className="page"><section className="panel"><h1>Configuration nécessaire</h1>
-      <p className="muted">L’espace sécurisé sera disponible après connexion de Supabase et application des migrations SQL. La démonstration reste accessible depuis l’accueil.</p>
+      <p className="muted">L’espace sécurisé sera disponible après connexion de Supabase et application des migrations SQL. Réessaie plus tard ou contacte le responsable de la plateforme.</p>
     </section></main>;
   }
   const {role} = await requireRole();
