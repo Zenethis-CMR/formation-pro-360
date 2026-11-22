@@ -70,7 +70,7 @@ export function LearningAchievements({catalog,earned,practice,validatedCount,cur
       <div className="daily-challenge">
         <div className="challenge-top"><span><CalendarCheck2 size={17}/> DÉFI DU JOUR</span><span>{practicedToday?"Séance enregistrée":"25 minutes de pratique"}</span></div>
         <h3>{challenge.title}</h3><p>{challenge.task}</p>
-        {currentMission && <Link href={"#mission-"+currentMission.id} className="challenge-mission"><span>Mission en cours : {currentMission.title}</span><ArrowRight size={14}/></Link>}
+        {currentMission && <Link href={"/espace/atelier/"+currentMission.id} className="challenge-mission"><span>Mission en cours : {currentMission.title}</span><ArrowRight size={14}/></Link>}
         {practicedToday
           ? <div className="challenge-done"><BadgeCheck size={17}/> Pratique du jour enregistrée. Reviens demain pour poursuivre.</div>
           : <form action={completeDailyPractice}><button type="submit" className="challenge-button">J'ai terminé ma séance <ArrowRight size={15}/></button></form>}
