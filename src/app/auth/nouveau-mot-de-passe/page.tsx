@@ -14,7 +14,7 @@ export default async function RecoverPassword({searchParams}:{searchParams:Promi
       <span className="journey-overline"><KeyRound size={15}/> RÉCUPÉRATION SÉCURISÉE</span>
       <h1>Créer un nouveau mot de passe.</h1>
       <p className="muted">Choisis un nouveau mot de passe pour retrouver ton compte existant.</p>
-      {params.success?<div className="auth-new-feedback success"><CheckCircle2 size={17}/> Le mot de passe a été mis à jour. <Link href="/espace">Accéder à mon espace</Link></div>:<>
+      {params.success?<div className="auth-new-feedback success"><CheckCircle2 size={17}/> Le mot de passe a été mis à jour. <Link href="/login">Se connecter avec le nouveau mot de passe</Link></div>:<>
         {params.error&&<p className="auth-new-feedback danger" role="alert">{params.error==="mismatch"?"Les deux mots de passe ne correspondent pas.":params.error==="password"?"Utilise au moins 12 caractères.":"La mise à jour a échoué. Réessaie."}</p>}
         <form className="auth-new-form" action={updateAccountPassword}>
           <input type="hidden" name="source" value="recovery"/>
