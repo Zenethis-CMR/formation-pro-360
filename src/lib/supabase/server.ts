@@ -15,6 +15,9 @@ export async function createClient() {
     apiUrl,
     "backend-proxy",
     {
+      global: {
+        headers: accessToken ? { Authorization: `Bearer ${accessToken}` } : {}
+      },
       cookies: {
         getAll() { return cookieStore.getAll(); },
         setAll(items) {
@@ -24,8 +27,7 @@ export async function createClient() {
             // Server Components cannot write cookies; middleware refreshes sessions.
           }
         }
-      },
-      accessToken: async () => accessToken
+      }
     }
   );
 }
