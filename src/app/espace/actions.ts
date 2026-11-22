@@ -52,41 +52,41 @@ export async function reviewMission(formData: FormData) {
   const submissionId=String(formData.get("submissionId")||"");
   const feedback=String(formData.get("feedback")||"").trim();
   if(!idPattern.test(submissionId)||feedback.length<3||feedback.length>1500) {
-    redirect(trainerPath+"?error=invalid");
+    redirect(trainerPath+"?onglet=evaluations&error=invalid");
   }
   const {data:submission,error:submissionError}=await supabase.from("submissions")
     .select("mission_id").eq("id",submissionId).eq("status","pending").maybeSingle();
-  if(submissionError||!submission) redirect(trainerPath+"?error=review");
+  if(submissionError||!submission) redirect(trainerPath+"?onglet=evaluations&error=review");
 
   const {data:guide,error:guideError}=await supabase.from("mission_guides")
     .select("rubric").eq("mission_id",submission.mission_id).maybeSingle();
-  if(guideError) redirect(trainerPath+"?error=review");
+  if(guideError) redirect(trainerPath+"?onglet=evaluations&error=review");
 
   if(guide && Array.isArray(guide.rubric) && guide.rubric.length===4) {
     const raw=[0,1,2,3].map(index=>String(formData.get("criterion"+index)??""));
     if(raw.some(value=>!/^\d{1,2}$/.test(value)||Number(value)>25)) {
-      redirect(trainerPath+"?error=invalid");
+      redirect(trainerPath+"?onglet=evaluations&error=invalid");
     }
     const scores=raw.map(Number);
     const {error}=await supabase.rpc("review_submission_with_rubric",{
       p_submission_id:submissionId,p_scores:scores,p_feedback:feedback
     });
-    if(error) redirect(trainerPath+"?error=review");
+    if(error) redirect(trainerPath+"?onglet=evaluations&error=review");
   } else {
     // Custom trainer-created missions may not have a guided rubric yet.
     const raw=String(formData.get("score")??"");
     if(!/^\d{1,3}$/.test(raw)||Number(raw)>100) {
-      redirect(trainerPath+"?error=invalid");
+      redirect(trainerPath+"?onglet=evaluations&error=invalid");
     }
     const {error}=await supabase.rpc("review_submission",{
       p_submission_id:submissionId,p_score:Number(raw),p_feedback:feedback
     });
-    if(error) redirect(trainerPath+"?error=review");
+    if(error) redirect(trainerPath+"?onglet=evaluations&error=review");
   }
   revalidatePath(trainerPath);
   revalidatePath(learnerPath);
   revalidatePath("/espace/atelier/"+submission.mission_id);
-  redirect(trainerPath+"?success=reviewed");
+  redirect(trainerPath+"?onglet=evaluations&success=reviewed");
 }
 
 export async function createMission(formData: FormData) {
@@ -100,57 +100,57 @@ export async function createMission(formData: FormData) {
   if (title.length < 3 || title.length > 110 || domain.length < 2 || domain.length > 80 ||
       description.length < 10 || description.length > 1500 || deliverable.length < 3 || deliverable.length > 500 ||
       !Number.isInteger(week) || week < 1 || week > 8 || !Number.isInteger(xp) || xp < 10 || xp > 1000) {
-    redirect(trainerPath+"?error=invalid");
+    redirect(trainerPath+"?onglet=programme&error=invalid");
   }
   const rawPrerequisite=String(formData.get("prerequisiteId")||"");
-  if(rawPrerequisite&&!idPattern.test(rawPrerequisite)) redirect(trainerPath+"?error=invalid");
+  if(rawPrerequisite&&!idPattern.test(rawPrerequisite)) redirect(trainerPath+"?onglet=programme&error=invalid");
   const {error} = await supabase.rpc("create_trainer_mission",{
     p_title:title,p_domain:domain,p_description:description,p_deliverable:deliverable,
     p_week:week,p_xp:xp,p_prerequisite_id:rawPrerequisite||null
   });
-  if (error) redirect(trainerPath+"?error=create");
+  if (error) redirect(trainerPath+"?onglet=programme&error=create");
   revalidatePath(trainerPath);
-  redirect(trainerPath+"?success=created");
+  redirect(trainerPath+"?onglet=programme&success=created");
 }
 
 
 export async function publishMission(formData: FormData) {
   const {supabase} = await requireRole("trainer");
   const missionId = String(formData.get("missionId") || "");
-  if (!idPattern.test(missionId)) redirect(trainerPath+"?error=invalid");
+  if (!idPattern.test(missionId)) redirect(trainerPath+"?onglet=programme&error=invalid");
   const {error} = await supabase.from("missions").update({published:true})
     .eq("id",missionId).eq("published",false);
-  if (error) redirect(trainerPath+"?error=publish");
+  if (error) redirect(trainerPath+"?onglet=programme&error=publish");
   revalidatePath(trainerPath);
   revalidatePath(learnerPath);
-  redirect(trainerPath+"?success=published");
+  redirect(trainerPath+"?onglet=programme&success=published");
 }
 
 export async function completeDailyPractice() {
   const {supabase,user}=await requireRole("learner");
   // The database sets the date using Africa/Douala and rejects forged past/future days.
   const {error}=await supabase.from("practice_checkins").insert({learner_id:user.id});
-  if(error && error.code !== "23505") redirect(learnerPath+"?error=practice");
+  if(error && error.code !== "23505") redirect(learnerPath+"?onglet=progression&error=practice");
   revalidatePath(learnerPath);
-  redirect(learnerPath+"?success=practice");
+  redirect(learnerPath+"?onglet=progression&success=practice");
 }
 
 export async function saveTrainingStartDate(formData:FormData) {
   const {supabase,user}=await requireRole("trainer");
   const startDate=String(formData.get("startDate")||"");
-  if(!/^\d{4}-\d{2}-\d{2}$/.test(startDate)) redirect(trainerPath+"?error=date");
+  if(!/^\d{4}-\d{2}-\d{2}$/.test(startDate)) redirect(trainerPath+"?onglet=programme&error=date");
   const candidate=new Date(startDate+"T12:00:00Z");
   if(!Number.isFinite(candidate.getTime())||candidate.toISOString().slice(0,10)!==startDate||
      startDate<"2024-01-01"||startDate>"2100-12-31") {
-    redirect(trainerPath+"?error=date");
+    redirect(trainerPath+"?onglet=programme&error=date");
   }
   const {data,error}=await supabase.from("training_settings").update({
     start_date:startDate,updated_at:new Date().toISOString(),updated_by:user.id
   }).eq("id",true).select("id").single();
-  if(error||!data) redirect(trainerPath+"?error=date");
+  if(error||!data) redirect(trainerPath+"?onglet=programme&error=date");
   revalidatePath(trainerPath);
   revalidatePath(learnerPath);
-  redirect(trainerPath+"?success=calendar");
+  redirect(trainerPath+"?onglet=programme&success=calendar");
 }
 
 export async function postCoachMessage(formData:FormData) {
@@ -158,18 +158,18 @@ export async function postCoachMessage(formData:FormData) {
   const learnerId=String(formData.get("learnerId")||"");
   const body=String(formData.get("body")||"").trim();
   if(!idPattern.test(learnerId)||body.length<10||body.length>1200) {
-    redirect(trainerPath+"?error=message");
+    redirect(trainerPath+"?onglet=apprenants&error=message");
   }
   const {data:learner,error:lookupError}=await supabase.from("profiles")
     .select("id").eq("id",learnerId).eq("role","learner").maybeSingle();
-  if(lookupError||!learner) redirect(trainerPath+"?error=message");
+  if(lookupError||!learner) redirect(trainerPath+"?onglet=apprenants&error=message");
   const {error}=await supabase.from("coach_messages").insert({
     trainer_id:user.id,learner_id:learnerId,body
   });
-  if(error) redirect(trainerPath+"?error=message");
+  if(error) redirect(trainerPath+"?onglet=apprenants&error=message");
   revalidatePath(trainerPath);
   revalidatePath(learnerPath);
-  redirect(trainerPath+"?success=message");
+  redirect(trainerPath+"?onglet=apprenants&success=message");
 }
 
 export async function saveDraftGuide(formData: FormData) {
