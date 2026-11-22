@@ -1,44 +1,74 @@
 # Formation Pro 360
 
-Plateforme de formation pratique et gamifiée. Next.js, TypeScript, React.
+Plateforme privée de formation pratique, propulsée par **Next.js 15, React 19, TypeScript, Supabase et Vercel**.
 
-**Application :** https://formation-pro-360.vercel.app
+**Site officiel :** https://formation-pro-360.vercel.app/
 
-## Ce que permet la version V1 démo
+## Accès et profils
 
-- Accueil : présentation du parcours et indicateurs de progression.
-- `/apprenant` : missions progressives, prérequis, détails, soumission d'un lien vers un livrable.
-- `/formateur` : file d'évaluation, note de 0 à 100, commentaire, validation ou demande de correction, création de missions personnalisées.
-- XP attribués **uniquement lorsqu'une mission est validée** avec une note d'au moins **80/100**.
-- Déblocage des missions suivantes après validation de leurs prérequis.
+La démonstration publique a été supprimée. Les visiteurs doivent **s'inscrire ou se connecter** sur `/login`. Les anciens comptes continuent à utiliser leur lien magique, ou définissent un mot de passe depuis « Mon compte ».
 
-**Important :** c'est une **simulation non sécurisée** destinée à valider l'interface et le moteur pédagogique. Les deux espaces sont publics, sans comptes, sans séparation réelle de rôles et sans stockage serveur. Les données sont gardées dans le `localStorage` du navigateur utilisé ; le flux apprenant → formateur fonctionne donc dans **le même navigateur**, pas entre appareils. Ne saisir aucune donnée personnelle ou confidentielle.
+La racine et les anciens chemins publics `/apprenant` et `/formateur` redirigent vers `/espace`, qui contrôle l'identité Supabase et le rôle. Seul un administrateur peut attribuer le rôle **formateur** ; tout nouveau compte est **apprenant** par défaut.
 
-## Démarrage local
+### Apprenant
+
+| Onglet | Fonction |
+| --- | --- |
+| Tableau de bord | Accueil, mission suivante et progression synthétique |
+| Mes missions | Ateliers, prérequis, état de chaque soumission et lien vers les livrables |
+| Ma progression | XP réellement attribués, badges, compétences, pratique et messages du formateur |
+| Programme | Calendrier de formation et feuille de route sur huit semaines |
+| Mon compte | Informations de connexion, mot de passe et objectifs personnels |
+
+### Formateur
+
+| Onglet | Fonction |
+| --- | --- |
+| Tableau de bord | Indicateurs de cohorte et raccourcis |
+| Évaluations | Livrables en attente, notes critériées, commentaires et historique |
+| Mes apprenants | Coaching, messagerie interne, suivi de cohorte et activité |
+| Programme | Calendrier, missions, ateliers, brouillons et publication |
+| Mon compte | Informations de connexion et gestion du mot de passe |
+
+Tous les onglets sont des vues distinctes et adaptent leur présentation aux petits écrans.
+
+## Données et sécurité
+
+- **Supabase Auth** gère les sessions, confirmations par e-mail et mots de passe. Les utilisateurs historiques conservent leurs comptes.
+- Les profils, les missions, les soumissions, les corrections, les séances, les badges et les XP sont persistants dans **PostgreSQL** et soumis à des **politiques RLS**.
+- Seul un formateur authentifié peut corriger ou publier des missions. Une validation d'au moins **80/100** accorde les XP une fois, dans une transaction sécurisée.
+- Le moteur de données simulées en `localStorage` a été supprimé.
+- Les e-mails d'authentification sont envoyés par Supabase via le SMTP personnalisé Resend ; vérifier leur réception sur un appareil réel.
+
+**Aucun secret, e-mail de compte, mot de passe, token, clé API ou résultat individuel ne doit être commité dans ce dépôt.**
+
+## Développement local
 
 ```bash
 npm install
 npm run dev
 ```
 
-Ouvrir http://localhost:3000. Vérification TypeScript : `npm run lint`, compilation : `npm run build`.
+Définir uniquement les variables Supabase autorisées dans l'environnement local ; ne jamais ajouter une clé de service côté navigateur.
 
-## Structure
+```bash
+npm run test:unit
+npm run lint
+npm run build
+```
 
-- `src/data/missions.ts` : catalogue des missions du parcours.
-- `src/lib/mission-engine.ts` : états de missions, prérequis, XP, niveaux, évaluations.
-- `src/context/demo-store.tsx` : stockage navigateur pour la démonstration.
-- `src/app/apprenant/page.tsx` : parcours et soumissions de missions.
-- `src/app/formateur/page.tsx` : validation et création de missions.
-- `docs/architecture.md` : architecture et chemin vers la version sécurisée.
-- `docs/programme.md` : référentiel pédagogique.
+Les tests sont exécutés automatiquement avant chaque build.
 
-## Prochaines étapes
+## Documentation
 
-1. Authentification et rôles sécurisés côté serveur.
-2. Base PostgreSQL et autorisations par propriétaire/organisation.
-3. Soumissions, corrections et missions persistantes.
-4. Tableau de progression, badges, missions supplémentaires et suivi des cohortes.
-5. Tests automatisés, validation et surveillance en production.
+- `docs/private-workspace-navigation.md` : accès privé, onglets des deux rôles et recette
+- `docs/auth-signup-compatibility.md` : comptes existants, inscription, récupération et confirmation des e-mails
+- `docs/supabase-setup.md` : base de données, migrations, rôles et règles de sécurité
+- `docs/programme.md` : objectifs du parcours pédagogique
 
-Aucun secret, identifiant, donnée personnelle ni résultat individuel ne doit être ajouté à ce dépôt public.
+## Validation avant lancement élargi
+
+Tester la connexion d'un nouvel apprenant, les cinq onglets sur téléphone,
+la remise d'un vrai projet, les évaluations, la progression et la séparation
+des droits entre un apprenant et un formateur. Les tests de compilation ne
+remplacent pas la recette avec de vrais utilisateurs.
