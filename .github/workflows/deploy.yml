@@ -9,31 +9,17 @@ permissions:
   contents: read
 
 concurrency:
-  group: formation-pro-360-production
+  group: formation-pro-360-hosted-production
   cancel-in-progress: false
 
 jobs:
   deploy:
-    runs-on: [self-hosted, Linux, X64]
+    runs-on: ubuntu-24.04
     if: github.ref == 'refs/heads/main'
     timeout-minutes: 30
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-
-      - name: Check production configuration on CT 410
-        run: |
-          set -euo pipefail
-          key="$HOME/.ssh/formation-pro-deploy"
-          host="formation360@10.0.0.41"
-          ssh -i "$key" -o BatchMode=yes -o StrictHostKeyChecking=yes "$host" 'bash -s' <<'REMOTE'
-          set -euo pipefail
-          file=/etc/formation-pro-360/frontend.env
-          test -s "$file" || { echo "Frontend runtime configuration is missing; fill deploy/frontend.env.example on CT 410." >&2; exit 1; }
-          grep -q '^SUPABASE_URL=http://10.0.0.42:3000$' "$file" && grep -Eq '^SUPABASE_PUBLISHABLE_KEY=eyJ[^[:space:]]{32,}$' "$file" || { echo "The internal API URL and a signed anon JWT are required for the application data layer." >&2; exit 1; }
-          grep -q '^FORMATION_API_INTERNAL_URL=http://10.0.0.42:3000$' "$file" || { echo "FORMATION_API_INTERNAL_URL must point to CT 420 port 3000." >&2; exit 1; }
-          grep -Eq 'example-project|change_me|localhost|<JWT' "$file" && { echo "Frontend runtime configuration still contains sample values." >&2; exit 1; } || true
-          REMOTE
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
@@ -45,6 +31,8 @@ jobs:
         run: npm ci --no-audit --no-fund
 
       - name: Build standalone frontend
+        env:
+          NEXT_PUBLIC_SITE_URL: https://formation.zenithis.tech
         run: |
           node ./node_modules/next/dist/bin/next build
           mkdir -p .next/standalone/.next
@@ -54,6 +42,46 @@ jobs:
           cp deploy/cleanup.sh .next/standalone/deploy/cleanup.sh
           cp deploy/formation-pro-360.service .next/standalone/deploy/formation-pro-360.service
           tar -czf "$RUNNER_TEMP/formation-pro-360.tar.gz" -C .next/standalone .
+
+      - name: Configure production SSH
+        env:
+          DEPLOY_KEY: ${{ secrets.FORMATION_PRO_DEPLOY_KEY }}
+        run: |
+          set -eu
+          umask 077
+          mkdir -p ~/.ssh
+          test -n "$DEPLOY_KEY" || { echo "Missing FORMATION_PRO_DEPLOY_KEY"; exit 1; }
+          printf '%s\n' "$DEPLOY_KEY" | tr -d '\r' > ~/.ssh/formation-pro-deploy
+          cat >> ~/.ssh/known_hosts <<'HOSTS'
+          136.243.58.44 ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMs67EFwyMCvS8uMJ7QnJ2ZRTPA8HOkDT0IpiYvXQB72
+          10.0.0.41 ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDA8+NV2mxXAkK2R6BrQ+VNQQG0+qFPIKuwoLDrX8kno
+          HOSTS
+          cat >> ~/.ssh/config <<'CONFIG'
+          Host 136.243.58.44 10.0.0.41
+            IdentityFile ~/.ssh/formation-pro-deploy
+            IdentitiesOnly yes
+            StrictHostKeyChecking yes
+            BatchMode yes
+          Host 10.0.0.41
+            ProxyJump root@136.243.58.44
+          CONFIG
+
+      - name: Check production configuration on CT 410
+        run: |
+          set -euo pipefail
+          key="$HOME/.ssh/formation-pro-deploy"
+          host="formation360@10.0.0.41"
+          ssh -i "$key" -o BatchMode=yes -o StrictHostKeyChecking=yes "$host" 'bash -s' <<'REMOTE'
+          set -euo pipefail
+          file=/etc/formation-pro-360/frontend.env
+          test -s "$file" || { echo "Frontend runtime configuration is missing; fill deploy/frontend.env.example on CT 410." >&2; exit 1; }
+          grep -q '^FORMATION_API_INTERNAL_URL=http://10.0.0.42:3000$' "$file" || { echo "FORMATION_API_INTERNAL_URL must point to CT 420 port 3000." >&2; exit 1; }
+          grep -q '^NEXT_PUBLIC_SITE_URL=https://formation.zenithis.tech$' "$file" || { echo "NEXT_PUBLIC_SITE_URL must point to the public frontend domain." >&2; exit 1; }
+          if grep -Eq 'example-project|change_me|localhost|JWT|SECRET|PASSWORD|TOKEN|KEY=' "$file"; then
+            echo "Frontend runtime configuration may contain a secret or sample value." >&2
+            exit 1
+          fi
+          REMOTE
 
       - name: Release to CT 410
         env:
@@ -86,6 +114,6 @@ jobs:
             fi
             exit 1
           fi
-          curl --fail --silent --show-error http://127.0.0.1:3000/ >/dev/null
+          curl --retry 15 --retry-connrefused --retry-delay 2 --fail --silent --show-error http://127.0.0.1:3000/ >/dev/null
           bash "$app/current/deploy/cleanup.sh"
           REMOTE

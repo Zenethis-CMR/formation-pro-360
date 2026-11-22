@@ -3,16 +3,17 @@ import { cookies } from "next/headers";
 import { databaseAccessToken } from "@/lib/auth/backend";
 
 export function isSupabaseConfigured() {
-  return Boolean(process.env.SUPABASE_URL && process.env.SUPABASE_PUBLISHABLE_KEY);
+  return Boolean(process.env.FORMATION_API_INTERNAL_URL || process.env.SUPABASE_URL);
 }
 
 export async function createClient() {
   if (!isSupabaseConfigured()) throw new Error("Supabase is not configured");
   const cookieStore = await cookies();
   const accessToken = await databaseAccessToken();
+  const apiUrl = process.env.FORMATION_API_INTERNAL_URL || process.env.SUPABASE_URL!;
   return createServerClient(
-    process.env.SUPABASE_URL!,
-    process.env.SUPABASE_PUBLISHABLE_KEY!,
+    apiUrl,
+    "backend-proxy",
     {
       cookies: {
         getAll() { return cookieStore.getAll(); },

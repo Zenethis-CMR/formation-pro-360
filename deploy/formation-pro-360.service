@@ -7,19 +7,15 @@ Wants=network-online.target
 Type=simple
 User=formation360
 Group=formation360
-WorkingDirectory=/opt/formation-pro-360
+WorkingDirectory=/opt/formation-pro-360/current
 EnvironmentFile=/etc/formation-pro-360/frontend.env
 Environment=NODE_ENV=production
 Environment=HOSTNAME=0.0.0.0
 Environment=PORT=3000
-ExecStart=/usr/bin/node /opt/formation-pro-360/server.js
+ExecStart=/usr/bin/node /opt/formation-pro-360/current/server.js
 Restart=on-failure
 RestartSec=3
 NoNewPrivileges=true
-PrivateTmp=true
-ProtectSystem=strict
-ProtectHome=true
-ReadWritePaths=/opt/formation-pro-360
 UMask=0027
 
 [Install]

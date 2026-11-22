@@ -25,11 +25,10 @@ Après un déploiement, chaque CT conserve cinq versions de l'application et net
 
 Variables attendues :
 
-- `SUPABASE_URL=http://10.0.0.42:3000` et `SUPABASE_PUBLISHABLE_KEY` : accès serveur à l'API PostgreSQL exposée par PostgREST derrière l'API Node et aux politiques RLS. Ces variables ne sont pas incluses dans le bundle navigateur.
 - `FORMATION_API_INTERNAL_URL=http://10.0.0.42:3000` : appels serveur à l'API dans le réseau privé.
 - `NEXT_PUBLIC_SITE_URL=https://formation.zenithis.tech` : liens de vérification et de récupération.
 
-Le modèle prêt à compléter est [`deploy/frontend.env.example`](../deploy/frontend.env.example). `SUPABASE_PUBLISHABLE_KEY` doit contenir le JWT `anon` signé avec `SUPABASE_JWT_SECRET` du CT 420; seule cette clé publique à privilèges limités va dans le frontend. Le secret de signature reste sur le CT backend. Le fichier doit être copié en `/etc/formation-pro-360/frontend.env` puis protégé par `chmod 0640` et le groupe `formation360`.
+Le modèle [`deploy/frontend.env.example`](../deploy/frontend.env.example) contient uniquement des URL. Toutes les clés et secrets applicatifs, y compris `POSTGREST_ANON_KEY` et `SUPABASE_JWT_SECRET`, restent dans `/etc/formation-pro-360/backend.env` sur le CT420. Le backend ajoute la clé anon lorsqu'il relaie les appels de données. Le fichier frontend est protégé par `chmod 0640` et le groupe `formation360`.
 
 Le cookie de session est `HttpOnly`, `Secure` en production et `SameSite=Lax`. Les pages Next transmettent ce cookie à l'API uniquement côté serveur.
 
