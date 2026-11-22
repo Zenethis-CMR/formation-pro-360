@@ -102,7 +102,7 @@ export default async function Login({searchParams}:{searchParams:Promise<Params>
           <div><strong>Déjà inscrit avec un lien par e-mail ?</strong><p>Continue d'utiliser ton compte existant sans créer de nouveau profil.</p>
             <Link href="/login?mode=lien">Connexion sans mot de passe <ArrowRight size={14}/></Link></div>
         </div>}
-        <div className="auth-new-bottom"><span><ShieldCheck size={15}/> Authentification sécurisée avec Supabase</span><Link href="/">Voir la démonstration</Link></div>
+        <div className="auth-new-bottom"><span><ShieldCheck size={15}/> Authentification sécurisée avec Supabase</span><span>Accès réservé aux membres inscrits</span></div>
       </section>
     </div>
   </main>;
