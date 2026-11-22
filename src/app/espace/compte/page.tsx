@@ -3,6 +3,7 @@ import { ArrowLeft, CheckCircle2, KeyRound, LockKeyhole, ShieldCheck, UserRound 
 import { requireRole } from "@/lib/auth/require-role";
 import { AuthPasswordField } from "@/components/auth-password-field";
 import { AuthSubmitButton } from "@/components/auth-submit-button";
+import { GraduationCap, ArrowRight } from "lucide-react";
 import { updateAccountPassword } from "@/app/auth/actions";
 
 type Params={error?:string;success?:string};
