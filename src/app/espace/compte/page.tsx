@@ -29,11 +29,12 @@ export default async function AccountPage({searchParams}:{searchParams:Promise<P
       </section>
       <section className="workshop-panel auth-account-card">
         <span className="journey-overline"><LockKeyhole size={15}/> IDENTIFIANTS</span>
-        <h2>Définir ou modifier mon mot de passe</h2>
-        <p className="muted">Pour les comptes créés avec un lien par e-mail, tu peux maintenant choisir un mot de passe sans te réinscrire.</p>
+        <h2>Modifier mon mot de passe</h2>
+        <p className="muted">Pour modifier ton mot de passe, saisis ton mot de passe actuel. Si ton compte a été créé avec un lien par e-mail et que tu n’as pas encore de mot de passe, utilise <Link href="/login?mode=recuperation">la récupération par e-mail</Link> pour en définir un sans créer de nouveau profil.</p>
         {params.success&&<p className="auth-new-feedback success" role="status"><CheckCircle2 size={17}/> Ton mot de passe a été enregistré. Tu pourras l'utiliser lors de ta prochaine connexion.</p>}
-        {params.error&&<p className="auth-new-feedback danger" role="alert">{params.error==="mismatch"?"Les mots de passe ne correspondent pas.":params.error==="password"?"Utilise 12 caractères minimum.":"Le mot de passe n'a pas pu être enregistré. Réessaie."}</p>}
+        {params.error&&<p className="auth-new-feedback danger" role="alert">{params.error==="mismatch"?"Les mots de passe ne correspondent pas.":params.error==="password"?"Utilise 12 caractères minimum.":params.error==="current"?"Le mot de passe actuel est incorrect ou manquant.":"Le mot de passe n'a pas pu être enregistré. Réessaie."}</p>}
         <form className="auth-new-form" action={updateAccountPassword}>
+          <AuthPasswordField name="currentPassword" label="Mot de passe actuel" autoComplete="current-password"/>
           <AuthPasswordField name="password" label="Nouveau mot de passe" autoComplete="new-password"/>
           <p className="auth-password-rule">12 caractères minimum.</p>
           <AuthPasswordField name="confirmPassword" label="Confirmer le nouveau mot de passe" autoComplete="new-password" confirm/>

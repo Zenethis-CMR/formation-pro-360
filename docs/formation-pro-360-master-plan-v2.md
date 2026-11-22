@@ -1,6 +1,6 @@
 # Formation Pro 360 — Plan directeur produit, pédagogie et infrastructure (v2)
 
-**Date de cadrage : 22 novembre 2026.** **Statut : plan proposé**, à valider avec le responsable avant exécution des grands chantiers.
+**Date de cadrage : 22 novembre 2026.** **Statut : vision pédagogique et produit à réaliser progressivement.** L'application a entretemps basculé sur deux CT Proxmox, avec un backend Node/Fastify et PostgreSQL local. Pour les constats validés sur les deux dépôts, les correctifs et l'ordre des livraisons, consulter [l'exécution V2 multi-dépôts](./v2-execution-cross-repo.md). Les plans de migration antérieurs ne sont plus des instructions de déploiement.
 
 ## 1. Vision, impératifs et résultats mesurables
 
@@ -131,17 +131,17 @@ Modules :
 
 Intégration IA : tutorat socratique, revue d'architecture, aide UX, génération de cas de test et de variantes de copywriting. Toujours conserver la validation humaine et des jeux de tests. Interdire aux agents de déployer en production, de dépenser en publicité, de contacter des clients ou de modifier des permissions sans contrôle explicite.
 
-## 7. Performance : mesurer avant Vercel → Proxmox
+## 7. Performance : mesurer et optimiser l'architecture Proxmox désormais active
 
 ### Constats vérifiables dans le code actuel
-- `src/app/espace/layout.tsx` déclenche déjà **plusieurs requêtes Supabase** pour le rail de profil.
+- `src/app/espace/layout.tsx` déclenche **5 requêtes PostgREST** apprenant ou **3** formateur pour le rail. Les pages ajoutent respectivement jusqu'à **11** et **13 requêtes** avant découpage par onglet.
 - Les pages de profil réexécutent un `requireRole()` et chargent de **nombreuses tables**, parfois même lorsque l'onglet affiché n'en a pas besoin.
-- Il existe donc un risque de surcoût de latence pour l'authentification, les allers-retours base de données et le rendu serveur. **Ce constat ne prouve pas que Vercel est seul responsable.**
-- Le projet et la base peuvent fonctionner dans des régions différentes ; cette hypothèse doit être vérifiée avec des traces, pas devinée.
+- Il existe donc un surcoût potentiel de latence pour l'authentification, les appels CT410 → CT420, PostgreSQL et le rendu serveur. **Les workflows Proxmox actuels sont verts, mais les latences de production n'ont pas encore été mesurées.**
+- Next.js et PostgreSQL sont configurés sur des CT distincts dans le même réseau privé. Il faut mesurer le temps de route, les pools SQL, le proxy PostgREST et les différents profils de réseau externe avant de chercher une nouvelle infrastructure.
 
-### Mesures à recueillir avant migration
+### Mesures à recueillir avant toute nouvelle décision d'hébergement
 - Depuis Douala et une seconde région : navigation réelle, réseau mobile et bureau, nouveau/ancien visiteur.
-- TTFB froid/chaud, p50/p75/p95 des routes, durée `getUser()`, nombre et durée des requêtes SQL, waterfall des bundles/typos/images.
+- TTFB froid/chaud, p50/p75/p95 des routes, durée de `/v1/auth/session-context`, nombre et durée des requêtes PostgREST/SQL, waterfall des bundles, typographies et images.
 - Web Vitals : LCP, INP, CLS, temps de navigation entre onglets.
 - Charges : 10, 50 et 200 utilisateurs actifs simulés **uniquement en environnement de test**, sans envoyer d'e-mails réels.
 - Analyse des requêtes lentes Supabase et instrumentation des opérations clés.
@@ -163,7 +163,7 @@ Intégration IA : tutorat socratique, revue d'architecture, aide UX, génératio
 | VM sous Proxmox + Supabase géré | Contrôle total des VM, snapshots, réseau et orchestration maison | Infrastructure hôte, disponibilité, Internet, PRA et maintenance à assumer |
 | VM Proxmox + base PostgreSQL auto-hébergée | Contrôle complet des données et du déploiement | Risque opérationnel nettement plus élevé : base, réplication, stockage, restore, secrets |
 
-**Proxmox VE est d'abord un hyperviseur, pas un « VPS » en soi.** Le déploiement choisi utilise deux CT isolés derrière Nginx Proxy Manager. Mesurer à trafic comparable ; maintenir Vercel comme retour arrière jusqu'à validation, observabilité et restauration testée.
+**Proxmox VE est d'abord un hyperviseur, pas un « VPS » en soi.** L'architecture active utilise CT410 et CT420 derrière Nginx Proxy Manager, avec PostgreSQL local. Le maintien effectif d'une solution Vercel de retour arrière doit être vérifié, et non supposé. Priorité : diagnostic, staging et restauration testée.
 
 Une migration vers un serveur physiquement plus proche des apprenants peut accélérer les assets mais ralentir les requêtes vers une base distante : seule la mesure de bout en bout permet de trancher.
 
@@ -172,8 +172,8 @@ Une migration vers un serveur physiquement plus proche des apprenants peut accé
 Les délais ci-dessous sont des **estimations d'ordonnancement à réviser** après mesure du backlog et de la capacité de développement, et sont distincts du parcours de huit semaines suivi par l'apprenant.
 
 ### Lot A — Fondations et confiance (priorité immédiate)
-- Onboarding intensif : jours fixes/facultatifs, 5–10 h, validation SQL, mise à jour du tableau formateur. **Implémentation initiée dans cette branche.**
-- Recette des rôles, droits RLS, envoi de mails Resend, parcours mobile, sauvegardes, journaux d'erreur.
+- Onboarding intensif : jours fixes/facultatifs, 5–10 h, validation SQL et visibilité formateur. **Déjà versionné dans les deux dépôts**, à confirmer avec un apprenant sur le serveur actuel.
+- Recette du parcours Node : inscription, cookie, récupération du mot de passe, SMTP configuré sur CT420, contrôles de rôle RLS, mobile, sauvegarde PostgreSQL et journaux d'erreur.
 - Audit de lenteur avec mesures reproductibles et deux optimisations à fort impact.
 - Uniformiser les onglets et fiabiliser les états vides/erreurs.
 
@@ -225,6 +225,6 @@ Les délais ci-dessous sont des **estimations d'ordonnancement à réviser** apr
 
 1. Le produit fil rouge commun doit-il être **au choix de chaque apprenant** dans une catégorie approuvée, ou une application métier définie par le formateur pour toute la cohorte ?
 2. Pour la V1, quelle cohorte pilote de **3–10 personnes** et quelle méthode de paiement convient au marché cible (Cameroun, Nigeria ou plusieurs pays) ?
-3. Où est hébergé le serveur Proxmox pressenti (datacenter, connexion, contraintes de sécurité) ? Une comparaison honnête nécessite ce contexte et des mesures de performance avant transfert.
+3. L'import des identités et progressions de l'ancienne base Supabase vers PostgreSQL local a-t-il été contrôlé par inventaire d'UUID, sauvegarde et parcours pilote ? **Aucun état de build ne peut remplacer cette vérification.**
 
 **Principe de priorité** : ne pas ouvrir sept parcours pour masquer un parcours central incomplet. D'abord construire une excellente école d'ingénierie produit, puis industrialiser la structure pour les autres métiers.

@@ -1,0 +1,26 @@
+name: Check Formation Pro 360 frontend
+
+on:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 16
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci --no-audit --no-fund
+      - run: npm run test:unit
+      - run: npm run lint
+      - name: Build standalone
+        env:
+          NEXT_PUBLIC_SITE_URL: https://formation.zenithis.tech
+        run: npm run build
