@@ -103,6 +103,7 @@ function SecureShell({children}:{children:React.ReactNode}) {
       <Link href="/" className="academy-brand"><span className="brand-flower"><GraduationCap size={23} strokeWidth={2.1}/></span><span>Formation <span>Pro 360</span></span></Link>
       <nav className="secure-nav" aria-label="Navigation de l'espace privé">
         <Link href="/espace">Mon espace</Link>
+        <Link href="/espace/compte">Mon compte</Link>
         <Link href="/">Voir la démonstration</Link>
       </nav>
     </header>
@@ -113,7 +114,7 @@ function SecureShell({children}:{children:React.ReactNode}) {
 
 export function AppShell({children}:{children:React.ReactNode}) {
   const pathname = usePathname();
-  const isSecure = pathname.startsWith("/espace") || pathname.startsWith("/login");
+  const isSecure = pathname.startsWith("/espace") || pathname.startsWith("/login") || pathname.startsWith("/auth/nouveau-mot-de-passe");
   return isSecure
     ? <SecureShell>{children}</SecureShell>
     : <DemoProvider><AcademyLayout>{children}</AcademyLayout></DemoProvider>;
