@@ -3,7 +3,7 @@
 ## État réel
 
 - Projet Supabase : **Formation Pro 360** (référence `llwuukoqwlwpefgipvgc`), région Paris.
-- PostgreSQL actif avec les migrations initiales, pédagogiques et d'authentification jusqu'à `012_learner_welcome_preferences.sql`.
+- PostgreSQL actif avec les migrations initiales, pédagogiques et d'authentification jusqu'à `013_intensive_weekly_availability.sql`.
 - **16 missions publiées** sur huit semaines, avec prérequis progressifs. La validation d'une mission attribue des XP une seule fois.
 - Les tables applicatives sont protégées par RLS : profils, missions, prérequis, soumissions, XP, badges, séances, guides d'ateliers, suivi de formation, messagerie et préférences.
 - Vercel possède les variables d'environnement publiques requises (URL, clé publishable, URL du site).
@@ -152,3 +152,7 @@ Migration `011_trainer_mission_authoring.sql` :
 - Message formateur lu par l'apprenant et contrôles de cloisonnement entre les utilisateurs.
 - Audit de l'ergonomie sur téléphone et avec une connexion réseau limitée.
 - Activation éventuelle de la protection des mots de passe compromis dans Supabase Auth, si disponible pour le plan du projet.
+
+## Onboarding intensif personnalisé
+
+La migration `013_intensive_weekly_availability.sql` étend `learner_preferences` avec `regular_days` (jours fixes) et `optional_days` (jours facultatifs). Les journées sont indexées de 1 (lundi) à 7 (dimanche) ; la saisie serveur exige **au moins 3 jours fixes**, des jours facultatifs distincts et une séance de **5, 6, 8 ou 10 heures**. L'ancien choix de 30 à 120 minutes des comptes existants est conservé comme historique **sans inventer de journées**, mais doit être actualisé volontairement depuis « Mes objectifs ». Aucune donnée d'identité, soumission ou XP n'est réinitialisée.
