@@ -10,8 +10,8 @@ export type OverviewMission={
 export type OverviewSubmission={
   mission_id:string;status:string;score:number|null;created_at:string;
 };
-export function SecureLearnerOverview({missions,submissions,approvedIds,xp,level}:{
-  missions:OverviewMission[];submissions:OverviewSubmission[];approvedIds:string[];xp:number;level:number;
+export function SecureLearnerOverview({missions,submissions,approvedIds,dependencies,xp,level}:{
+  missions:OverviewMission[];submissions:OverviewSubmission[];approvedIds:string[];dependencies:{mission_id:string;prerequisite_id:string}[];xp:number;level:number;
 }){
   const [query,setQuery]=useState("");
   const approved=new Set(approvedIds);
@@ -23,7 +23,8 @@ export function SecureLearnerOverview({missions,submissions,approvedIds,xp,level
   const plannedXp=missions.reduce((sum,m)=>sum+m.xp,0);
   const visible=useMemo(()=>missions.filter(m=>(m.title+" "+m.domain+" "+m.description).toLocaleLowerCase("fr")
     .includes(query.toLocaleLowerCase("fr").trim())).slice(0,6),[missions,query]);
-  const first=missions.find(m=>!approved.has(m.id)&&latest.get(m.id)?.status!=="pending");
+  const first=missions.find(m=>!approved.has(m.id)&&latest.get(m.id)?.status!=="pending"&&
+    !dependencies.some(d=>d.mission_id===m.id&&!approved.has(d.prerequisite_id)));
   const pending=missions.find(m=>latest.get(m.id)?.status==="pending");
   const next=first||pending||missions[0];
   return <div className="real-overview" id="tableau-de-bord">
@@ -78,7 +79,8 @@ export function SecureLearnerOverview({missions,submissions,approvedIds,xp,level
           {visible.length===0&&<p className="academy-empty">Aucune mission trouvée. Essaie une autre recherche.</p>}
           {visible.map((m,index)=>{
             const last=latest.get(m.id);
-            const status=approved.has(m.id)?"approved":last?.status==="pending"?"in_review":
+            const blocked=dependencies.some(d=>d.mission_id===m.id&&!approved.has(d.prerequisite_id));
+            const status=approved.has(m.id)?"approved":blocked?"locked":last?.status==="pending"?"in_review":
               last?.status==="changes_requested"?"changes_requested":"available";
             return <Link key={m.id} className={"academy-class-item state-"+status} href={"/espace/atelier/"+m.id}>
               <span className="class-count">{String(index+1).padStart(2,"0")}</span>
@@ -86,7 +88,7 @@ export function SecureLearnerOverview({missions,submissions,approvedIds,xp,level
                 <small>Semaine {m.week} · {displayDomain(m.domain)}</small>
                 <span className="mission-tech-tags">{technologiesForMission(m).map(tech=><TechnologyBadge name={tech} key={tech}/>)}</span>
               </span>
-              <span className={"class-state "+status}>{status==="approved"?"Validée":status==="in_review"?"En correction":status==="changes_requested"?"À corriger":"À découvrir"}</span>
+              <span className={"class-state "+status}>{status==="approved"?"Validée":status==="in_review"?"En correction":status==="changes_requested"?"À corriger":status==="locked"?"À débloquer":"Disponible"}</span>
               <span className="class-go"><ArrowRight size={16}/></span>
               {last?.score!=null&&<span className="sr-only">Note : {last.score} sur 100</span>}
             </Link>;
