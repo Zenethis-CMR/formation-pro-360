@@ -20,7 +20,7 @@ export default async function TrainerSpace({searchParams}:{searchParams:Promise<
   if(!isSupabaseConfigured()) redirect("/espace");
   const {supabase} = await requireRole("trainer");
   const params=await searchParams;
-  const [{data:submissions,error:se},{data:missions,error:me},{data:learners,error:le},{data:awards,error:ae},{data:allSubmissions,error:allSe},{data:practice,error:pe},{data:guides,error:ge},{data:settings,error:settingsError},{data:deps,error:depsError},{data:steps,error:stepsError},{data:coachMessages,error:coachError},{data:badgeAwards,error:badgeAwardsError}] = await Promise.all([
+  const [{data:submissions,error:se},{data:missions,error:me},{data:learners,error:le},{data:awards,error:ae},{data:allSubmissions,error:allSe},{data:practice,error:pe},{data:guides,error:ge},{data:settings,error:settingsError},{data:deps,error:depsError},{data:steps,error:stepsError},{data:coachMessages,error:coachError},{data:badgeAwards,error:badgeAwardsError},{data:learningProfiles,error:learningProfilesError}] = await Promise.all([
     supabase.from("submissions").select("id,mission_id,learner_id,url,note,created_at").eq("status","pending").order("created_at"),
     supabase.from("missions").select("id,title,domain,xp,published,week").order("week"),
     supabase.from("profiles").select("id").eq("role","learner").order("created_at"),
@@ -32,10 +32,18 @@ export default async function TrainerSpace({searchParams}:{searchParams:Promise<
     supabase.from("mission_prerequisites").select("mission_id,prerequisite_id"),
     supabase.from("workshop_steps").select("learner_id,mission_id,completed_at"),
     supabase.from("coach_messages").select("id,trainer_id,learner_id,body,created_at").order("created_at",{ascending:false}).limit(200),
-    supabase.from("learner_badges").select("badge_slug")
+    supabase.from("learner_badges").select("badge_slug"),
+    supabase.from("learner_preferences").select("learner_id,preferred_name,goal,minutes_per_day")
   ]);
-  if(se||me||le||ae||allSe||pe||ge||settingsError||depsError||stepsError||coachError||badgeAwardsError)return <main className="page"><p className="alert danger">Erreur de chargement. Vérifie les migrations SQL et les droits du compte.</p></main>;
+  if(se||me||le||ae||allSe||pe||ge||settingsError||depsError||stepsError||coachError||badgeAwardsError||learningProfilesError)return <main className="page"><p className="alert danger">Erreur de chargement. Vérifie les migrations SQL et les droits du compte.</p></main>;
   const pending=(submissions||[]) as Submission[], catalog=(missions||[]) as Mission[];
+  const preferencesById=new Map((learningProfiles||[]).map(p=>[p.learner_id,p]));
+  const namedLearners=(learners||[]).map(l=>({
+    ...l,
+    preferred_name:preferencesById.get(l.id)?.preferred_name||null,
+    goal:preferencesById.get(l.id)?.goal||null,
+    minutes_per_day:preferencesById.get(l.id)?.minutes_per_day||null
+  }));
   const byId = new Map(catalog.map(m=>[m.id,m]));
   const rubricById = new Map(((guides||[]) as MissionRubric[]).map(g=>[g.mission_id,g.rubric]));
   const published=catalog.filter(m=>m.published);
@@ -52,13 +60,13 @@ export default async function TrainerSpace({searchParams}:{searchParams:Promise<
       <div className="stat-card"><span>MISSIONS PUBLIÉES</span><strong>{catalog.filter(m=>m.published).length}</strong></div>
       <div className="stat-card"><span>APPRENANTS INSCRITS</span><strong>{(learners||[]).length}</strong></div>
       <div className="stat-card"><span>XP ATTRIBUÉS</span><strong>{(awards||[]).reduce((sum,x)=>sum+Number(x.xp),0)}</strong></div></div>
-    <TrainerCoachingPanel learners={learners||[]} insights={insights} messages={(coachMessages||[]) as CoachMessage[]} startDate={settings?.start_date??null}/>
+    <TrainerCoachingPanel learners={namedLearners} insights={insights} messages={(coachMessages||[]) as CoachMessage[]} startDate={settings?.start_date??null}/>
     <LaunchReadiness publishedMissions={catalog.filter(m=>m.published).length} guidedMissions={(guides||[]).length}
       learners={(learners||[]).length} submissions={(allSubmissions||[]).length} validatedMissions={(awards||[]).length}
       awardedBadges={(badgeAwards||[]).length} startDate={settings?.start_date??null}/>
     <TrainingSchedule startDate={settings?.start_date??null} missions={catalog} variant="trainer"/>
     <CurriculumRoadmap missions={catalog} variant="trainer"/>
-    <CohortProgress learners={learners||[]} awards={awards||[]} submissions={allSubmissions||[]} practice={practice||[]} missions={catalog.filter(m=>m.published)} missionCount={catalog.filter(m=>m.published).length}/>
+    <CohortProgress learners={namedLearners} awards={awards||[]} submissions={allSubmissions||[]} practice={practice||[]} missions={catalog.filter(m=>m.published)} missionCount={catalog.filter(m=>m.published).length}/>
     {params.success && <p className="alert success">{params.success==="message"?"Message pédagogique enregistré et visible dans l’espace apprenant.":"Modification enregistrée dans la base de données."}</p>}
     {params.error && <p className="alert danger">Échec de l’opération. Vérifie les champs ou les droits d’accès.</p>}
     <section className="panel"><div className="section-head"><h2>Soumissions à évaluer</h2><span className="counter">{pending.length} en attente</span></div>
