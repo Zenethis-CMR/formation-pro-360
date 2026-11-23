@@ -6,6 +6,7 @@ import {backendRequest} from "@/lib/auth/backend";
 import {pilotCourse} from "@/lib/v2-public-catalog";
 import {v2WorkshopGuides} from "@/lib/v2-workshop-guides";
 import {V2WorkshopChecklist,V2WorkshopCopyTools} from "@/components/v2-workshop-tools";
+import {WorkshopNotebook} from "@/components/workshop-notebook";
 import {submitV2Lesson} from "@/app/espace/actions";
 
 export const dynamic="force-dynamic";
@@ -50,7 +51,7 @@ function rubricTitles(rubric:unknown[]):string[]{
 }
 export default async function V2WorkshopStudio({params,searchParams}:{
   params:Promise<{slug:string}>;
-  searchParams:Promise<{livrable?:string}>;
+  searchParams:Promise<{livrable?:string;carnet?:string}>;
 }){
   const {slug}=await params;
   const editorial=allLessons.find(item=>item.slug===slug);
@@ -68,6 +69,15 @@ export default async function V2WorkshopStudio({params,searchParams}:{
     .sort((a,b)=>b.version-a.version):[];
   const lesson=matching[0];
   const accessible=Boolean(entitlement&&lesson);
+  const savedResponse=accessible&&lesson
+    ?await backendRequest("/v1/training/catalog/ingenierie-produit-ia/lessons/"+
+      lesson.id+"/notebook").catch(()=>null):null;
+  const workbook= savedResponse?.ok?(
+    (await savedResponse.json() as {notebook:{
+      notes:string;next_action:string;reference_url:string|null;
+      completed_steps:number[];updated_at:string|null
+    }}).notebook
+  ):null;
   // Editorial guides are server-only and are never rendered to unregistered users.
   const guide=accessible?v2WorkshopGuides[slug]:null;
   const history=accessible&&lesson?(data?.submissions||[]).filter(s=>
@@ -107,6 +117,10 @@ export default async function V2WorkshopStudio({params,searchParams}:{
         <p>Position dans le programme, pas progression officiellement validée.</p>
       </div>
     </header>
+    {query.carnet==="ok"&&<p className="alert success" role="status"><CheckCircle2 size={17}/> Carnet enregistré ! Les coches et notes sont maintenant synchronisées avec ton compte.</p>}
+    {query.carnet==="invalide"&&<p className="alert danger" role="alert">Le carnet contient un champ incorrect. Vérifie le contenu et le lien.</p>}
+    {query.carnet==="acces"&&<p className="alert danger" role="alert">Le carnet ne peut pas être enregistré : vérifie ton inscription.</p>}
+    {query.carnet==="indisponible"&&<p className="alert danger" role="alert">La sauvegarde du carnet est temporairement indisponible. Copie tes notes avant de quitter.</p>}
     {query.livrable==="envoye"&&<p role="status" className="alert success"><CheckCircle2 size={17}/> Ton livrable a été transmis. Le formateur peut maintenant le corriger.</p>}
     {query.livrable==="erreur"&&<p role="alert" className="alert danger">Le dépôt n'a pas abouti. Vérifie ton lien et réessaie depuis ton atelier.</p>}
     {query.livrable==="acces"&&<p role="alert" className="alert danger">L'accès au dépôt est refusé. Vérifie que ton inscription est active et que la leçon est publiée.</p>}
@@ -128,7 +142,18 @@ export default async function V2WorkshopStudio({params,searchParams}:{
           <div className="studio-objective-card"><span>CONSIGNE OFFICIELLE · EXERCICE GUIDÉ</span><p>{lesson?.guided_work}</p></div>
           <div className="studio-objective-card is-independent"><span>CONSIGNE OFFICIELLE · TRAVAIL AUTONOME</span><p>{lesson?.independent_work}</p></div>
         </section>
-        {guide&&<V2WorkshopChecklist steps={guide.steps}/>}
+        {guide&&(workbook&&lesson&&data?.enrollment==="active"?
+          <WorkshopNotebook slug={slug} lessonId={lesson.id} steps={guide.steps} initial={workbook}/>:
+          <>
+            <V2WorkshopChecklist steps={guide.steps}/>
+            <section id="carnet" className="studio-section studio-workbook-fallback">
+              <LockKeyhole size={20}/><div><h2>{data?.enrollment==="completed"?"Carnet en lecture seule":"La sauvegarde du carnet est indisponible"}</h2>
+                <p>Tu peux consulter les consignes, mais les coches de cet écran ne sont pas synchronisées.</p>
+                {workbook?.notes&&<blockquote>{workbook.notes}</blockquote>}
+                {workbook?.next_action&&<p><strong>Prochaine action :</strong> {workbook.next_action}</p>}
+              </div>
+            </section>
+          </>)}
         <section id="qualite" className="studio-section studio-quality">
           <span className="studio-eyebrow"><ShieldCheck size={15}/> 03 · AUTOÉVALUATION</span>
           <h2>Vérifie la qualité avant de soumettre</h2>
@@ -193,8 +218,8 @@ export default async function V2WorkshopStudio({params,searchParams}:{
       <aside className="studio-aside" aria-label="Sommaire de l'atelier">
         <div className="studio-aside-card"><span>TON STUDIO D'ATELIER</span><strong>{editorial.title}</strong><div className="studio-aside-divider"/>
           <a href="#brief">01 · La mission</a><a href="#studio-checklist-title">02 · Les étapes</a>
-          <a href="#qualite">03 · Qualité</a><a href="#boite-outils">04 · Modèles et IA</a>
-          <a href="#livrable">05 · Remise du livrable</a>
+          <a href="#carnet">03 · Carnet</a><a href="#qualite">04 · Qualité</a><a href="#boite-outils">05 · Modèles et IA</a>
+          <a href="#livrable">06 · Remise du livrable</a>
           <div className="studio-aside-divider"/>
           <p>Statut : <b>{approved?"Validé":latest?.status==="pending"?"En correction":
             latest?.status==="changes_requested"?"À améliorer":"À réaliser"}</b></p>

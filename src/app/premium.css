@@ -1252,3 +1252,17 @@ button,a,input,textarea,select { -webkit-tap-highlight-color:transparent; }
 .v2-review-total>span{display:flex;gap:6px;align-items:center;flex:1;color:#315f91;font-size:11px;font-weight:850}.v2-review-total>strong{font-size:23px;color:#245a99}
 .v2-review-total>strong small{font-size:11px;color:#6c89aa}.v2-review-total em{display:flex;align-items:center;gap:5px;font-style:normal;font-size:10px;color:#5185ba;width:100%}
 @media(max-width:650px){.v2-review-rubric>label{align-items:flex-start;flex-direction:column}.v2-review-criterion-score{align-self:flex-end}}
+
+/* Private notebook is saved explicitly; evaluated submissions stay separate. */
+.workbook-form{display:grid;gap:20px;min-width:0}.workbook-section{display:grid;gap:12px}
+.workbook-section>label{display:flex;gap:12px;justify-content:space-between;align-items:center;font-size:12px;font-weight:850;color:#2c557c}
+.workbook-section label small{font-weight:500;font-size:10px;color:#8399b0}
+.workbook-section textarea,.workbook-section input{width:100%;border:1px solid #cedff1;background:#fff;color:#254566;border-radius:9px;padding:11px 12px;font:inherit;font-size:12px;line-height:1.7;resize:vertical}
+.workbook-section textarea:focus-visible,.workbook-section input:focus-visible{outline:2px solid #327fce;outline-offset:1px}
+.workbook-footer{display:flex;gap:14px;align-items:center;flex-wrap:wrap;margin-top:6px}
+.workbook-submit{display:inline-flex;gap:8px;align-items:center;justify-content:center;border:0;background:#347bdc;color:#fff;border-radius:10px;padding:13px 16px;font-size:12px;font-weight:900;cursor:pointer}
+.workbook-submit:disabled{opacity:.6;cursor:wait}.workbook-footer>span,.workbook-disclaimer{font-size:10px!important;color:#8299b2!important;line-height:1.7}
+.studio-workbook-fallback{display:flex;gap:12px;align-items:flex-start;color:#4583bf}
+.studio-workbook-fallback svg{flex:none}.studio-workbook-fallback h2{font-size:15px;margin:0 0 5px}.studio-workbook-fallback p{font-size:11px;color:#7890a8}
+.studio-workbook-fallback blockquote{white-space:pre-wrap;word-break:break-word;border-left:3px solid #4f95d9;background:#f5faff;padding:12px;font-size:11px;color:#557694}
+@media(max-width:650px){.workbook-section>label{align-items:start;flex-direction:column}.workbook-submit{width:100%}}

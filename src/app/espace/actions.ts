@@ -314,3 +314,39 @@ export async function reviewV2Lesson(formData:FormData) {
   revalidatePath("/espace/parcours/ingenierie-produit-ia");
   redirect(path+"?correction=validee");
 }
+
+/** Private work notes and checklist: never a submission, never XP. */
+export async function saveWorkshopNotebook(formData:FormData){
+  await requireRole("learner");
+  const base="/espace/parcours/ingenierie-produit-ia";
+  const slug=String(formData.get("workshopSlug")||"");
+  const destination=/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug)&&slug.length<=80
+    ?base+"/atelier/"+slug:base;
+  const lessonId=String(formData.get("lessonId")||"");
+  const notes=String(formData.get("notes")||"").trim();
+  const nextAction=String(formData.get("nextAction")||"").trim();
+  const rawUrl=String(formData.get("referenceUrl")||"").trim();
+  const checked=formData.getAll("completedStep").map(String);
+  if(!idPattern.test(lessonId)||notes.length>6000||nextAction.length>1000||
+    rawUrl.length>800||checked.length>5||checked.some(v=>!/^[1-5]$/.test(v))||
+    new Set(checked).size!==checked.length)redirect(destination+"?carnet=invalide");
+  let url:string|null=null;
+  if(rawUrl){
+    let candidate:URL;
+    try{candidate=new URL(rawUrl)}catch{redirect(destination+"?carnet=invalide")}
+    if(!["http:","https:"].includes(candidate.protocol))
+      redirect(destination+"?carnet=invalide");
+    url=candidate.href;
+  }
+  const result=await backendRequest(
+    "/v1/training/catalog/ingenierie-produit-ia/lessons/"+lessonId+"/notebook",
+    {method:"PUT",body:JSON.stringify({
+      notes,next_action:nextAction,reference_url:url,
+      completed_steps:checked.map(Number)
+    })}
+  ).catch(()=>null);
+  if(!result?.ok)
+    redirect(destination+"?carnet="+(result?.status===403?"acces":"indisponible"));
+  revalidatePath(destination);
+  redirect(destination+"?carnet=ok");
+}
