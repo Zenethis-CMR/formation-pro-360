@@ -9,7 +9,8 @@ test("V2 trainer scoring is based on real proof and published lesson details",()
   assert.match(page,/item.evidence_required/);
   assert.match(page,/item.rubric/);
   assert.match(page,/action=\{reviewV2Lesson\}/);
-  assert.match(page,/4 × 25/);
+  const scoring=read("src/components/v2-trainer-score-inputs.tsx");
+  assert.match(scoring,/4 × 25/);
 });
 test("four criterion values are recomputed and validated on the server",()=>{
   const action=read("src/app/espace/actions.ts");
