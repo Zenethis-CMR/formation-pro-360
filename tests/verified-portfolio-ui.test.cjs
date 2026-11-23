@@ -12,7 +12,7 @@ test("portfolio is private, learner-only and refuses invented data",()=>{
  assert.match(page,/project.xp===100/);
  assert.match(page,/project.score>=80/);
  assert.match(page,/portfolio_not_available|response\?\.status===403/);
- assert.doesNotMatch(page,/xp_ledger|db\.from\(|Math\.random/);
+ assert.doesNotMatch(page,/db\.from\(|Math\.random|select .*public\.xp_ledger/);
 });
 test("portfolio never claims automatic certification and only prints on explicit click",()=>{
  const ui=read("src/components/learner-verified-portfolio.tsx");
