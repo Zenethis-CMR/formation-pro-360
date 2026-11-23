@@ -77,7 +77,7 @@ export default async function LearnerSpace({searchParams}:{searchParams:Promise<
       {params.error && <p className="alert danger" role="alert">{params.error==="practice"?"Impossible d’enregistrer la séance. Essaie à nouveau.":"Impossible d’enregistrer cette soumission. Vérifie les informations et les prérequis."}</p>}
     </div>
     {tab==="progression"&&<>
-      {v2Progress&&<V2LearnerProgressPanel progress={v2Progress}/>}
+      {v2Progress&&<V2LearnerProgressPanel progress={v2Progress} otherXp={xp}/>}
       <div className="v2-legacy-section-head"><span>MES AUTRES ACQUIS · RÉALISATIONS CONSERVÉES</span><h2>Mes compétences et récompenses</h2><p>Badges, exercices et retours de tes autres réalisations, conservés sur ton compte.</p></div>
       <LearnerCoachingPanel insight={insight} messages={(coachMessages||[]) as CoachMessage[]} startDate={settings?.start_date??null}/>
       <LearningAchievements catalog={(badgeCatalog||[]) as Badge[]} earned={(myBadges||[]) as EarnedBadge[]} practice={(practice||[]) as PracticeCheckin[]} validatedCount={approved.size} currentMission={currentMission ? {id:currentMission.id,title:currentMission.title} : null}/>

@@ -122,8 +122,11 @@ export default async function TrainerSpace({searchParams}:{searchParams:Promise<
   }
   return <main className="page secure-trainer-page">
     {tab!=="dashboard"&&<WorkspaceTabHeading role="trainer" tab={tab}/>}
-    {tab==="dashboard"&&<SecureTrainerOverview pending={pendingCount} learners={learnerCount}
-      missions={published.length} validatedXp={(awards||[]).reduce((sum,x)=>sum+Number(x.xp),0)}/>}
+    {tab==="dashboard"&&<>
+      <V2TrainerEvaluationOverview/>
+      <SecureTrainerOverview pending={pendingCount} learners={learnerCount}
+        missions={published.length} validatedXp={(awards||[]).reduce((sum,x)=>sum+Number(x.xp),0)}/>
+    </>}
     {params.success&&<p className="alert success" role="status">{params.success==="message"?"Message pédagogique enregistré dans l'espace apprenant.":"Modification enregistrée dans la base de données."}</p>}
     {params.error&&<p className="alert danger" role="alert">Échec de l'opération. Vérifie les champs ou les droits d'accès.</p>}
     {tab==="evaluations"&&<>

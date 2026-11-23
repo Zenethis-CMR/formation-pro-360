@@ -11,7 +11,7 @@ function dateString(stamp:string){
   if(!Number.isFinite(date.getTime()))return "Date indisponible";
   return new Intl.DateTimeFormat("fr-FR",{timeZone:"Africa/Douala",dateStyle:"medium"}).format(date);
 }
-export function V2LearnerProgressPanel({progress}:{progress:Progress}){
+export function V2LearnerProgressPanel({progress,otherXp}:{progress:Progress;otherXp:number}){
   const enrolled=progress.enrollment==="active"||progress.enrollment==="completed";
   const paused=progress.enrollment==="paused"||progress.enrollment==="revoked";
   const lessonVersions=new Map<string,Progress["lessons"][number]>();
@@ -50,7 +50,7 @@ export function V2LearnerProgressPanel({progress}:{progress:Progress}){
     :<>
       <div className="v2-progress-metrics">
         <div className="v2-progress-stat"><span><CheckCircle2 size={15}/> Ateliers validés</span><strong>{successes}<small> / {total}</small></strong><p>{percent}% du parcours évalué avec succès</p></div>
-        <div className="v2-progress-stat"><span><Award size={15}/> XP obtenus dans le parcours</span><strong>{progress.xpTotal}</strong><p>Uniquement après validation (80/100 minimum)</p></div>
+        <div className="v2-progress-stat"><span><Award size={15}/> XP CUMULÉS</span><strong>{progress.xpTotal+otherXp}</strong><p>{progress.xpTotal} XP du parcours · {otherXp} XP des autres réalisations</p></div>
         <div className="v2-progress-stat"><span><Clock3 size={15}/> En correction</span><strong>{pending}</strong><p>{revisions} atelier(s) à améliorer</p></div>
       </div>
       <div className="v2-progress-bar" role="progressbar" aria-valuenow={successes} aria-valuemin={0} aria-valuemax={total} aria-label="Ateliers validés"><span style={{width:percent+"%"}}/></div>

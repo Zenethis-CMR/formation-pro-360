@@ -15,7 +15,8 @@ test("V2 progression is session-scoped and separate from learner V1 achievements
   assert.match(helper,/lesson_access==="granted"/);
   assert.match(helper,/return empty/);
   assert.match(panel,/status==="approved"/);
-  assert.match(panel,/XP obtenus dans le parcours/);
+  assert.match(panel,/XP CUMULÉS/);
+  assert.match(panel,/progress.xpTotal\+otherXp/);
   assert.match(panel,/latest\.has\(key\)/);
   assert.match(panel,/Rejoindre la formation/);
   assert.doesNotMatch(panel,/xp_ledger|from\("submissions"\)/);

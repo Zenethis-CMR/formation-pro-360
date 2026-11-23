@@ -25,7 +25,7 @@ test("client makes an explicit request and shows a model response or accurate un
  const s=read("src/components/workshop-coach.tsx");
  assert.match(s,/useActionState/);
  assert.match(s,/action=\{run\}/);
- assert.match(s,/Le coach interactif/);
+ assert.match(s,/Pose une question sur cet atelier/);
  assert.match(s,/state.answer/);
  assert.match(s,/En envoyant cette question/);
  assert.doesNotMatch(s,/localStorage|fetch\(|simulate|faker/i);
