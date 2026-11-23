@@ -118,5 +118,15 @@ jobs:
             exit 1
           fi
           curl --retry 15 --retry-connrefused --retry-delay 2 --fail --silent --show-error http://127.0.0.1:3000/ >/dev/null
+          # Ensure both V2 public catalog routes really serve rendered content,
+          # without logging personal information or requiring auth.
+          catalog_html="$(mktemp)"
+          course_html="$(mktemp)"
+          trap 'rm -f "$catalog_html" "$course_html"' EXIT
+          curl --retry 5 --retry-connrefused --retry-delay 2 --fail --silent --show-error http://127.0.0.1:3000/catalogue -o "$catalog_html"
+          curl --retry 5 --retry-connrefused --retry-delay 2 --fail --silent --show-error http://127.0.0.1:3000/catalogue/ingenierie-produit-ia -o "$course_html"
+          grep -Fq 'Les formations 360' "$catalog_html" || { echo "V2 catalog content check failed." >&2; exit 1; }
+          grep -Fq 'Interroger les utilisateurs' "$course_html" || { echo "V2 course details check failed." >&2; exit 1; }
+          echo "V2 public catalog and program verified on CT410."
           bash "$app/current/deploy/cleanup.sh"
           REMOTE

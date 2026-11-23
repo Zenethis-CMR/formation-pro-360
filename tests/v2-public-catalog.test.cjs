@@ -25,6 +25,7 @@ test("public catalog pages are discoverable and never grant enrollment or XP",()
   assert.match(detail,/pilotCourse\.modules\.map/);
   assert.match(list,/inscriptions V2 en cours de préparation/);
   assert.match(shell,/label:"Catalogue V2"/);
+  assert.equal((shell.match(/label:"Catalogue V2"/g)||[]).length,2);
   assert.match(login,/href="\/catalogue"/);
   for(const page of [list,detail]){
     assert.doesNotMatch(page,/enrollments|xp_ledger|createDatabaseClient|action=\{/);

@@ -35,7 +35,8 @@ export function SecureAcademyShell({children,stats}:{children:React.ReactNode;st
     {href:base,label:"Tableau de bord",icon:LayoutDashboard},
     {href:base+"?onglet=evaluations",label:"Évaluations",icon:ClipboardCheck},
     {href:base+"?onglet=apprenants",label:"Mes apprenants",icon:Users},
-    {href:base+"?onglet=programme",label:"Programme",icon:CalendarDays}
+    {href:base+"?onglet=programme",label:"Programme",icon:CalendarDays},
+    {href:"/catalogue",label:"Catalogue V2",icon:Sparkles}
   ]:[
     {href:base,label:"Tableau de bord",icon:LayoutDashboard},
     {href:base+"?onglet=missions",label:"Mes missions",icon:BookOpen},
