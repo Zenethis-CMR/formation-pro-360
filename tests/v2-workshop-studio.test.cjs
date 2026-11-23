@@ -8,8 +8,8 @@ test("every V2 workshop has an exhaustive guided plan and reusable tools",()=>{
   const text=read("src/lib/v2-workshop-guides.ts");
   const start=text.indexOf("export const v2WorkshopGuides:Record<string,V2WorkshopGuide>=");
   assert.ok(start>0);
-  const body=text.slice(start).split(";\nexport const v2WorkshopGuideCount")[0]
-    .split("=\n")[1];
+  const prefix="export const v2WorkshopGuides:Record<string,V2WorkshopGuide>=";
+  const body=text.slice(start+prefix.length).split(";\nexport const v2WorkshopGuideCount")[0];
   const guides=JSON.parse(body);
   const catalog=read("src/lib/v2-public-catalog.ts");
   const pilot=JSON.parse(catalog.split("export const pilotCourse=")[1].split(" as const;")[0]);
