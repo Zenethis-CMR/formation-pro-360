@@ -18,6 +18,7 @@ import { type LearnerPreferences } from "@/lib/learner-preferences";
 import { getV2DashboardPilot } from "@/lib/v2-dashboard-pilot";
 import { loadV2LearnerProgress } from "@/lib/v2-learner-progress";
 import { V2LearnerProgressPanel } from "@/components/v2-learner-progress-panel";
+import { LearnerJourneyGuide } from "@/components/learner-journey-guide";
 import { V2LearnerResourcesPanel, type LearnerCourseResources } from "@/components/v2-learner-resources-panel";
 import { backendRequest } from "@/lib/auth/backend";
 
@@ -74,6 +75,7 @@ export default async function LearnerSpace({searchParams}:{searchParams:Promise<
   return <main className="page secure-learner-page">
     {tab!=="dashboard"&&<WorkspaceTabHeading role="learner" tab={tab}/>}
     {tab==="dashboard"&&<>
+      {pilot&&<LearnerJourneyGuide pilot={pilot} profileSaved={!!rawPreferences}/>}
       {pilot&&<SecureLearnerOverview missions={missions} submissions={submissions} approvedIds={[...approved]} dependencies={deps} xp={xp} level={level} pilot={pilot}/>}
       <LearnerWelcomeBanner preferences={rawPreferences as LearnerPreferences|null}
         mission={insight.nextMission} pilot={pilot}/>

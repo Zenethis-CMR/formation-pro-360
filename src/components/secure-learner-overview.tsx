@@ -1,7 +1,7 @@
 "use client";
 import { useMemo, useState } from "react";
 import Link from "next/link";
-import { ArrowRight, BadgeCheck, BookOpen, Code2, GraduationCap, Info, Search, Sparkles, Target, TrendingUp } from "lucide-react";
+import { ArrowRight, BadgeCheck, BookOpen, Code2, GraduationCap, Info, Search, Sparkles, Target, TrendingUp, Trophy } from "lucide-react";
 import { TechnologyBadge, technologiesForMission, displayDomain } from "@/components/technology-badge";
 import type { V2DashboardPilot } from "@/lib/v2-dashboard-pilot";
 
@@ -31,8 +31,13 @@ export function SecureLearnerOverview({missions,submissions,approvedIds,dependen
   const enrolled=pilot.enrollment==="active"||pilot.enrollment==="completed";
   const suspended=pilot.enrollment==="paused"||pilot.enrollment==="revoked";
   const pilotHref="/espace/parcours/ingenierie-produit-ia";
-  const resumeHref=enrolled&&pilot.resumeSlug?pilotHref+"/atelier/"+pilot.resumeSlug:pilotHref;
-  const actionLabel=enrolled?"Continuer mes ateliers":
+  const finished=enrolled&&pilot.approved===16&&pilot.xp>=1600;
+  const resumeHref=finished?"/espace/portfolio":
+    enrolled&&pilot.resumeSlug?pilotHref+"/atelier/"+pilot.resumeSlug:
+    enrolled&&pilot.pending>0?"/espace/apprenant?onglet=progression":pilotHref;
+  const actionLabel=finished?"Voir mon portfolio de fin de parcours":
+    enrolled&&pilot.pending>0&&!pilot.resumeSlug?"Suivre mes corrections":
+    enrolled?"Continuer mes ateliers":
     suspended?"Consulter mon inscription":
     pilot.published&&pilot.enrollmentOpen?"Rejoindre le pilote gratuit":
     pilot.published?"Consulter le programme":"Découvrir le programme";
@@ -77,6 +82,12 @@ export function SecureLearnerOverview({missions,submissions,approvedIds,dependen
       <div><span>XP CUMULÉS</span><strong>{xp+pilot.xp}</strong><p>{xp} XP de tes autres réalisations · {pilot.xp} XP du parcours</p></div>
       <div><span>EN CORRECTION</span><strong>{enrolled?pilot.pending:"—"}</strong><p>{enrolled?"Livrables en attente":"Suivi après inscription"}</p></div>
     </section>
+    {finished&&<section className="learner-finish-celebration" aria-label="Fin de parcours validée">
+      <Trophy size={27}/><div><span>16 ATELIERS APPROUVÉS PAR LE FORMATEUR</span>
+        <h2>Ton parcours de production est terminé.</h2>
+        <p>Rassemble tes projets vérifiés et présente tes preuves dans ton portfolio.</p>
+      </div><Link href="/espace/portfolio">Présenter mes réalisations <ArrowRight size={16}/></Link>
+    </section>}
     {enrolled&&<section className="portfolio-dashboard-shortcut">
       <div><span><BadgeCheck size={16}/> RÉALISATIONS VÉRIFIÉES</span>
         <h2>Constitue ton portfolio professionnel</h2>
