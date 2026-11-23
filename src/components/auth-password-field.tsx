@@ -11,7 +11,10 @@ export function AuthPasswordField({name,label,autoComplete,confirm=false}:{
     <label htmlFor={inputId}>{label}</label>
     <div className="auth-password-wrap">
       <input id={inputId} type={visible?"text":"password"} name={name} required
-        minLength={autoComplete==="new-password"?10:1} maxLength={128}
+        minLength={autoComplete==="new-password"?12:1} maxLength={128}
+        pattern={autoComplete==="new-password"?"(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9]).{12,128}":undefined}
+        title={autoComplete==="new-password"?
+          "12 caractères minimum, avec une majuscule, une minuscule et un chiffre":undefined}
         autoComplete={autoComplete} placeholder={confirm?"Confirme ton mot de passe":"Saisis ton mot de passe"}/>
       <button type="button" onClick={()=>setVisible(!visible)}
         aria-label={visible?"Masquer le mot de passe":"Afficher le mot de passe"}
