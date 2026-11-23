@@ -1,0 +1,44 @@
+const test=require("node:test");
+const assert=require("node:assert/strict");
+const fs=require("node:fs");const path=require("node:path");
+const read=p=>fs.readFileSync(path.join(__dirname,"..",p),"utf8");
+test("sharing is opt-in, selection-based, and revocable from the private verified portfolio",()=>{
+ const c=read("src/components/portfolio-publishing.tsx");
+ const portfolio=read("src/components/learner-verified-portfolio.tsx");
+ assert.match(portfolio,/<PortfolioPublishing projects=\{safeProjects\}/);
+ assert.match(c,/useState<string\[\]>\(\[\]\)/);
+ assert.match(c,/projects\.map/);
+ assert.match(c,/submission_ids:chosen/);
+ assert.match(c,/include_scores:scores/);
+ assert.match(c,/include_links:links/);
+ assert.match(c,/window.confirm/);
+ assert.match(c,/method:"DELETE"/);
+ assert.match(c,/token/);
+ assert.match(c,/régénér|lien précédent|lien actuel/);
+ assert.doesNotMatch(c,/localStorage|sessionStorage|Math.random/);
+});
+test("publication proxy enforces learner session and same-origin mutations",()=>{
+ const proxy=read("src/app/api/portfolio-publication/route.ts");
+ assert.match(proxy,/currentUser\(\)/);
+ assert.match(proxy,/user\?\.role==="learner"/);
+ assert.match(proxy,/sameOrigin\(request\)/);
+ assert.match(proxy,/origin/);
+ assert.match(proxy,/backendRequest\(api/);
+ assert.match(proxy,/method:"POST"/);
+ assert.match(proxy,/method:"DELETE"/);
+ assert.match(proxy,/private, no-store/);
+});
+test("public bearer route is dynamic, anonymized and never SEO-indexed",()=>{
+ const page=read("src/app/p/[token]/page.tsx");
+ const config=read("next.config.ts");
+ assert.match(page,/dynamic="force-dynamic"/);
+ assert.match(page,/robots:\{index:false,follow:false,nocache:true\}/);
+ assert.match(page,/backendRequest\("\/v1\/training\/public-portfolio\/"/);
+ assert.match(page,/verification==="trainer_approved_with_xp_ledger"/);
+ assert.match(page,/safeExternal\(p.url\)/);
+ assert.match(page,/noopener noreferrer/);
+ assert.doesNotMatch(page,/learner_id|email|\.note|\.feedback|currentUser|requireRole/);
+ assert.match(config,/Referrer-Policy/);
+ assert.match(config,/no-referrer/);
+ assert.match(config,/noindex, nofollow, noarchive/);
+});

@@ -1,6 +1,7 @@
 "use client";
 import {useMemo,useState} from "react";
 import Link from "next/link";
+import {PortfolioPublishing} from "@/components/portfolio-publishing";
 import {ArrowRight,Award,BadgeCheck,BookOpen,BriefcaseBusiness,CalendarCheck2,
   CheckCircle2,ExternalLink,FileDown,Filter,LockKeyhole,Search,ShieldCheck} from "lucide-react";
 
@@ -94,6 +95,7 @@ export function LearnerVerifiedPortfolio({portfolio}:{portfolio:VerifiedPortfoli
       </button>
     </section>
 
+    <PortfolioPublishing projects={safeProjects}/>
     {safeProjects.length>0&&<section className="portfolio-skill-section">
       <div className="portfolio-section-heading">
         <span>COMPÉTENCES DU PARCOURS</span>
