@@ -51,6 +51,8 @@ export function SecureAcademyShell({children,stats}:{children:React.ReactNode;st
   const profileName=stats.displayName|| (trainer?"Espace formateur":"Mon parcours");
   const isActive=(href:string)=>{
     const [path,query]=href.split("?");
+    if(!trainer&&path==="/espace/parcours/ingenierie-produit-ia"&&
+      pathname.startsWith(path))return true;
     if(path!==pathname)return false;
     const tab=new URLSearchParams(query||"").get("onglet")||"dashboard";
     return tab===currentTab;
@@ -95,9 +97,9 @@ export function SecureAcademyShell({children,stats}:{children:React.ReactNode;st
           {trainer?<><CircleStat label="Apprenants" value={String(stats.learners)} percent={Math.min(100,stats.learners*10)} color="#48c995"/>
             <CircleStat label="À corriger" value={String(stats.pending)} percent={Math.min(100,stats.pending*25)} color="#4387f5"/>
             <CircleStat label="Missions" value={String(stats.missionCount)} percent={Math.min(100,stats.missionCount/16*100)} color="#ffa56e"/></>
-          :<><CircleStat label="Missions" value={String(stats.approvedCount)} percent={learningPercent} color="#48c995"/>
-            <CircleStat label="XP missions" value={String(stats.xp)} percent={(stats.xp%300)/300*100} color="#4387f5"/>
-            <CircleStat label="À corriger" value={String(stats.pending)} percent={Math.min(100,stats.pending*25)} color="#ffa56e"/></>}
+          :<><CircleStat label="Autres missions" value={String(stats.approvedCount)} percent={learningPercent} color="#48c995"/>
+            <CircleStat label="XP autres" value={String(stats.xp)} percent={(stats.xp%300)/300*100} color="#4387f5"/>
+            <CircleStat label="Autres en attente" value={String(stats.pending)} percent={Math.min(100,stats.pending*25)} color="#ffa56e"/></>}
         </div>
       </div>
       <div className="rail-widget">
@@ -121,7 +123,7 @@ export function SecureAcademyShell({children,stats}:{children:React.ReactNode;st
       <Link href={base+"?onglet=apprenants"} className={pathname===base&&currentTab==="apprenants"?"on":""}><Users size={19}/>Apprenants</Link>
     </>:<>
       <Link href={base+"?onglet=missions"} className={pathname===base&&currentTab==="missions"?"on":""}><BookOpen size={19}/>Missions</Link>
-      <Link href={base+"?onglet=progression"} className={pathname===base&&currentTab==="progression"?"on":""}><BarChart3 size={19}/>XP missions</Link>
+      <Link href={base+"?onglet=progression"} className={pathname===base&&currentTab==="progression"?"on":""}><BarChart3 size={19}/>Progression</Link>
     </>}
     <Link href={trainer?base+"?onglet=programme":"/espace/parcours/ingenierie-produit-ia"} className={(trainer?pathname===base&&currentTab==="programme":pathname==="/espace/parcours/ingenierie-produit-ia")?"on":""}><CalendarDays size={19}/>{trainer?"Programme":"Parcours"}</Link>
     <Link href="/espace/compte" className={pathname==="/espace/compte"?"on":""}><Settings2 size={19}/>Compte</Link>

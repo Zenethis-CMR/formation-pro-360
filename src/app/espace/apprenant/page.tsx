@@ -18,6 +18,8 @@ import { type LearnerPreferences } from "@/lib/learner-preferences";
 import { getV2DashboardPilot } from "@/lib/v2-dashboard-pilot";
 import { loadV2LearnerProgress } from "@/lib/v2-learner-progress";
 import { V2LearnerProgressPanel } from "@/components/v2-learner-progress-panel";
+import { V2LearnerResourcesPanel, type LearnerCourseResources } from "@/components/v2-learner-resources-panel";
+import { backendRequest } from "@/lib/auth/backend";
 
 type Params = { error?: string; success?: string; welcome?: string; onglet?: string };
 type Mission = { id:string; title:string; domain:string; description:string; week:number;
@@ -57,6 +59,11 @@ export default async function LearnerSpace({searchParams}:{searchParams:Promise<
   // V2 rights and XP are independent of the historical V1 mission ledger.
   const pilot=tab==="dashboard"?await getV2DashboardPilot():null;
   const v2Progress=tab==="progression"?await loadV2LearnerProgress():null;
+  const resourceResponse=tab==="programme"
+    ?await backendRequest("/v1/training/catalog/ingenierie-produit-ia").catch(()=>null)
+    :null;
+  const courseResources:LearnerCourseResources|null=resourceResponse?.ok
+    ?await resourceResponse.json().catch(()=>null) as LearnerCourseResources|null:null;
   const insight=learnerInsight({
     learnerId:user.id,missions,deps,
     awards:(rawXp||[]).map(x=>({learner_id:user.id,mission_id:x.mission_id})),
@@ -68,7 +75,8 @@ export default async function LearnerSpace({searchParams}:{searchParams:Promise<
     {tab!=="dashboard"&&<WorkspaceTabHeading role="learner" tab={tab}/>}
     {tab==="dashboard"&&<>
       {pilot&&<SecureLearnerOverview missions={missions} submissions={submissions} approvedIds={[...approved]} dependencies={deps} xp={xp} level={level} pilot={pilot}/>}
-      <LearnerWelcomeBanner preferences={rawPreferences as LearnerPreferences|null} mission={insight.nextMission}/>
+      <LearnerWelcomeBanner preferences={rawPreferences as LearnerPreferences|null}
+        mission={insight.nextMission} pilot={pilot}/>
       <section className="v2-catalog-banner"><div><span>LE CATALOGUE 360</span><h2>Sept formations, une première spécialisation active</h2><p>Découvre les six autres domaines, actuellement en préparation. Tes missions historiques et les XP obtenus restent conservés séparément.</p></div><Link href="/catalogue" className="v2-catalog-banner-link">Explorer le catalogue <ArrowUpRight size={16}/></Link></section>
     </>}
     <div className="secure-learner-alerts">
@@ -84,8 +92,16 @@ export default async function LearnerSpace({searchParams}:{searchParams:Promise<
       <SkillMastery missions={missions} approved={approved}/>
     </>}
     {tab==="programme"&&<>
-      <TrainingSchedule startDate={settings?.start_date??null} missions={missions} approved={approved}/>
-      <CurriculumRoadmap missions={missions} approved={approved} prerequisites={deps}/>
+      <V2LearnerResourcesPanel data={courseResources}/>
+      <section className="learner-other-resources">
+        <div className="v2-legacy-section-head"><span>AUTRES RÉALISATIONS · RESSOURCES CONSERVÉES</span>
+          <h2>Calendrier et fiches de mes autres missions</h2>
+          <p>Les activités ci-dessous appartiennent à tes réalisations complémentaires.
+            Le programme principal « Ingénierie produit et IA » est présenté au-dessus.</p>
+        </div>
+        <TrainingSchedule startDate={settings?.start_date??null} missions={missions} approved={approved}/>
+        <CurriculumRoadmap missions={missions} approved={approved} prerequisites={deps}/>
+      </section>
     </>}
     {tab==="missions"&&<>
     <div className="section-head" id="missions"><h2>Programme et missions</h2><span className="counter">Seuil : 80/100</span></div>

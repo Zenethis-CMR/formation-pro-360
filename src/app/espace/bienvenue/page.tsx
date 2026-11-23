@@ -2,6 +2,8 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { ArrowLeft, ArrowRight, BookOpenCheck, CalendarDays, CheckCircle2, Clock3, GraduationCap, Rocket, ShieldCheck, Target } from "lucide-react";
 import { requireRole } from "@/lib/auth/require-role";
+import { getV2DashboardPilot } from "@/lib/v2-dashboard-pilot";
+import { pilotCourse } from "@/lib/v2-public-catalog";
 import { saveLearnerPreferences } from "@/app/espace/actions";
 import { learnerGoals, learnerLevels, type LearnerPreferences } from "@/lib/learner-preferences";
 import { IntensiveScheduleSelector } from "@/components/intensive-schedule-selector";
@@ -27,6 +29,11 @@ export default async function WelcomeLearner({searchParams}:Props) {
   const prerequisites=dependencies||[];
   const next=(missions as Mission[]||[]).find(m=>!completed.has(m.id)&&
     !prerequisites.some(p=>p.mission_id===m.id&&!completed.has(p.prerequisite_id)));
+  const pilot=await getV2DashboardPilot();
+  const enrolled=pilot.enrollment==="active"||pilot.enrollment==="completed";
+  const primaryLesson=enrolled&&pilot.resumeSlug?pilotCourse.modules.flatMap(
+    m=>m.lessons.map(l=>({...l,week:m.week}))
+  ).find(l=>l.slug===pilot.resumeSlug):null;
   return <main className="page learner-welcome-page">
     <Link className="workshop-back" href="/espace/apprenant"><ArrowLeft size={15}/> Mon parcours</Link>
     <header className="learner-welcome-hero">
@@ -77,10 +84,20 @@ export default async function WelcomeLearner({searchParams}:Props) {
         <div className="learner-welcome-next">
           <span className="journey-overline"><Rocket size={15}/> PREMIÈRE ACTION CONCRÈTE</span>
           <h2>Ton prochain atelier</h2>
-          {next?<><span className="learner-welcome-week">SEMAINE {next.week}</span><h3>{next.title}</h3><p>{next.description}</p>
-            <Link href={"/espace/atelier/"+next.id}>Découvrir l'atelier <ArrowRight size={16}/></Link></>
-            :<><p>Toutes tes missions accessibles sont terminées ou en attente de validation.</p>
-            <Link href="/espace/apprenant">Voir mon parcours <ArrowRight size={16}/></Link></>}
+          {primaryLesson?<><span className="learner-welcome-week">SEMAINE {primaryLesson.week}</span>
+            <h3>{primaryLesson.title}</h3><p>{primaryLesson.objective}</p>
+            <Link href={"/espace/parcours/ingenierie-produit-ia/atelier/"+primaryLesson.slug}>
+              Reprendre mon atelier principal <ArrowRight size={16}/></Link></>
+          :enrolled?<><p>Tes ateliers principaux sont terminés ou en correction.</p>
+            <Link href="/espace/parcours/ingenierie-produit-ia">Revoir mes ateliers <ArrowRight size={16}/></Link></>
+          :pilot.published?<><h3>Ingénierie produit et IA</h3>
+            <p>Ouvre le parcours pour découvrir les ateliers et vérifier ton inscription.</p>
+            <Link href="/espace/parcours/ingenierie-produit-ia">Ouvrir mon parcours <ArrowRight size={16}/></Link></>
+          :next?<><span className="learner-welcome-week">AUTRE RÉALISATION · SEMAINE {next.week}</span>
+            <h3>{next.title}</h3><p>{next.description}</p>
+            <Link href={"/espace/atelier/"+next.id}>Découvrir l'atelier complémentaire <ArrowRight size={16}/></Link></>
+          :<><p>Consulte tes réalisations et le calendrier des activités.</p>
+            <Link href="/espace/apprenant">Voir mon espace <ArrowRight size={16}/></Link></>}
         </div>
         <div className="learner-welcome-guide">
           <h3><Target size={17}/> Comment progresser ?</h3>
@@ -90,7 +107,7 @@ export default async function WelcomeLearner({searchParams}:Props) {
         </div>
         <div className="learner-welcome-guide"><h3><CalendarDays size={17}/> Cadence exigeante, résultats concrets</h3>
           <p>Planifie au moins trois jours fixes et cinq heures de travail par séance. Ton formateur vérifie surtout tes livrables : conception, UX, ingénierie, tests et déploiement.</p>
-          <Link href="/espace/apprenant?onglet=programme">Voir les huit semaines <ArrowRight size={15}/></Link>
+          <Link href="/espace/parcours/ingenierie-produit-ia">Voir les huit semaines du parcours principal <ArrowRight size={15}/></Link>
         </div>
       </aside>
     </div>

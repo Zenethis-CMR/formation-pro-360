@@ -6,7 +6,7 @@ const content={
   learner:{
     missions:{eyebrow:"ATELIERS ET LIVRABLES",title:"Mes missions",description:"Retrouve tes ateliers, les prérequis, les livrables attendus et l'état de tes corrections.",icon:BookOpenCheck},
     progression:{eyebrow:"SUIVI DE TOUTES MES RÉALISATIONS",title:"Ma progression",description:"Suis tes ateliers, tes validations et tes XP, ainsi que les badges acquis sur tes autres projets.",icon:BarChart3},
-    programme:{eyebrow:"ORGANISATION DES 8 SEMAINES",title:"Mon programme",description:"Visualise ton calendrier pédagogique et les compétences à construire semaine après semaine.",icon:CalendarDays}
+    programme:{eyebrow:"SUPPORTS ET ATELIERS PRATIQUES",title:"Mes ressources",description:"Accède aux modèles, aux consignes et aux outils des 16 ateliers du parcours principal. Tes anciennes ressources restent disponibles plus bas.",icon:CalendarDays}
   },
   trainer:{
     evaluations:{eyebrow:"ÉVALUATIONS ET HISTORIQUE",title:"Évaluations",description:"Suis les corrections du parcours principal et retrouve l'historique des autres réalisations.",icon:ClipboardCheck},
