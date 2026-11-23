@@ -61,7 +61,9 @@ export function V2LearnerProgressPanel({progress}:{progress:Progress}){
             const validated=lessons.filter(l=>latest.get(l.module_id+":"+l.slug)?.status==="approved").length;
             const weekTotal=lessons.length||2;
             const weekPercent=Math.min(100,Math.round(validated/weekTotal*100));
-            return <Link key={module.id} href={pilotHref} className="v2-progress-week">
+            const current=lessons.find(l=>latest.get(l.module_id+":"+l.slug)?.status!=="approved");
+            const target=current||lessons[0];
+            return <Link key={module.id} href={target?pilotHref+"/atelier/"+target.slug:pilotHref} className="v2-progress-week">
               <span className="v2-progress-week-number">S{String(module.week).padStart(2,"0")}</span>
               <span className="v2-progress-week-name"><strong>{module.title}</strong><span className="v2-progress-week-line"><i style={{width:weekPercent+"%"}}/></span></span>
               <b>{validated}/{weekTotal}</b><ArrowRight size={15}/>

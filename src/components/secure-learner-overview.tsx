@@ -31,6 +31,7 @@ export function SecureLearnerOverview({missions,submissions,approvedIds,dependen
   const enrolled=pilot.enrollment==="active"||pilot.enrollment==="completed";
   const suspended=pilot.enrollment==="paused"||pilot.enrollment==="revoked";
   const pilotHref="/espace/parcours/ingenierie-produit-ia";
+  const resumeHref=enrolled&&pilot.resumeSlug?pilotHref+"/atelier/"+pilot.resumeSlug:pilotHref;
   const actionLabel=enrolled?"Continuer mes ateliers":
     suspended?"Consulter mon inscription":
     pilot.published&&pilot.enrollmentOpen?"Rejoindre le pilote gratuit":
@@ -55,7 +56,7 @@ export function SecureLearnerOverview({missions,submissions,approvedIds,dependen
           <span>8 modules · 16 ateliers · 8 semaines</span>
         </div>
         <div className="v2-feature-actions">
-          <Link href={pilotHref} className="feature-action">{actionLabel} <ArrowRight size={16}/></Link>
+          <Link href={resumeHref} className="feature-action">{actionLabel} <ArrowRight size={16}/></Link>
           <Link href="/catalogue/ingenierie-produit-ia" className="v2-feature-outline">Voir les objectifs <ArrowRight size={14}/></Link>
         </div>
         <p className="v2-pilot-state" role="status">

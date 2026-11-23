@@ -20,6 +20,12 @@ test("progression and enrollment are session-derived and fail closed",()=>{
   const s=read("src/lib/v2-dashboard-pilot.ts");
   assert.match(s,/backendRequest\("\/v1\/training\/catalog\/ingenierie-produit-ia"\)/);
   assert.match(s,/data.enrollment_open===true/);
+  assert.match(s,/resumeSlug/);
+  assert.match(s,/newest=new Map/);
+  const overview=read("src/components/secure-learner-overview.tsx");
+  assert.match(overview,/resumeHref/);
+  const course=read("src/app/espace/parcours/ingenierie-produit-ia/page.tsx");
+  assert.match(course,/bySlug=new Map<string,TrainingLesson>/);
   assert.match(s,/data.track\?\.status!=="published"/);
   assert.match(s,/catch\{return unavailable;\}/);
   assert.doesNotMatch(s,/xp_ledger/);

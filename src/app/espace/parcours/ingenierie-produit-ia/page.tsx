@@ -85,7 +85,13 @@ export default async function V2LearnerTrack({searchParams}:{
     </p>}
     <section className="v2-track-weeks" aria-label="Modules du cursus V2">
       {modList.map(mod=>{
-        const live=lessons.filter(l=>l.module_id===mod.id);
+        // Multiple published revisions must never duplicate a logical workshop.
+        const bySlug=new Map<string,TrainingLesson>();
+        for(const item of lessons.filter(l=>l.module_id===mod.id&&l.status==="published")){
+          if(!bySlug.has(item.slug)||(bySlug.get(item.slug)?.version??0)<item.version)
+            bySlug.set(item.slug,item);
+        }
+        const live=[...bySlug.values()];
         const preview=pilotCourse.modules.find(m=>m.slug===mod.slug);
         return <article key={mod.id} className="v2-track-module">
           <div className="v2-track-module-heading"><span>S{String(mod.week).padStart(2,"0")}</span><div><h2>{mod.title}</h2><p>{mod.outcome}</p></div></div>
