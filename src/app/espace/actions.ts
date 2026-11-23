@@ -350,3 +350,27 @@ export async function saveWorkshopNotebook(formData:FormData){
   revalidatePath(destination);
   redirect(destination+"?carnet=ok");
 }
+
+/** A real and optional per-lesson AI coach. No grading, XP or persistence. */
+export async function askWorkshopCoach(_previous:{status:string;answer:string},
+  formData:FormData):Promise<{status:string;answer:string}>{
+  await requireRole("learner");
+  const lessonId=String(formData.get("lessonId")||"");
+  const question=String(formData.get("question")||"").trim();
+  if(!idPattern.test(lessonId)||question.length<8||question.length>1200)
+    return {status:"invalid",answer:"La question doit contenir entre 8 et 1 200 caractères."};
+  const response=await backendRequest(
+    "/v1/training/catalog/ingenierie-produit-ia/lessons/"+lessonId+"/coach",
+    {method:"POST",body:JSON.stringify({question})}
+  ).catch(()=>null);
+  if(response?.status===429)
+    return {status:"unavailable",answer:"Limite de questions atteinte. Reviens un peu plus tard."};
+  if(!response?.ok)
+    return {status:"unavailable",answer:response?.status===403?
+      "L'accès au coach nécessite une inscription active au parcours.":
+      "Le coach interactif n'est pas encore disponible sur cet environnement."};
+  const body=await response.json().catch(()=>null) as {answer?:unknown}|null;
+  if(typeof body?.answer!=="string"||!body.answer.trim())
+    return {status:"unavailable",answer:"La réponse du coach n'a pas pu être affichée."};
+  return {status:"ok",answer:body.answer.slice(0,6000)};
+}

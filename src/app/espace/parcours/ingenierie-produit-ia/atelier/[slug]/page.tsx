@@ -7,6 +7,7 @@ import {pilotCourse} from "@/lib/v2-public-catalog";
 import {v2WorkshopGuides} from "@/lib/v2-workshop-guides";
 import {V2WorkshopChecklist,V2WorkshopCopyTools} from "@/components/v2-workshop-tools";
 import {WorkshopNotebook} from "@/components/workshop-notebook";
+import {WorkshopCoach} from "@/components/workshop-coach";
 import {submitV2Lesson} from "@/app/espace/actions";
 
 export const dynamic="force-dynamic";
@@ -28,6 +29,7 @@ type Detail={
   lesson_access:"granted"|"locked";
   enrollment:"active"|"completed"|"paused"|"revoked"|null;
   enrollment_open:boolean;evaluation_open:boolean;xp_total:number;
+  coach_available?:boolean;
 };
 const base="/espace/parcours/ingenierie-produit-ia";
 const allLessons=pilotCourse.modules.flatMap(m=>m.lessons.map(l=>({
@@ -170,6 +172,13 @@ export default async function V2WorkshopStudio({params,searchParams}:{
           <p>Le modèle t'aide à produire une preuve concrète ; le prompt t'aide à réfléchir. Aucun contenu généré n'est une preuve de terrain.</p>
           {guide&&<V2WorkshopCopyTools prompt={guide.prompt} template={guide.template}/>}
         </section>
+        {lesson&&data?.coach_available?
+          <WorkshopCoach lessonId={lesson.id}/>:
+          <section id="coach" className="studio-section studio-coach-disabled">
+            <span className="studio-eyebrow"><Sparkles size={15}/> ACCOMPAGNEMENT PERSONNALISÉ</span>
+            <h2>Le coach interactif n'est pas encore activé.</h2>
+            <p>Tu peux déjà utiliser le prompt de coaching et le modèle disponibles dans la boîte à outils, puis poser tes questions à ton formateur. Les réponses IA ne sont jamais simulées.</p>
+          </section>}
         <section id="livrable" className="studio-section studio-delivery">
           <span className="studio-eyebrow"><Flag size={15}/> 05 · REMISE ET CORRECTION</span>
           <h2>Présente ton résultat au formateur</h2>
@@ -218,8 +227,9 @@ export default async function V2WorkshopStudio({params,searchParams}:{
       <aside className="studio-aside" aria-label="Sommaire de l'atelier">
         <div className="studio-aside-card"><span>TON STUDIO D'ATELIER</span><strong>{editorial.title}</strong><div className="studio-aside-divider"/>
           <a href="#brief">01 · La mission</a><a href="#studio-checklist-title">02 · Les étapes</a>
-          <a href="#carnet">03 · Carnet</a><a href="#qualite">04 · Qualité</a><a href="#boite-outils">05 · Modèles et IA</a>
-          <a href="#livrable">06 · Remise du livrable</a>
+          <a href="#carnet">03 · Carnet</a><a href="#qualite">04 · Qualité</a><a href="#boite-outils">05 · Modèles et outils</a>
+          <a href="#coach">06 · Coach pédagogique</a>
+          <a href="#livrable">07 · Remise du livrable</a>
           <div className="studio-aside-divider"/>
           <p>Statut : <b>{approved?"Validé":latest?.status==="pending"?"En correction":
             latest?.status==="changes_requested"?"À améliorer":"À réaliser"}</b></p>

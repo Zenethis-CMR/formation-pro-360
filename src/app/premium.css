@@ -1266,3 +1266,19 @@ button,a,input,textarea,select { -webkit-tap-highlight-color:transparent; }
 .studio-workbook-fallback svg{flex:none}.studio-workbook-fallback h2{font-size:15px;margin:0 0 5px}.studio-workbook-fallback p{font-size:11px;color:#7890a8}
 .studio-workbook-fallback blockquote{white-space:pre-wrap;word-break:break-word;border-left:3px solid #4f95d9;background:#f5faff;padding:12px;font-size:11px;color:#557694}
 @media(max-width:650px){.workbook-section>label{align-items:start;flex-direction:column}.workbook-submit{width:100%}}
+
+/* Explicit, privacy-aware AI coaching; no fake chat or local storage. */
+.studio-live-coach{background:linear-gradient(135deg,#f7fbff,#ffffff);border-color:#d0e5fc}
+.studio-live-coach>small{color:#7d91aa;font-size:10px;line-height:1.6}
+.studio-coach-form{display:grid;gap:12px;padding:18px;margin:17px 0;background:#eef6ff;border:1px solid #d7e9fc;border-radius:12px}
+.studio-coach-form label{color:#315e8e;font-size:12px;font-weight:850}
+.studio-coach-form textarea{width:100%;padding:13px;border:1px solid #cddff2;background:white;color:#28496e;border-radius:9px;font:inherit;font-size:12px;line-height:1.7;resize:vertical}
+.studio-coach-form textarea:focus-visible{outline:2px solid #4287d7;outline-offset:1px}
+.studio-coach-form p{font-size:10px;color:#7894af;line-height:1.65;margin:0}
+.studio-coach-submit{display:inline-flex;align-items:center;gap:8px;justify-content:center;background:#317ad9;border:0;border-radius:10px;padding:12px 17px;color:#fff;font-size:12px;font-weight:850;cursor:pointer;justify-self:start}
+.studio-coach-submit:disabled{opacity:.6;cursor:wait}
+.studio-coach-answer{padding:17px;background:#eefaf5;border:1px solid #ccebdc;border-radius:12px;color:#477d6c;margin:16px 0}
+.studio-coach-answer>div{display:flex;gap:9px;align-items:center;font-size:12px}.studio-coach-answer>p{white-space:pre-wrap;word-break:break-word;font-size:12px;line-height:1.85;color:#3d6685;margin:9px 0 0}
+.studio-coach-answer.is-unavailable{background:#fff8eb;border-color:#f3e1c5}
+.studio-coach-disabled{background:#f7faff;border-style:dashed}.studio-coach-disabled h2{font-size:16px}
+@media(max-width:650px){.studio-coach-submit{justify-self:stretch}}
