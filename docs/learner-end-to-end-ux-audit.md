@@ -1,0 +1,29 @@
+# Revue UX : du premier clic au portfolio professionnel
+
+Cette revue porte sur l'expérience réelle construite par le frontend Formation Pro 360, de la création du compte au dernier atelier et aux réalisations vérifiées. La session privée de l'apprenant n'est pas accessible au robot de CI ; les vérifications du parcours utilisateur sont des vérifications de code et des tests automatisés, **pas** une étude utilisateur en direct.
+
+| Moment | Friction repérée | Correction livrée |
+|---|---|---|
+| Inscription | Le mot de passe demandait plusieurs types de caractères mais l'écran n'affichait que « 12 caractères ». | Règle complète affichée |
+| E-mail de confirmation | Une confirmation réussie redirigeait vers `sent=verified` mais aucun message ne reconnaissait cet état. | Succès confirmé, étapes visibles, bouton de connexion |
+| Échec d'inscription | Une erreur `signup` masquait le formulaire sous le formulaire de renvoi de mail. | Correction de l'état et possibilité de ressaisir |
+| Tableau de bord initial | Deux programmes concurrents, sans orientation prioritaire de l'apprenant. | Fil conducteur à cinq repères et une action principale vérifiable |
+| Onboarding | Les préférences strictes pouvaient paraître obligatoires. | Possibilité visible de passer et de revenir ensuite |
+| Inscription au parcours | L'utilisateur doit retrouver la formation et vérifier sa situation. | CTA contextualisé selon les accès autorisés |
+| Programme de 16 ateliers | Deux chemins distincts permettaient de remettre un livrable, dont un avant les outils de l'atelier. | Un seul dépôt, dans le studio complet |
+| Ouverture d'un atelier | Le CTA primaire « Préparer mon livrable » envoyait directement vers la fin du studio. | CTA conditionnel : lire les consignes, reprendre après correction, suivre ou revoir |
+| Correction et XP | L'IA et les coches personnelles ne doivent pas prétendre valider les compétences. | Statut toujours fondé sur la correction humaine et le registre XP |
+| Fin | Aucune indication claire que le parcours est réellement accompli. | Célébration et accès au portfolio uniquement pour 16 validations et au moins 1 600 XP vérifiés |
+
+## Matrice de recette manuelle encore nécessaire
+
+Avec un vrai compte apprenant et l'accord des responsables :
+1. Créer un compte et vérifier le mail ; entrer avec une session neuve.
+2. Comprendre l'onboarding sur téléphone et ordinateur, le passer puis y revenir.
+3. Rejoindre le cursus ; commencer l'atelier 1 ; utiliser les cinq étapes, le coach et le carnet.
+4. Sauvegarder et recharger le carnet ; soumettre ; suivre une correction ; recevoir une demande d'amélioration et resoumettre.
+5. Recevoir une approbation et 100 XP officiels ; terminer réellement 16 ateliers ; observer la fin et le portfolio.
+6. Imprimer/exporter le portfolio, créer un partage, ouvrir dans une fenêtre privée, puis révoquer.
+7. Vérifier contraste, taille de texte, navigation clavier, défilement, états de chargement, menus mobiles et délais de réponse du coach Qwen3.
+
+**Aucun apprenant fictif, XP artificiel, diplôme ou publication publique n'a été créé par cette modification.**
