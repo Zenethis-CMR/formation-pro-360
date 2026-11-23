@@ -41,6 +41,21 @@ export async function registerLearner(formData:FormData) {
   redirect("/login?mode=inscription&sent=signup");
 }
 
+export async function resendVerificationEmail(formData:FormData) {
+  if(!isBackendConfigured()) redirect("/login?mode=inscription&error=setup");
+  const email=String(formData.get("email")||"").trim().toLowerCase();
+  const mode=String(formData.get("mode")||"")==="connexion"?"connexion":"inscription";
+  if(!isValidEmail(email)) redirect(`/login?mode=${mode}&error=email`);
+  const response=await backendRequest(`${authApi}/resend-verification`,{
+    method:"POST",body:JSON.stringify({email})
+  }).catch(()=>null);
+  if(!response?.ok) {
+    if(response?.status===429) redirect(`/login?mode=${mode}&error=quota`);
+    redirect(`/login?mode=${mode}&error=resend`);
+  }
+  redirect(`/login?mode=${mode}&sent=resend`);
+}
+
 export async function requestPasswordReset(formData:FormData) {
   if(!isBackendConfigured()) redirect("/login?mode=recuperation&error=setup");
   const email=String(formData.get("email")||"").trim().toLowerCase();

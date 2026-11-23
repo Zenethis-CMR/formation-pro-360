@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { ArrowLeft, BadgeCheck, BookOpenCheck, CheckCircle2, Code2, GraduationCap, LockKeyhole, ShieldCheck, Sparkles, UserPlus } from "lucide-react";
-import { registerLearner, requestPasswordReset, signInWithPassword } from "@/app/auth/actions";
+import { registerLearner, requestPasswordReset, resendVerificationEmail, signInWithPassword } from "@/app/auth/actions";
 import { AuthSubmitButton } from "@/components/auth-submit-button";
 import { AuthPasswordField } from "@/components/auth-password-field";
 import { isBackendConfigured } from "@/lib/database/server";
@@ -20,10 +20,12 @@ const messages:Record<string,string>={
   exists:"Cette adresse possède déjà un compte. Connecte-toi ou réinitialise son mot de passe.",
   verification:"Ce lien de confirmation est invalide ou a expiré. Demande une nouvelle confirmation.",
   recovery:"Impossible d'envoyer les instructions de récupération pour le moment.",
+  resend:"Le renvoi n'a pas abouti. Réessaie dans quelques instants.",
   callback:"Le lien est invalide ou expiré. Demande un nouveau lien depuis cette page."
 };
 const confirmations:Record<string,string>={
-  signup:"Vérifie ta boîte e-mail pour confirmer ton inscription. Si tu possèdes déjà un compte, utilise la connexion ou récupère ton accès.",
+  signup:"Inscription enregistrée. Consulte ta boîte de réception et le dossier des spams pour confirmer ton adresse.",
+  resend:"Si cette adresse correspond à un compte en attente, un nouveau lien va arriver. Pense aussi à vérifier les spams.",
   reset:"Si un compte correspond à cette adresse, les instructions de récupération ont été envoyées."
 };
 
@@ -33,6 +35,8 @@ export default async function Login({searchParams}:{searchParams:Promise<Params>
     ? params.mode as Mode : "connexion");
   const configured=isBackendConfigured();
   const creating=mode==="inscription";
+  const needsConfirmation=params.sent==="signup"||params.sent==="resend"
+    ||params.error==="confirm"||params.error==="verification"||params.error==="signup";
   const title=mode==="connexion"?"Bienvenue à nouveau"
     :creating?"Commence ton parcours"
     :"Retrouve ton accès";
@@ -74,20 +78,27 @@ export default async function Login({searchParams}:{searchParams:Promise<Params>
             <div className="auth-forgot-row"><Link href="/login?mode=recuperation">Mot de passe oublié ?</Link></div>
             <AuthSubmitButton label="Se connecter à mon espace" pendingLabel="Connexion en cours…"/>
           </form>}
-          {mode==="inscription"&&<form action={registerLearner} className="auth-new-form">
+          {mode==="inscription"&&!needsConfirmation&&<form action={registerLearner} className="auth-new-form">
             <label htmlFor="signup-email">Adresse e-mail</label>
             <input id="signup-email" name="email" type="email" autoComplete="email" placeholder="prenom@exemple.com" maxLength={254} required/>
             <AuthPasswordField name="password" label="Créer un mot de passe" autoComplete="new-password"/>
             <p className="auth-password-rule">12 caractères minimum.</p>
             <AuthPasswordField name="confirmPassword" label="Confirmer le mot de passe" autoComplete="new-password" confirm/>
             <AuthSubmitButton label="Créer mon compte apprenant" pendingLabel="Création du compte…"/>
-            <p className="auth-new-legal">Un e-mail de confirmation peut être nécessaire pour activer le compte. Les rôles formateurs sont attribués uniquement par l'administration.</p>
+            <p className="auth-new-legal">Après ton inscription, vérifie ta boîte de réception et les spams. Les rôles formateurs sont attribués uniquement par l'administration.</p>
           </form>}
           {mode==="recuperation"&&<form action={requestPasswordReset} className="auth-new-form">
             <label htmlFor="reset-email">Adresse e-mail du compte</label>
             <input id="reset-email" name="email" type="email" autoComplete="email" placeholder="prenom@exemple.com" maxLength={254} required/>
             <AuthSubmitButton label="Recevoir le lien de récupération" pendingLabel="Envoi en cours…"/>
             <p className="auth-new-legal">Si un compte correspond à cette adresse, tu recevras les instructions pour choisir un nouveau mot de passe.</p>
+          </form>}
+          {needsConfirmation&&<form action={resendVerificationEmail} className="auth-new-form">
+            <label htmlFor="resend-verification-email">Adresse e-mail du compte</label>
+            <input id="resend-verification-email" name="email" type="email" autoComplete="email" placeholder="prenom@exemple.com" maxLength={254} required/>
+            <input type="hidden" name="mode" value={mode}/>
+            <AuthSubmitButton label="Renvoyer le lien de confirmation" pendingLabel="Envoi en cours…"/>
+            <p className="auth-new-legal">Tu ne vois pas le message ? Vérifie aussi le dossier des spams. Le lien expire après 24 heures.</p>
           </form>}
         </>}
         <div className="auth-new-bottom"><span><ShieldCheck size={15}/> Authentification sécurisée</span><span>Accès réservé aux membres inscrits</span></div>
