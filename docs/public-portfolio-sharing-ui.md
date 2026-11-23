@@ -9,3 +9,5 @@ Public URLs `/p/<43-character-token>` are server-rendered separately from `/espa
 No diploma or certified identity is claimed. Real grades and external URLs are visible **only after explicit user consent**. A revoked, changed or no-longer-authorized publication returns a generic unavailable page.
 
 Runtime deployment is independent of migrations except that backend migration 020 and its tests **must succeed before the frontend is made available**.
+
+Un échec de chargement de la configuration bloque la publication jusqu'à vérification, avec un bouton « Réessayer ». Une erreur de validation ou réseau pendant la publication reste corrigeable sans masquer le formulaire. Le propriétaire voit l'état `currently_accessible` et peut révoquer le lien même lorsque son inscription est suspendue.

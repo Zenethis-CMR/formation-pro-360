@@ -12,6 +12,10 @@ test("sharing is opt-in, selection-based, and revocable from the private verifie
  assert.match(c,/include_scores:scores/);
  assert.match(c,/include_links:links/);
  assert.match(c,/window.confirm/);
+ assert.match(c,/currently_accessible/);
+ assert.match(c,/loadFailed/);
+ assert.match(c,/setReloadKey/);
+ assert.doesNotMatch(c,/saving\|\|!loaded\|\|error/);
  assert.match(c,/method:"DELETE"/);
  assert.match(c,/token/);
  assert.match(c,/régénér|lien précédent|lien actuel/);

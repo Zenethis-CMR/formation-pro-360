@@ -7,7 +7,7 @@ import type {VerifiedProject} from "@/components/learner-verified-portfolio";
 type Publication={
   token:string;title:string;selected_submission_ids:string[];
   include_scores:boolean;include_links:boolean;
-  published_at:string;updated_at:string;
+  published_at:string;updated_at:string;currently_accessible?:boolean;
 };
 const endpoint="/api/portfolio-publication";
 
@@ -18,6 +18,8 @@ const endpoint="/api/portfolio-publication";
 export function PortfolioPublishing({projects}:{projects:VerifiedProject[]}){
   const [publication,setPublication]=useState<Publication|null>(null);
   const [loaded,setLoaded]=useState(false);
+  const [loadFailed,setLoadFailed]=useState(false);
+  const [reloadKey,setReloadKey]=useState(0);
   const [error,setError]=useState("");
   const [notice,setNotice]=useState("");
   const [saving,setSaving]=useState(false);
@@ -44,16 +46,17 @@ export function PortfolioPublishing({projects}:{projects:VerifiedProject[]}){
           setScores(p.include_scores);
           setLinks(p.include_links);
         }
+        setLoadFailed(false);
         setLoaded(true);
       }catch{
         if(!controller.signal.aborted){
-          setError("Impossible de vérifier ta configuration de partage. Aucun changement n'a été effectué.");
+          setLoadFailed(true);
           setLoaded(true);
         }
       }
     })();
     return ()=>controller.abort();
-  },[projects]);
+  },[projects,reloadKey]);
 
   const toggle=(id:string)=>{
     setChosen(current=>current.includes(id)?current.filter(x=>x!==id):[...current,id]);
@@ -67,7 +70,7 @@ export function PortfolioPublishing({projects}:{projects:VerifiedProject[]}){
     chosen.some(id=>!publication.selected_submission_ids.includes(id))
   );
   const publish=async()=>{
-    if(saving||!loaded||error)return;
+    if(saving||!loaded||loadFailed)return;
     if(chosen.length===0||chosen.length>16||title.trim().length<3||title.trim().length>80){
       setError("Sélectionne au moins un projet vérifié et saisis un titre entre 3 et 80 caractères.");
       return;
@@ -115,8 +118,12 @@ export function PortfolioPublishing({projects}:{projects:VerifiedProject[]}){
         Une personne qui possède le lien peut aussi le transmettre à d'autres personnes.</p>
     </header>
     {!loaded?<p className="portfolio-sharing-message" role="status">Vérification de ta configuration de partage…</p>:
-    error&&(!publication&&projects.length>0)?
-      <p className="portfolio-sharing-error" role="alert">{error}</p>:
+    loadFailed?
+      <div className="portfolio-sharing-error" role="alert">
+        Impossible de vérifier ton partage actuel. Aucune publication n'a été modifiée.
+        <button type="button" onClick={()=>{setLoadFailed(false);setLoaded(false);
+          setReloadKey(k=>k+1);}}>Réessayer</button>
+      </div>:
     projects.length===0?
       <div className="portfolio-sharing-empty"><LockKeyhole size={20}/>
         Publie après la validation de ton premier atelier par le formateur.
@@ -149,7 +156,7 @@ export function PortfolioPublishing({projects}:{projects:VerifiedProject[]}){
         <p>Jamais publiés : email, identité de compte, carnet privé, commentaires du formateur, descriptions déposées et échanges avec Qwen3.</p>
       </fieldset>
       <div className="portfolio-sharing-actions">
-        <button type="button" className="portfolio-sharing-publish" disabled={saving||chosen.length===0||!!error}
+        <button type="button" className="portfolio-sharing-publish" disabled={saving||chosen.length===0}
           onClick={publish}><Globe2 size={16}/>
           {saving?"Enregistrement…":publication?"Mettre à jour et changer de lien":"Créer mon lien public"}
         </button>
@@ -157,7 +164,12 @@ export function PortfolioPublishing({projects}:{projects:VerifiedProject[]}){
           disabled={saving} onClick={revoke}><Trash2 size={16}/> Désactiver le lien</button>}
       </div>
       {publication&&<div className="portfolio-sharing-link">
-        <span><CheckCircle2 size={15}/> Lien public actif · {publication.selected_submission_ids.length} projet(s)</span>
+        <span><CheckCircle2 size={15}/>
+          {publication.currently_accessible===false?
+            "Lien actuellement inaccessible (inscription suspendue ou parcours archivé)":
+            "Lien public actif"}
+          {" · "}{publication.selected_submission_ids.length} projet(s)
+        </span>
         {changed&&<p>Modifications non publiées : le lien actuel conserve ta précédente sélection. Publie pour appliquer tes choix.</p>}
         <div><input aria-label="Lien public du portfolio" value={url} readOnly onFocus={e=>e.target.select()}/>
           <button type="button" onClick={copy}><Clipboard size={15}/>{copied?"Copié":"Copier"}</button>
@@ -166,7 +178,7 @@ export function PortfolioPublishing({projects}:{projects:VerifiedProject[]}){
       </div>}
     </>}
     {notice&&<p className="portfolio-sharing-notice" role="status"><RefreshCcw size={15}/>{notice}</p>}
-    {error&&publication&&<p className="portfolio-sharing-error" role="alert">{error}</p>}
+    {error&&!loadFailed&&<p className="portfolio-sharing-error" role="alert">{error}</p>}
     <p className="portfolio-sharing-footnote"><EyeOff size={14}/>
       Lien non indexé et révocable, mais toute personne à qui il est transmis peut le consulter tant qu'il est actif.</p>
   </section>;
