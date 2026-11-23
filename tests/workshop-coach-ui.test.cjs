@@ -28,7 +28,7 @@ test("client makes an explicit request and shows a model response or accurate un
  const s=read("src/components/workshop-coach.tsx");
  assert.match(s,/useActionState/);
  assert.match(s,/action=\{run\}/);
- assert.match(s,/Pose une question sur cet atelier/);
+ assert.match(s,/Débloque ton atelier, une question à la fois/);
  assert.match(s,/state.answer/);
  assert.match(s,/Ta question est transmise à Qwen3/);
  assert.match(s,/useFormStatus/);
