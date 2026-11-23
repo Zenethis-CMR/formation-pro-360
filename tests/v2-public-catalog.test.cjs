@@ -23,7 +23,9 @@ test("public catalog pages are discoverable and never grant enrollment or XP",()
   assert.match(list,/specializations\.map/);
   assert.match(list,/EN PRÉPARATION/);
   assert.match(detail,/pilotCourse\.modules\.map/);
-  assert.match(list,/inscriptions V2 en cours de préparation/);
+  assert.match(list,/Pilote V2 en service/);
+  assert.match(detail,/Le pilote V2 est ouvert dans ton espace personnel/);
+  assert.match(list,/href="\/espace\/parcours\/ingenierie-produit-ia"/);
   assert.match(shell,/label:"Catalogue V2"/);
   assert.equal((shell.match(/label:"Catalogue V2"/g)||[]).length,2);
   assert.match(login,/href="\/catalogue"/);

@@ -24,9 +24,9 @@ export default function CataloguePage(){
       <section className="v2catalog-section" aria-labelledby="v2catalog-title"><div className="v2catalog-heading"><div><span>CHOISIS TON DOMAINE</span><h2 id="v2catalog-title">Les formations 360</h2></div><p>Le premier programme est consultable. Les six spécialisations suivantes seront ouvertes progressivement, après validation pédagogique.</p></div>
         <div className="v2catalog-feature">
           <div className="v2catalog-feature-symbol"><BrainCircuit size={34}/></div>
-          <div className="v2catalog-feature-copy"><span className="v2catalog-state">PROGRAMME DÉTAILLÉ DISPONIBLE</span><h3>{pilotCourse.name}</h3><p>{pilotCourse.summary}</p>
+          <div className="v2catalog-feature-copy"><span className="v2catalog-state">PILOTE V2 ACTIVÉ</span><h3>{pilotCourse.name}</h3><p>{pilotCourse.summary}</p>
             <div className="v2catalog-chips"><span><Clock3 size={14}/> 8 semaines</span><span><BookOpen size={14}/> 16 ateliers</span><span><Rocket size={14}/> MVP au mois 1</span></div>
-            <Link href="/catalogue/ingenierie-produit-ia" className="v2catalog-link">Voir le programme complet <ArrowRight size={16}/></Link>
+            <div className="v2catalog-feature-actions"><Link href="/catalogue/ingenierie-produit-ia" className="v2catalog-link">Voir les 16 ateliers <ArrowRight size={16}/></Link><Link href="/espace/parcours/ingenierie-produit-ia" className="v2catalog-enrollment-link">Rejoindre le pilote <ArrowRight size={16}/></Link></div>
           </div>
         </div>
         <div className="v2catalog-grid">{specializations.map((track,i)=><article key={track.slug} className="v2catalog-track">
@@ -34,7 +34,7 @@ export default function CataloguePage(){
           <h3>{track.name}</h3><p>{track.summary}</p><div className="v2catalog-track-deliverable"><CheckCircle2 size={15}/><span><b>Projet final :</b> {track.deliverable}</span></div>
         </article>)}</div>
       </section>
-      <section className="v2catalog-note" aria-label="Information sur les inscriptions"><Layers3 size={21}/><div><strong>Catalogue consultable, inscriptions V2 en cours de préparation</strong><p>Le nouveau programme n'est pas encore activé pour les remises de projets ou l'attribution d'XP. Les comptes et les missions de la formation actuelle continuent de fonctionner normalement.</p></div><Link href="/login">Accéder à mon espace <ArrowRight size={15}/></Link></section>
+      <section className="v2catalog-note" aria-label="Information sur les inscriptions"><Layers3 size={21}/><div><strong>Pilote V2 en service : inscription depuis ton espace personnel</strong><p>Le parcours Ingénierie produit et IA est publié. Connecte-toi pour vérifier ton éligibilité, t'inscrire gratuitement et réaliser les ateliers. Les six autres formations restent en préparation ; tes missions historiques et XP V1 sont conservés.</p></div><Link href="/espace/parcours/ingenierie-produit-ia">Ouvrir le pilote <ArrowRight size={15}/></Link></section>
       <footer className="v2catalog-footer"><span>© Formation Pro 360 · Catalogue pédagogique V2</span><Link href="/login">Connexion</Link></footer>
     </div>
   </main>;

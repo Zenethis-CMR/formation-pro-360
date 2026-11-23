@@ -28,7 +28,7 @@ export default function ProductEngineeringCatalog(){
           <div><h4>{lesson.title}</h4><p>{lesson.objective}</p><div className="v2catalog-evidence"><BadgeCheck size={15}/><span><b>Livrable attendu :</b> {lesson.evidence}</span></div></div>
         </article>)}</div>
       </section>)}</div>
-      <aside className="v2catalog-cta"><Lightbulb size={24}/><div><strong>Consulte le programme et suis l'ouverture des ateliers.</strong><p>Le programme est consultable dès maintenant. L'inscription gratuite sera proposée dans ton espace dès que la validation de sécurité sera terminée.</p></div><Link href="/espace/parcours/ingenierie-produit-ia">Accéder à mon parcours <ArrowRight size={16}/></Link></aside>
+      <aside className="v2catalog-cta"><Lightbulb size={24}/><div><strong>Le pilote V2 est ouvert dans ton espace personnel.</strong><p>Connecte-toi pour consulter ton statut d'inscription, rejoindre gratuitement le pilote si ton compte y est autorisé, puis soumettre tes réalisations à ton formateur.</p></div><Link href="/espace/parcours/ingenierie-produit-ia">Rejoindre ou continuer le pilote <ArrowRight size={16}/></Link></aside>
       <footer className="v2catalog-footer"><span>© Formation Pro 360 · Programme éditorial V2</span><Link href="/catalogue">Toutes les formations</Link></footer>
     </div>
   </main>;
