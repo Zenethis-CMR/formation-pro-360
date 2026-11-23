@@ -98,8 +98,8 @@ export default async function V2WorkshopStudio({params,searchParams}:{
   const verifiedLessons=new Set((data?.submissions||[]).filter(s=>s.status==="approved")
     .map(s=>s.module_id+":"+s.lesson_slug));
   const fullCourseValidated=accessible&&verifiedLessons.size===16&&Number(data?.xp_total??0)>=1600;
-  const primaryHref=approved?"#carnet":latest?.status==="pending"?"#livrable":
-    latest?.status==="changes_requested"?"#carnet":"#brief";
+  const primaryHref=approved?"#retour-formateur":latest?.status==="pending"?"#livrable":
+    latest?.status==="changes_requested"?"#retour-formateur":"#brief";
   const primaryLabel=approved?"Revoir ma correction":latest?.status==="pending"?"Suivre mon évaluation":
     latest?.status==="changes_requested"?"Reprendre après la correction":"Commencer par les consignes";
   const officialRubric=lesson?rubricTitles(lesson.rubric):[];
