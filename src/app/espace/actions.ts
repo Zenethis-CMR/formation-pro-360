@@ -2,6 +2,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { requireRole } from "@/lib/auth/require-role";
+import { backendRequest } from "@/lib/auth/backend";
 import { parseLearnerPreferences } from "@/lib/learner-preferences";
 
 const idPattern = /^[a-f0-9]{8}-[a-f0-9]{4}-[1-8][a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/i;
@@ -226,4 +227,18 @@ export async function saveLearnerPreferences(formData:FormData) {
   revalidatePath("/espace/bienvenue");
   revalidatePath("/espace/formateur");
   redirect("/espace/apprenant?welcome=1");
+}
+
+/** V2 pilot is strictly free, opted-in and server-authorized. */
+export async function enrollInV2Pilot() {
+  await requireRole("learner");
+  const destination="/espace/parcours/ingenierie-produit-ia";
+  const response=await backendRequest(
+    "/v1/training/catalog/ingenierie-produit-ia/enroll",
+    {method:"POST",headers:{"content-type":"application/json"},
+      body:JSON.stringify({acceptFreePilot:true})}
+  ).catch(()=>null);
+  if(!response?.ok)redirect(destination+"?inscription=indisponible");
+  revalidatePath(destination);
+  redirect(destination+"?inscription=confirmee");
 }
