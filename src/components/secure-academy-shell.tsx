@@ -42,7 +42,7 @@ export function SecureAcademyShell({children,stats}:{children:React.ReactNode;st
     {href:base,label:"Tableau de bord",icon:LayoutDashboard},
     {href:"/espace/parcours/ingenierie-produit-ia",label:"Mon parcours V2",icon:Sparkles},
     {href:base+"?onglet=missions",label:"Missions V1",icon:BookOpen},
-    {href:base+"?onglet=progression",label:"Progression V1",icon:BarChart3},
+    {href:base+"?onglet=progression",label:"Ma progression",icon:BarChart3},
     {href:base+"?onglet=programme",label:"Programme V1",icon:CalendarDays},
     {href:"/catalogue",label:"Catalogue V2",icon:Sparkles}
   ];

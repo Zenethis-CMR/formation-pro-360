@@ -5,11 +5,11 @@ type Role="learner"|"trainer";
 const content={
   learner:{
     missions:{eyebrow:"ATELIERS ET LIVRABLES",title:"Mes missions",description:"Retrouve tes ateliers, les prérequis, les livrables attendus et l'état de tes corrections.",icon:BookOpenCheck},
-    progression:{eyebrow:"COMPÉTENCES ET RÉCOMPENSES",title:"Ma progression",description:"Consulte tes acquis, tes XP, tes badges, tes séances de pratique et les conseils de ton formateur.",icon:BarChart3},
+    progression:{eyebrow:"SUIVI DU PARCOURS V2 ET HISTORIQUE V1",title:"Ma progression",description:"Suis tes 16 ateliers V2, les corrections et les XP gagnés, puis retrouve tes badges et acquis historiques V1.",icon:BarChart3},
     programme:{eyebrow:"ORGANISATION DES 8 SEMAINES",title:"Mon programme",description:"Visualise ton calendrier pédagogique et les compétences à construire semaine après semaine.",icon:CalendarDays}
   },
   trainer:{
-    evaluations:{eyebrow:"CORRECTIONS ET HISTORIQUE",title:"Évaluations",description:"Consulte les livrables à corriger, attribue des notes et retrouve les évaluations déjà réalisées.",icon:ClipboardCheck},
+    evaluations:{eyebrow:"ÉVALUATIONS V2 ET HISTORIQUE V1",title:"Évaluations",description:"Suis les inscrits et corrections du pilote V2, puis consulte les soumissions historiques V1.",icon:ClipboardCheck},
     apprenants:{eyebrow:"ACCOMPAGNEMENT ET COHORTE",title:"Mes apprenants",description:"Suis la progression de chaque apprenant, ses projets et ses besoins d'accompagnement.",icon:Users},
     programme:{eyebrow:"PLANIFICATION ET CRÉATION",title:"Programme et ateliers",description:"Planifie les semaines, gère les missions publiées et rédige les nouveaux ateliers.",icon:CalendarDays}
   }

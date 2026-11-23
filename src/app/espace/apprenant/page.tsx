@@ -16,6 +16,8 @@ import { SecureLearnerOverview } from "@/components/secure-learner-overview";
 import { WorkspaceTabHeading } from "@/components/workspace-tab-heading";
 import { type LearnerPreferences } from "@/lib/learner-preferences";
 import { getV2DashboardPilot } from "@/lib/v2-dashboard-pilot";
+import { loadV2LearnerProgress } from "@/lib/v2-learner-progress";
+import { V2LearnerProgressPanel } from "@/components/v2-learner-progress-panel";
 
 type Params = { error?: string; success?: string; welcome?: string; onglet?: string };
 type Mission = { id:string; title:string; domain:string; description:string; week:number;
@@ -54,6 +56,7 @@ export default async function LearnerSpace({searchParams}:{searchParams:Promise<
     !deps.some(d => d.mission_id===m.id && !approved.has(d.prerequisite_id)));
   // V2 rights and XP are independent of the historical V1 mission ledger.
   const pilot=tab==="dashboard"?await getV2DashboardPilot():null;
+  const v2Progress=tab==="progression"?await loadV2LearnerProgress():null;
   const insight=learnerInsight({
     learnerId:user.id,missions,deps,
     awards:(rawXp||[]).map(x=>({learner_id:user.id,mission_id:x.mission_id})),
@@ -74,6 +77,8 @@ export default async function LearnerSpace({searchParams}:{searchParams:Promise<
       {params.error && <p className="alert danger" role="alert">{params.error==="practice"?"Impossible d’enregistrer la séance. Essaie à nouveau.":"Impossible d’enregistrer cette soumission. Vérifie les informations et les prérequis."}</p>}
     </div>
     {tab==="progression"&&<>
+      {v2Progress&&<V2LearnerProgressPanel progress={v2Progress}/>}
+      <div className="v2-legacy-section-head"><span>HISTORIQUE V1 · ACQUIS CONSERVÉS</span><h2>Mes compétences et récompenses V1</h2><p>Badges, exercices, messages et XP de l'ancien programme. Ils ne sont pas fusionnés avec les résultats V2.</p></div>
       <LearnerCoachingPanel insight={insight} messages={(coachMessages||[]) as CoachMessage[]} startDate={settings?.start_date??null}/>
       <LearningAchievements catalog={(badgeCatalog||[]) as Badge[]} earned={(myBadges||[]) as EarnedBadge[]} practice={(practice||[]) as PracticeCheckin[]} validatedCount={approved.size} currentMission={currentMission ? {id:currentMission.id,title:currentMission.title} : null}/>
       <SkillMastery missions={missions} approved={approved}/>

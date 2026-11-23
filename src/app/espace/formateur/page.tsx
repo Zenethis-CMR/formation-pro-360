@@ -13,6 +13,7 @@ import { SecureTrainerOverview } from "@/components/secure-trainer-overview";
 import { WorkspaceTabHeading } from "@/components/workspace-tab-heading";
 import { learnerInsight, type CoachMessage } from "@/lib/coaching-insights";
 import { V2TrainerCoursePreview, type V2CoursePreview } from "@/components/v2-trainer-course-preview";
+import { V2TrainerEvaluationOverview } from "@/components/v2-trainer-evaluation-overview";
 
 type Params={error?:string;success?:string;onglet?:string;page?:string};
 type Submission={id:string;mission_id:string;learner_id:string;url:string;note:string;created_at:string};
@@ -126,7 +127,9 @@ export default async function TrainerSpace({searchParams}:{searchParams:Promise<
     {params.success&&<p className="alert success" role="status">{params.success==="message"?"Message pédagogique enregistré dans l'espace apprenant.":"Modification enregistrée dans la base de données."}</p>}
     {params.error&&<p className="alert danger" role="alert">Échec de l'opération. Vérifie les champs ou les droits d'accès.</p>}
     {tab==="evaluations"&&<>
-    <section className="panel" id="evaluations"><div className="section-head"><h2>Soumissions à évaluer</h2><span className="counter">{pending.length} en attente</span></div>
+    <V2TrainerEvaluationOverview/>
+    <div className="v2-legacy-section-head"><span>ARCHIVES ET CORRECTIONS V1</span><h2>Évaluations du programme historique</h2><p>Les anciennes missions et leurs XP continuent de fonctionner indépendamment des ateliers V2.</p></div>
+    <section className="panel" id="evaluations"><div className="section-head"><h2>Soumissions V1 à évaluer</h2><span className="counter">{pending.length} en attente</span></div>
       {!pending.length ? <div className="empty-state"><h3>Aucune soumission en attente</h3><p>Les livrables apparaîtront ici lorsqu’un apprenant les déposera.</p></div>
       :<div className="review-list">{pending.map(s=><article className="review-card" key={s.id}>
         <div><span className="week">MISSION · {displayDomain(byId.get(s.mission_id)?.domain||"")}</span><h3>{byId.get(s.mission_id)?.title||"Mission"}</h3>
