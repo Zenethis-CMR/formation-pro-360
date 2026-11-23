@@ -20,9 +20,9 @@ function makeRoute({user={id:"ci-learner",role:"learner"},upstream}={}){
   const exports={};
   const dependency={
     currentUser:async()=>user,
-    backendRequest:upstream||async()=>new Response(
+    backendRequest:upstream||(async()=>new Response(
       JSON.stringify({answer:"Piste : teste un scénario et documente la preuve."}),
-      {status:200,headers:{"content-type":"application/json"}})
+      {status:200,headers:{"content-type":"application/json"}}))
   };
   vm.runInNewContext(compiled,{
     exports,
