@@ -46,7 +46,7 @@ export function SecureLearnerOverview({missions,submissions,approvedIds,dependen
         <Link href="/espace/apprenant?onglet=missions" className="head-square-action" title="Mes missions" aria-label="Voir les missions"><Search size={18}/></Link>
       </div>
     </header>
-    <section className="academy-feature academy-feature-v2" aria-label="Parcours V2 à la une">
+    <section className="academy-feature academy-feature-v2" aria-label="Formation principale">
       <div className="feature-copy">
         <span className="feature-label"><Sparkles size={14}/> PARCOURS PRINCIPAL · FORMATION DISPONIBLE</span>
         <h2>Ingénierie produit<br/><span>et intelligence artificielle.</span></h2>
@@ -72,12 +72,12 @@ export function SecureLearnerOverview({missions,submissions,approvedIds,dependen
           <span><strong>Du prototype au produit</strong><small>Concevoir, coder, tester, vendre</small></span></div>
       </div>
     </section>
-    <section className="v2-pilot-metrics" aria-label="Progression dans le programme V2">
+    <section className="v2-pilot-metrics" aria-label="Progression du programme">
       <div><span>ATELIERS VALIDÉS</span><strong>{enrolled?pilot.approved:"—"}<small> / 16</small></strong><p>{enrolled?"Validés par le formateur":"Après inscription"}</p></div>
       <div><span>XP CUMULÉS</span><strong>{xp+pilot.xp}</strong><p>{xp} XP de tes autres réalisations · {pilot.xp} XP du parcours</p></div>
       <div><span>EN CORRECTION</span><strong>{enrolled?pilot.pending:"—"}</strong><p>{enrolled?"Livrables en attente":"Suivi après inscription"}</p></div>
     </section>
-    <div className="v2-legacy-heading"><div><span>AUTRES RÉALISATIONS · ACQUIS CONSERVÉS</span><h2>Mes projets et missions complémentaires</h2><p>Ces réalisations sont toujours accessibles avec leurs validations et récompenses.</p></div><Link href="/espace/apprenant?onglet=missions">Mes missions V1 <ArrowRight size={15}/></Link></div>
+    <div className="v2-legacy-heading"><div><span>AUTRES RÉALISATIONS · ACQUIS CONSERVÉS</span><h2>Mes projets et missions complémentaires</h2><p>Ces réalisations sont toujours accessibles avec leurs validations et récompenses.</p></div><Link href="/espace/apprenant?onglet=missions">Mes autres projets <ArrowRight size={15}/></Link></div>
     <section className="academy-metrics" aria-label="Indicateurs des réalisations complémentaires">
       <div className="metric"><div className="metric-icon blue"><GraduationCap size={20}/></div>
         <div><span>Niveau des missions</span><strong>{String(level).padStart(2,"0")}</strong><small>Progression par expérience</small></div></div>

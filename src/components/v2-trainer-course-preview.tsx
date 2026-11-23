@@ -38,7 +38,7 @@ export function V2TrainerCoursePreview({course,unavailable}:{
               <summary>Voir les ateliers et les livrables attendus</summary>
               <ol>{m.lessons.map((lesson,i)=><li key={i}>
                 <strong>{lesson.title}</strong>
-                <small>{lesson.status==="draft"?"Brouillon":"Publié"} · Version {lesson.version}</small>
+                <small>{lesson.status==="draft"?"Brouillon":"Publié"} · Révision pédagogique {lesson.version}</small>
                 <p>{lesson.objective}</p>
                 <p><b>Preuve attendue :</b> {lesson.evidence}</p>
               </li>)}</ol>

@@ -73,7 +73,7 @@ export function SecureAcademyShell({children,stats}:{children:React.ReactNode;st
       <div className="sidebar-ad"><div className="sidebar-ad-icon"><Sparkles size={21}/></div>
         <b>{trainer?"Chaque correction compte.":"Chaque projet compte."}</b>
         <p>{trainer?"Un retour précis aide chaque apprenant à progresser.":"Apprends en réalisant de vrais projets."}</p>
-        <Link href={trainer?base+"?onglet=evaluations":"/espace/parcours/ingenierie-produit-ia"}>{trainer?"Voir les évaluations":"Ouvrir le parcours V2"} <ArrowRight size={16}/></Link>
+        <Link href={trainer?base+"?onglet=evaluations":"/espace/parcours/ingenierie-produit-ia"}>{trainer?"Voir les évaluations":"Ouvrir mon parcours"} <ArrowRight size={16}/></Link>
       </div>
       <form action={signOut} className="secure-sidebar-signout"><button type="submit"><LogOut size={16}/> Se déconnecter</button></form>
       <div className="sidebar-footer">© Formation Pro 360<br/><small>Espace personnel sécurisé</small></div>
@@ -100,7 +100,7 @@ export function SecureAcademyShell({children,stats}:{children:React.ReactNode;st
         </div>
       </div>
       <div className="rail-widget">
-        <div className="rail-widget-heading"><h3>{trainer?"À traiter":"Ton parcours V2"}</h3><span>{trainer?(stats.pending>0?String(stats.pending).padStart(2,"0"):"01"):"V2"}</span></div>
+        <div className="rail-widget-heading"><h3>{trainer?"À traiter":"Mon parcours"}</h3><span>{trainer?(stats.pending>0?String(stats.pending).padStart(2,"0"):"01"):"16"}</span></div>
         <div className="rail-next-icon">{trainer?<ClipboardCheck size={20}/>:<Sparkles size={20}/>}</div>
         <strong>{trainer?(stats.nextTitle||"Corrections à venir"):"Ingénierie produit et IA"}</strong>
         <p>{trainer?(stats.pending?"Des livrables attendent une correction.":"Les nouvelles soumissions apparaîtront ici."):"Ouvre les 16 ateliers, vérifie ton inscription et avance jusqu'au MVP avec ton formateur."}</p>
@@ -119,10 +119,10 @@ export function SecureAcademyShell({children,stats}:{children:React.ReactNode;st
       <Link href={base+"?onglet=evaluations"} className={pathname===base&&currentTab==="evaluations"?"on":""}><ClipboardCheck size={19}/>Corrections</Link>
       <Link href={base+"?onglet=apprenants"} className={pathname===base&&currentTab==="apprenants"?"on":""}><Users size={19}/>Apprenants</Link>
     </>:<>
-      <Link href={base+"?onglet=missions"} className={pathname===base&&currentTab==="missions"?"on":""}><BookOpen size={19}/>V1</Link>
+      <Link href={base+"?onglet=missions"} className={pathname===base&&currentTab==="missions"?"on":""}><BookOpen size={19}/>Missions</Link>
       <Link href={base+"?onglet=progression"} className={pathname===base&&currentTab==="progression"?"on":""}><BarChart3 size={19}/>XP missions</Link>
     </>}
-    <Link href={trainer?base+"?onglet=programme":"/espace/parcours/ingenierie-produit-ia"} className={(trainer?pathname===base&&currentTab==="programme":pathname==="/espace/parcours/ingenierie-produit-ia")?"on":""}><CalendarDays size={19}/>{trainer?"Programme":"Parcours V2"}</Link>
+    <Link href={trainer?base+"?onglet=programme":"/espace/parcours/ingenierie-produit-ia"} className={(trainer?pathname===base&&currentTab==="programme":pathname==="/espace/parcours/ingenierie-produit-ia")?"on":""}><CalendarDays size={19}/>{trainer?"Programme":"Parcours"}</Link>
     <Link href="/espace/compte" className={pathname==="/espace/compte"?"on":""}><Settings2 size={19}/>Compte</Link>
   </nav>
   </div>;

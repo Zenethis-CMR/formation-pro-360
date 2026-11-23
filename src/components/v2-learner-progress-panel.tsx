@@ -42,7 +42,7 @@ export function V2LearnerProgressPanel({progress}:{progress:Progress}){
     </header>
     {!progress.available?<div className="v2-progress-empty"><LockKeyhole size={19}/><div><strong>Statut du parcours momentanément indisponible</strong><p>Consulte le programme sans supposer que ton inscription ou tes évaluations sont activées.</p></div></div>
     :!enrolled?<div className="v2-progress-empty"><BookOpenCheck size={19}/><div>
-      <strong>{paused?"Ton inscription V2 est suspendue":progress.enrollmentOpen?"Prêt à rejoindre le pilote ?":"Le programme est disponible"}</strong>
+      <strong>{paused?"Ton inscription au parcours est suspendue":progress.enrollmentOpen?"Prêt à rejoindre le pilote ?":"Le programme est disponible"}</strong>
       <p>{paused?"Les résultats restent privés. Contacte ton formateur pour retrouver l'accès.":
         progress.enrollmentOpen?"Inscris-toi depuis ton parcours pour commencer les 16 ateliers et suivre tes validations ici.":
         "Ton inscription n'est pas encore ouverte pour ce compte. Le programme détaillé reste consultable."}</p>
@@ -53,7 +53,7 @@ export function V2LearnerProgressPanel({progress}:{progress:Progress}){
         <div className="v2-progress-stat"><span><Award size={15}/> XP obtenus dans le parcours</span><strong>{progress.xpTotal}</strong><p>Uniquement après validation (80/100 minimum)</p></div>
         <div className="v2-progress-stat"><span><Clock3 size={15}/> En correction</span><strong>{pending}</strong><p>{revisions} atelier(s) à améliorer</p></div>
       </div>
-      <div className="v2-progress-bar" role="progressbar" aria-valuenow={successes} aria-valuemin={0} aria-valuemax={total} aria-label="Ateliers V2 validés"><span style={{width:percent+"%"}}/></div>
+      <div className="v2-progress-bar" role="progressbar" aria-valuenow={successes} aria-valuemin={0} aria-valuemax={total} aria-label="Ateliers validés"><span style={{width:percent+"%"}}/></div>
       <div className="v2-progress-grid">
         <div className="v2-progress-weeks"><div className="v2-progress-subhead"><TrendingUp size={17}/><h3>Mes huit semaines</h3></div>
           {progress.modules.map(module=>{
@@ -73,7 +73,7 @@ export function V2LearnerProgressPanel({progress}:{progress:Progress}){
         <div className="v2-progress-latest"><div className="v2-progress-subhead"><BookOpenCheck size={17}/><h3>Retours récents</h3></div>
           {!recent.length?<p className="v2-progress-no-review">Aucun livrable déposé pour le moment. Réalise ton premier atelier pour recevoir une correction.</p>:
           recent.map(item=>{
-            const name=lessonNames.get(item.module_id+":"+item.lesson_slug)||"Atelier V2";
+            const name=lessonNames.get(item.module_id+":"+item.lesson_slug)||"Atelier";
             return <article key={item.id} className="v2-progress-feedback">
               <div><span className={"v2-progress-status state-"+item.status}>{labelFor(item.status)}</span>
                 <time dateTime={item.reviewed_at||item.created_at}>{dateString(item.reviewed_at||item.created_at)}</time></div>

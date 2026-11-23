@@ -81,9 +81,9 @@ export default async function V2LearnerTrack({searchParams}:{
       </div>
     </section>}
     {enrolled&&<p className="v2-track-eligibility" role="status"><CheckCircle2 size={17}/> Inscription {status==="completed"?"terminée":"active"} · {canRead?"Ateliers publiés accessibles":"Les leçons ne sont pas encore publiées."}
-      {canRead&&<strong> · {data?.xp_total??0} XP V2 acquis</strong>}
+      {canRead&&<strong> · {data?.xp_total??0} XP acquis</strong>}
     </p>}
-    <section className="v2-track-weeks" aria-label="Modules du cursus V2">
+    <section className="v2-track-weeks" aria-label="Modules du parcours">
       {modList.map(mod=>{
         // Multiple published revisions must never duplicate a logical workshop.
         const bySlug=new Map<string,TrainingLesson>();
