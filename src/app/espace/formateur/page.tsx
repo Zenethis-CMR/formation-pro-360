@@ -100,15 +100,20 @@ export default async function TrainerSpace({searchParams}:{searchParams:Promise<
         const moduleRows=(modulesR.data||[]) as {id:string;week:number;title:string;outcome:string}[];
         const ids=moduleRows.map(m=>m.id);
         const lessonR=ids.length
-          ? await db.from("module_lessons").select("module_id").in("module_id",ids)
-          : {data:[] as {module_id:string}[],error:null};
+          ? await db.from("module_lessons").select("module_id,title,objective,evidence_required,version,status").in("module_id",ids).order("version",{ascending:false})
+          : {data:[] as {module_id:string;title:string;objective:string;evidence_required:string;version:number;status:"draft"|"published"}[],error:null};
         if(lessonR.error) v2Unavailable=true;
         else {
-          const counts=new Map<string,number>();
-          for(const lesson of lessonR.data||[]) counts.set(lesson.module_id,(counts.get(lesson.module_id)||0)+1);
+          const byModule=new Map<string,V2CoursePreview["modules"][number]["lessons"]>();
+          for(const lesson of lessonR.data||[]) {
+            const list=byModule.get(lesson.module_id)||[];
+            list.push({title:lesson.title,objective:lesson.objective,
+              evidence:lesson.evidence_required,version:lesson.version,status:lesson.status});
+            byModule.set(lesson.module_id,list);
+          }
           v2Course={
             title:track.title,status:track.status,
-            modules:moduleRows.map(m=>({...m,lessonCount:counts.get(m.id)||0}))
+            modules:moduleRows.map(m=>({...m,lessons:byModule.get(m.id)||[]}))
           };
         }
       }
