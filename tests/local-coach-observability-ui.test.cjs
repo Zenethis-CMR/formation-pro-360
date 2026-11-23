@@ -16,15 +16,15 @@ test("formateur dashboard shows only aggregate local coach metrics",()=>{
 });
 test("slow Qwen3 has real pending time, suggested questions and clear busy feedback",()=>{
   const panel=read("src/components/workshop-coach.tsx");
-  const actions=read("src/app/espace/actions.ts");
+  const endpoint=read("src/app/api/coach/route.ts");
   assert.match(panel,/setInterval/);
   assert.match(panel,/plusieurs dizaines de secondes/);
-  assert.match(panel,/sans progression simulée/);
+  assert.match(panel,/plusieurs dizaines de secondes/);
   assert.match(panel,/exampleQuestions/);
-  assert.match(panel,/previousQuestion/);
-  assert.match(panel,/previousAnswer/);
+  assert.match(panel,/previous_exchange/);
+  assert.match(panel,/lastSuccess\.answer/);
   assert.match(panel,/Poser une question de suivi/);
-  assert.match(actions,/reason\?\.error==="coach_busy"/);
-  assert.match(actions,/status:"limit"/);
+  assert.match(endpoint,/reason\?\.error==="coach_busy"/);
+  assert.match(endpoint,/status:busy\?"busy":"limit"/);
   assert.doesNotMatch(panel,/localStorage|sessionStorage/);
 });

@@ -1310,3 +1310,14 @@ button,a,input,textarea,select { -webkit-tap-highlight-color:transparent; }
 .trainer-coach-warning{display:flex;align-items:center;gap:10px;color:#ae792e;background:#fff8ec;border-radius:10px;padding:14px;font-size:11px;margin-top:15px}
 @media(max-width:900px){.trainer-coach-stats{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:600px){.trainer-coach-health{padding:17px}.trainer-coach-stats{grid-template-columns:1fr}}
+
+/* Keep the learner workspace usable if the local model stalls or UI fails. */
+.studio-coach-suggestions button:disabled{opacity:.55;cursor:wait}
+.studio-coach-recovery{display:flex;align-items:center;gap:8px;font-size:11px!important;color:#9d734b!important}
+.studio-error-recovery{background:#fff;border:1px solid #e3eaf5;border-radius:17px;padding:28px;margin:24px auto;max-width:780px;color:#3f6a99}
+.studio-error-recovery>svg{color:#ad793e}.studio-error-recovery h1{font-size:23px;color:#254b77;margin:12px 0}
+.studio-error-recovery p{font-size:12px;line-height:1.8;color:#7890a9}
+.studio-error-recovery>div{display:flex;gap:12px;flex-wrap:wrap;margin-top:18px}
+.studio-error-recovery button,.studio-error-recovery a{display:inline-flex;align-items:center;gap:8px;border:1px solid #c9def5;border-radius:9px;background:#eef6ff;color:#286cbb;padding:11px 15px;font-weight:850;font-size:11px;text-decoration:none;cursor:pointer}
+.studio-error-recovery button{background:#347ad4;color:#fff;border-color:#347ad4}
+@media(max-width:600px){.studio-error-recovery{padding:20px}.studio-error-recovery>div{flex-direction:column}.studio-error-recovery button,.studio-error-recovery a{justify-content:center}}

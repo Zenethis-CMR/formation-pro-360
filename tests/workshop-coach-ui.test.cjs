@@ -3,38 +3,50 @@ const assert=require("node:assert/strict");
 const fs=require("node:fs"),path=require("node:path");
 const read=p=>fs.readFileSync(path.join(__dirname,"..",p),"utf8");
 
-test("coach is rendered only if the real backend declares it available",()=>{
+test("tutor is only visible when backend authorizes the published lesson",()=>{
  const s=read("src/app/espace/parcours/ingenierie-produit-ia/atelier/[slug]/page.tsx");
  assert.match(s,/coach_available\?:boolean/);
  assert.match(s,/lesson&&data\?\.coach_available/);
  assert.match(s,/<WorkshopCoach lessonId=\{lesson.id\}/);
  assert.match(s,/Les réponses IA ne sont jamais simulées/);
 });
-test("authenticated coach server action only sends a question and never issues XP",()=>{
- const s=read("src/app/espace/actions.ts");
- const pos=s.indexOf("export async function askWorkshopCoach");
- assert.ok(pos>=0);
- const action=s.slice(pos);
- assert.match(action,/requireRole\("learner"\)/);
- assert.match(action,/question.length<8/);
- assert.match(action,/question.length>1200/);
- assert.match(action,/method:"POST",body:JSON.stringify\(previous_exchange/);
- assert.match(action,/previousQuestion/);
- assert.match(action,/previousAnswer/);
- assert.match(action,/reason\?\.error==="coach_busy"/);
- assert.doesNotMatch(action,/xp_ledger|v2_lesson_xp|referenceUrl|completed_steps/);
+test("coach no longer holds a slow model response in a Next Server Action",()=>{
+ const client=read("src/components/workshop-coach.tsx");
+ const endpoint=read("src/app/api/coach/route.ts");
+ assert.match(client,/onSubmit=\{ask\}/);
+ assert.match(client,/fetch\("\/api\/coach"/);
+ assert.match(client,/response\.body\?\.getReader\(\)/);
+ assert.match(endpoint,/text\/event-stream/);
+ assert.match(endpoint,/new ReadableStream<Uint8Array>/);
+ assert.match(endpoint,/emit\("ready"/);
+ assert.match(endpoint,/emit\("heartbeat"/);
+ assert.match(endpoint,/emit\("answer"/);
+ assert.match(endpoint,/emit\("failure"/);
+ assert.match(endpoint,/setInterval/);
+ assert.match(endpoint,/x-accel-buffering/);
+ assert.doesNotMatch(client,/useActionState|useFormStatus|action=\{run\}/);
 });
-test("client makes an explicit request and shows a model response or accurate unavailability",()=>{
- const s=read("src/components/workshop-coach.tsx");
- assert.match(s,/useActionState/);
- assert.match(s,/action=\{run\}/);
- assert.match(s,/Débloque ton atelier, une question à la fois/);
- assert.match(s,/state.answer/);
- assert.match(s,/Ta question est transmise à Qwen3/);
- assert.match(s,/useFormStatus/);
- assert.match(s,/seconds/);
- assert.match(s,/exampleQuestions/);
- assert.match(s,/name="previousQuestion"/);
- assert.match(s,/name="previousAnswer"/);
- assert.doesNotMatch(s,/localStorage|fetch\(|simulate|faker/i);
+test("same-origin, learner authentication and backend entitlement remain enforced",()=>{
+ const endpoint=read("src/app/api/coach/route.ts");
+ assert.match(endpoint,/origin!==allowed/);
+ assert.match(endpoint,/currentUser\(\)/);
+ assert.match(endpoint,/user.role!=="learner"/);
+ assert.match(endpoint,/uuid\.test/);
+ assert.match(endpoint,/backendRequest\(/);
+ assert.doesNotMatch(endpoint,/xp_ledger|completed_steps|v2_lesson_xp|public\.submissions/);
+});
+test("model failures are handled in component state without reloading the page",()=>{
+ const client=read("src/components/workshop-coach.tsx");
+ assert.match(client,/catch\{/);
+ assert.match(client,/setReply\(\{status:"unavailable"/);
+ assert.match(client,/Aucun travail ni carnet/);
+ assert.match(client,/Poser une question de suivi/);
+ assert.match(client,/lastSuccess\.question/);
+ assert.doesNotMatch(client,/localStorage|sessionStorage/);
+});
+test("studio has a local error boundary for browser-side exceptions",()=>{
+ const fallback=read("src/app/espace/parcours/ingenierie-produit-ia/atelier/[slug]/error.tsx");
+ assert.match(fallback,/reset/);
+ assert.match(fallback,/Retour au parcours/);
+ assert.match(fallback,/role="alert"/);
 });

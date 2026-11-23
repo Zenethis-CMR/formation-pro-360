@@ -135,5 +135,13 @@ jobs:
             302|303|307|308|401|403) echo "V2 private studio correctly requires an authenticated session." ;;
             *) echo "V2 studio security smoke failed: unexpected HTTP $studio_code." >&2; exit 1 ;;
           esac
+          # The slow local AI route must refuse unauthenticated POSTs immediately.
+          # This is an HTTP auth smoke, not a real learner inference test.
+          coach_status="$(curl --silent --show-error --output /dev/null --write-out '%{http_code}' \
+            -X POST -H 'Origin: https://formation.zenithis.tech' \
+            -H 'Content-Type: application/json' \
+            --data '{"lessonId":"00000000-0000-4000-8000-000000000000","question":"Comment vérifier mon atelier ?"}' \
+            http://127.0.0.1:3000/api/coach)"
+          test "$coach_status" = 401 || { echo "Private coach route exposed without session: $coach_status" >&2; exit 1; }
           bash "$app/current/deploy/cleanup.sh"
           REMOTE
