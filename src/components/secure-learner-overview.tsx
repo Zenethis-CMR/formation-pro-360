@@ -35,7 +35,7 @@ export function SecureLearnerOverview({missions,submissions,approvedIds,dependen
   const actionLabel=enrolled?"Continuer mes ateliers":
     suspended?"Consulter mon inscription":
     pilot.published&&pilot.enrollmentOpen?"Rejoindre le pilote gratuit":
-    pilot.published?"Consulter le programme V2":"Découvrir le programme";
+    pilot.published?"Consulter le programme":"Découvrir le programme";
 
   return <div className="real-overview" id="tableau-de-bord">
     <header className="academy-head">
@@ -48,7 +48,7 @@ export function SecureLearnerOverview({missions,submissions,approvedIds,dependen
     </header>
     <section className="academy-feature academy-feature-v2" aria-label="Parcours V2 à la une">
       <div className="feature-copy">
-        <span className="feature-label"><Sparkles size={14}/> PILOTE V2 · FORMATION ACTIVE</span>
+        <span className="feature-label"><Sparkles size={14}/> PARCOURS PRINCIPAL · FORMATION DISPONIBLE</span>
         <h2>Ingénierie produit<br/><span>et intelligence artificielle.</span></h2>
         <p>Du problème utilisateur au MVP en ligne, puis aux premiers essais commerciaux. Un projet fil rouge et des réalisations évaluées.</p>
         <div className="feature-meta">
@@ -73,27 +73,27 @@ export function SecureLearnerOverview({missions,submissions,approvedIds,dependen
       </div>
     </section>
     <section className="v2-pilot-metrics" aria-label="Progression dans le programme V2">
-      <div><span>ATELIERS V2 VALIDÉS</span><strong>{enrolled?pilot.approved:"—"}<small> / 16</small></strong><p>{enrolled?"Validés par le formateur":"Après inscription"}</p></div>
-      <div><span>XP GAGNÉS EN V2</span><strong>{enrolled?pilot.xp:"—"}</strong><p>Indépendants des XP historiques V1</p></div>
+      <div><span>ATELIERS VALIDÉS</span><strong>{enrolled?pilot.approved:"—"}<small> / 16</small></strong><p>{enrolled?"Validés par le formateur":"Après inscription"}</p></div>
+      <div><span>XP CUMULÉS</span><strong>{xp+pilot.xp}</strong><p>{xp} XP de tes autres réalisations · {pilot.xp} XP du parcours</p></div>
       <div><span>EN CORRECTION</span><strong>{enrolled?pilot.pending:"—"}</strong><p>{enrolled?"Livrables en attente":"Suivi après inscription"}</p></div>
     </section>
-    <div className="v2-legacy-heading"><div><span>PARCOURS HISTORIQUE · V1</span><h2>Mes acquis et missions conservés</h2><p>Ces résultats appartiennent à la V1 et restent séparés des XP V2.</p></div><Link href="/espace/apprenant?onglet=missions">Mes missions V1 <ArrowRight size={15}/></Link></div>
-    <section className="academy-metrics" aria-label="Indicateurs du programme historique V1">
+    <div className="v2-legacy-heading"><div><span>AUTRES RÉALISATIONS · ACQUIS CONSERVÉS</span><h2>Mes projets et missions complémentaires</h2><p>Ces réalisations sont toujours accessibles avec leurs validations et récompenses.</p></div><Link href="/espace/apprenant?onglet=missions">Mes missions V1 <ArrowRight size={15}/></Link></div>
+    <section className="academy-metrics" aria-label="Indicateurs des réalisations complémentaires">
       <div className="metric"><div className="metric-icon blue"><GraduationCap size={20}/></div>
-        <div><span>Niveau historique V1</span><strong>{String(level).padStart(2,"0")}</strong><small>Progression par expérience</small></div></div>
+        <div><span>Niveau des missions</span><strong>{String(level).padStart(2,"0")}</strong><small>Progression par expérience</small></div></div>
       <div className="metric"><div className="metric-icon purple"><TrendingUp size={20}/></div>
-        <div><span>XP historiques V1</span><strong>{xp}<em> / {plannedXp}</em></strong><small>Gagnés après validation</small></div></div>
+        <div><span>XP des missions</span><strong>{xp}<em> / {plannedXp}</em></strong><small>Gagnés après validation</small></div></div>
       <div className="metric"><div className="metric-icon mint"><BadgeCheck size={20}/></div>
-        <div><span>Missions V1 validées</span><strong>{approved.size}<em> / {missions.length}</em></strong><small>{inReview} soumission(s) en attente</small></div></div>
+        <div><span>Missions complémentaires validées</span><strong>{approved.size}<em> / {missions.length}</em></strong><small>{inReview} soumission(s) en attente</small></div></div>
     </section>
     <section className="academy-milestone"><div className="milestone-marker"><Target size={20}/></div>
-      <div><span>OBJECTIF V2 · JOUR 14</span><strong>Mettre ton premier scénario utilisateur en ligne.</strong>
+      <div><span>OBJECTIF · JOUR 14</span><strong>Mettre ton premier scénario utilisateur en ligne.</strong>
         <p>Une mission à la fois. Chaque étape donne lieu à un livrable évalué.</p></div>
-      <Link href={pilotHref} aria-label="Ouvrir le parcours V2"><ArrowRight size={20}/></Link>
+      <Link href={pilotHref} aria-label="Ouvrir le parcours"><ArrowRight size={20}/></Link>
     </section>
     <div className="academy-content-grid real-overview-grid">
       <section className="academy-class-section" aria-label="Missions à poursuivre">
-        <div className="academy-section-title"><div><h2>Mes missions historiques V1</h2>
+        <div className="academy-section-title"><div><h2>Mes autres réalisations</h2>
           <span>{missions.length} missions conservées</span></div>
           <Link href="/espace/apprenant?onglet=missions">Voir tout <ArrowRight size={16}/></Link></div>
         <label className="academy-search"><Search size={18}/>
@@ -123,7 +123,7 @@ export function SecureLearnerOverview({missions,submissions,approvedIds,dependen
       </section>
       <div className="academy-column-cards">
         <section className="academy-chart-card" id="progression" aria-label="Graphique de progression">
-          <div className="academy-card-heading"><div><h2>Progression V1</h2>
+          <div className="academy-card-heading"><div><h2>Progression des missions</h2>
             <p>Évolution de tes missions</p></div><TrendingUp size={18}/></div>
           <div className="academy-donut-wrap">
             <svg className="academy-donut" viewBox="0 0 160 160" role="img"

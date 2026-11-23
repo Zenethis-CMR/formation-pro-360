@@ -34,15 +34,15 @@ export function V2LearnerProgressPanel({progress}:{progress:Progress}){
   const recent=progress.submissions.slice(0,4);
   return <section className="v2-progress-hub" aria-labelledby="v2-progress-heading">
     <header className="v2-progress-head">
-      <div><span className="journey-overline"><Sparkles size={15}/> MON PARCOURS V2 · INGÉNIERIE PRODUIT ET IA</span>
+      <div><span className="journey-overline"><Sparkles size={15}/> MON PARCOURS · INGÉNIERIE PRODUIT ET IA</span>
         <h2 id="v2-progress-heading">Ma progression dans le pilote</h2>
-        <p>Résultats vérifiés par ton formateur. Les XP V2 restent séparés de ceux des missions historiques.</p>
+        <p>Résultats vérifiés par ton formateur. Retrouve tes validations et, plus bas, les acquis de tes autres réalisations.</p>
       </div>
-      <Link href={pilotHref} className="v2-progress-go">{enrolled?"Continuer mes ateliers":progress.enrollmentOpen&&!paused?"Rejoindre le pilote":"Ouvrir le parcours"} <ArrowRight size={16}/></Link>
+      <Link href={pilotHref} className="v2-progress-go">{enrolled?"Continuer mes ateliers":progress.enrollmentOpen&&!paused?"Rejoindre la formation":"Ouvrir le parcours"} <ArrowRight size={16}/></Link>
     </header>
-    {!progress.available?<div className="v2-progress-empty"><LockKeyhole size={19}/><div><strong>Statut du pilote momentanément indisponible</strong><p>Consulte le programme sans supposer que ton inscription ou tes évaluations sont activées.</p></div></div>
+    {!progress.available?<div className="v2-progress-empty"><LockKeyhole size={19}/><div><strong>Statut du parcours momentanément indisponible</strong><p>Consulte le programme sans supposer que ton inscription ou tes évaluations sont activées.</p></div></div>
     :!enrolled?<div className="v2-progress-empty"><BookOpenCheck size={19}/><div>
-      <strong>{paused?"Ton inscription V2 est suspendue":progress.enrollmentOpen?"Prêt à rejoindre le pilote ?":"Le pilote V2 est publié"}</strong>
+      <strong>{paused?"Ton inscription V2 est suspendue":progress.enrollmentOpen?"Prêt à rejoindre le pilote ?":"Le programme est disponible"}</strong>
       <p>{paused?"Les résultats restent privés. Contacte ton formateur pour retrouver l'accès.":
         progress.enrollmentOpen?"Inscris-toi depuis ton parcours pour commencer les 16 ateliers et suivre tes validations ici.":
         "Ton inscription n'est pas encore ouverte pour ce compte. Le programme détaillé reste consultable."}</p>
@@ -50,7 +50,7 @@ export function V2LearnerProgressPanel({progress}:{progress:Progress}){
     :<>
       <div className="v2-progress-metrics">
         <div className="v2-progress-stat"><span><CheckCircle2 size={15}/> Ateliers validés</span><strong>{successes}<small> / {total}</small></strong><p>{percent}% du parcours évalué avec succès</p></div>
-        <div className="v2-progress-stat"><span><Award size={15}/> XP V2 attribués</span><strong>{progress.xpTotal}</strong><p>Uniquement après validation (80/100 minimum)</p></div>
+        <div className="v2-progress-stat"><span><Award size={15}/> XP obtenus dans le parcours</span><strong>{progress.xpTotal}</strong><p>Uniquement après validation (80/100 minimum)</p></div>
         <div className="v2-progress-stat"><span><Clock3 size={15}/> En correction</span><strong>{pending}</strong><p>{revisions} atelier(s) à améliorer</p></div>
       </div>
       <div className="v2-progress-bar" role="progressbar" aria-valuenow={successes} aria-valuemin={0} aria-valuemax={total} aria-label="Ateliers V2 validés"><span style={{width:percent+"%"}}/></div>

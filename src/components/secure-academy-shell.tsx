@@ -34,17 +34,17 @@ export function SecureAcademyShell({children,stats}:{children:React.ReactNode;st
   const links=trainer?[
     {href:base,label:"Tableau de bord",icon:LayoutDashboard},
     {href:base+"?onglet=evaluations",label:"Évaluations",icon:ClipboardCheck},
-    {href:"/espace/formateur/corrections-v2",label:"Corrections V2",icon:BadgeCheck},
+    {href:"/espace/formateur/corrections",label:"Corriger les ateliers",icon:BadgeCheck},
     {href:base+"?onglet=apprenants",label:"Mes apprenants",icon:Users},
     {href:base+"?onglet=programme",label:"Programme",icon:CalendarDays},
-    {href:"/catalogue",label:"Catalogue V2",icon:Sparkles}
+    {href:"/catalogue",label:"Catalogue",icon:Sparkles}
   ]:[
     {href:base,label:"Tableau de bord",icon:LayoutDashboard},
-    {href:"/espace/parcours/ingenierie-produit-ia",label:"Mon parcours V2",icon:Sparkles},
-    {href:base+"?onglet=missions",label:"Missions V1",icon:BookOpen},
+    {href:"/espace/parcours/ingenierie-produit-ia",label:"Mon parcours",icon:Sparkles},
+    {href:base+"?onglet=missions",label:"Mes réalisations",icon:BookOpen},
     {href:base+"?onglet=progression",label:"Ma progression",icon:BarChart3},
-    {href:base+"?onglet=programme",label:"Programme V1",icon:CalendarDays},
-    {href:"/catalogue",label:"Catalogue V2",icon:Sparkles}
+    {href:base+"?onglet=programme",label:"Mes ressources",icon:CalendarDays},
+    {href:"/catalogue",label:"Catalogue",icon:Sparkles}
   ];
   const learningPercent=stats.missionCount?Math.round(stats.approvedCount/stats.missionCount*100):0;
   const profileName=stats.displayName|| (trainer?"Espace formateur":"Mon parcours");
@@ -94,9 +94,9 @@ export function SecureAcademyShell({children,stats}:{children:React.ReactNode;st
           {trainer?<><CircleStat label="Apprenants" value={String(stats.learners)} percent={Math.min(100,stats.learners*10)} color="#48c995"/>
             <CircleStat label="À corriger" value={String(stats.pending)} percent={Math.min(100,stats.pending*25)} color="#4387f5"/>
             <CircleStat label="Missions" value={String(stats.missionCount)} percent={Math.min(100,stats.missionCount/16*100)} color="#ffa56e"/></>
-          :<><CircleStat label="V1 validées" value={String(stats.approvedCount)} percent={learningPercent} color="#48c995"/>
-            <CircleStat label="XP V1" value={String(stats.xp)} percent={(stats.xp%300)/300*100} color="#4387f5"/>
-            <CircleStat label="V1 attente" value={String(stats.pending)} percent={Math.min(100,stats.pending*25)} color="#ffa56e"/></>}
+          :<><CircleStat label="Missions" value={String(stats.approvedCount)} percent={learningPercent} color="#48c995"/>
+            <CircleStat label="XP missions" value={String(stats.xp)} percent={(stats.xp%300)/300*100} color="#4387f5"/>
+            <CircleStat label="À corriger" value={String(stats.pending)} percent={Math.min(100,stats.pending*25)} color="#ffa56e"/></>}
         </div>
       </div>
       <div className="rail-widget">
@@ -120,7 +120,7 @@ export function SecureAcademyShell({children,stats}:{children:React.ReactNode;st
       <Link href={base+"?onglet=apprenants"} className={pathname===base&&currentTab==="apprenants"?"on":""}><Users size={19}/>Apprenants</Link>
     </>:<>
       <Link href={base+"?onglet=missions"} className={pathname===base&&currentTab==="missions"?"on":""}><BookOpen size={19}/>V1</Link>
-      <Link href={base+"?onglet=progression"} className={pathname===base&&currentTab==="progression"?"on":""}><BarChart3 size={19}/>XP V1</Link>
+      <Link href={base+"?onglet=progression"} className={pathname===base&&currentTab==="progression"?"on":""}><BarChart3 size={19}/>XP missions</Link>
     </>}
     <Link href={trainer?base+"?onglet=programme":"/espace/parcours/ingenierie-produit-ia"} className={(trainer?pathname===base&&currentTab==="programme":pathname==="/espace/parcours/ingenierie-produit-ia")?"on":""}><CalendarDays size={19}/>{trainer?"Programme":"Parcours V2"}</Link>
     <Link href="/espace/compte" className={pathname==="/espace/compte"?"on":""}><Settings2 size={19}/>Compte</Link>

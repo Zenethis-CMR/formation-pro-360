@@ -128,8 +128,8 @@ export default async function TrainerSpace({searchParams}:{searchParams:Promise<
     {params.error&&<p className="alert danger" role="alert">Échec de l'opération. Vérifie les champs ou les droits d'accès.</p>}
     {tab==="evaluations"&&<>
     <V2TrainerEvaluationOverview/>
-    <div className="v2-legacy-section-head"><span>ARCHIVES ET CORRECTIONS V1</span><h2>Évaluations du programme historique</h2><p>Les anciennes missions et leurs XP continuent de fonctionner indépendamment des ateliers V2.</p></div>
-    <section className="panel" id="evaluations"><div className="section-head"><h2>Soumissions V1 à évaluer</h2><span className="counter">{pending.length} en attente</span></div>
+    <div className="v2-legacy-section-head"><span>AUTRES RÉALISATIONS · HISTORIQUE</span><h2>Évaluations des projets complémentaires</h2><p>Les corrections déjà effectuées et leurs récompenses restent conservées.</p></div>
+    <section className="panel" id="evaluations"><div className="section-head"><h2>Autres soumissions à évaluer</h2><span className="counter">{pending.length} en attente</span></div>
       {!pending.length ? <div className="empty-state"><h3>Aucune soumission en attente</h3><p>Les livrables apparaîtront ici lorsqu’un apprenant les déposera.</p></div>
       :<div className="review-list">{pending.map(s=><article className="review-card" key={s.id}>
         <div><span className="week">MISSION · {displayDomain(byId.get(s.mission_id)?.domain||"")}</span><h3>{byId.get(s.mission_id)?.title||"Mission"}</h3>

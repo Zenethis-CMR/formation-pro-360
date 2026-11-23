@@ -78,7 +78,7 @@ export default async function LearnerSpace({searchParams}:{searchParams:Promise<
     </div>
     {tab==="progression"&&<>
       {v2Progress&&<V2LearnerProgressPanel progress={v2Progress}/>}
-      <div className="v2-legacy-section-head"><span>HISTORIQUE V1 · ACQUIS CONSERVÉS</span><h2>Mes compétences et récompenses V1</h2><p>Badges, exercices, messages et XP de l'ancien programme. Ils ne sont pas fusionnés avec les résultats V2.</p></div>
+      <div className="v2-legacy-section-head"><span>MES AUTRES ACQUIS · RÉALISATIONS CONSERVÉES</span><h2>Mes compétences et récompenses</h2><p>Badges, exercices et retours de tes autres réalisations, conservés sur ton compte.</p></div>
       <LearnerCoachingPanel insight={insight} messages={(coachMessages||[]) as CoachMessage[]} startDate={settings?.start_date??null}/>
       <LearningAchievements catalog={(badgeCatalog||[]) as Badge[]} earned={(myBadges||[]) as EarnedBadge[]} practice={(practice||[]) as PracticeCheckin[]} validatedCount={approved.size} currentMission={currentMission ? {id:currentMission.id,title:currentMission.title} : null}/>
       <SkillMastery missions={missions} approved={approved}/>

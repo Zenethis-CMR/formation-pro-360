@@ -30,24 +30,24 @@ export async function V2TrainerEvaluationOverview(){
   }catch{/* fail closed: preserve historical V1 correction workflows */}
   return <section className="v2-trainer-summary" aria-labelledby="v2-trainer-summary-heading">
     <div className="v2-trainer-summary-head"><div>
-      <span className="journey-overline"><Sparkles size={14}/> PILOTE V2 · ACTIVITÉ PÉDAGOGIQUE</span>
+      <span className="journey-overline"><Sparkles size={14}/> PARCOURS ACTIF · SUIVI PÉDAGOGIQUE</span>
       <h2 id="v2-trainer-summary-heading">Ingénierie produit et IA</h2>
-      <p>Inscriptions, évaluations et XP exclusivement issus du programme V2.</p>
+      <p>Inscriptions, évaluations et récompenses de la formation Ingénierie produit et IA.</p>
     </div>
-      <Link href="/espace/formateur/corrections-v2" className="v2-trainer-summary-link">Corriger les ateliers V2 <ArrowRight size={16}/></Link>
+      <Link href="/espace/formateur/corrections" className="v2-trainer-summary-link">Corriger les ateliers <ArrowRight size={16}/></Link>
     </div>
-    {!summary?<div className="v2-progress-empty"><ClipboardCheck size={19}/><div><strong>Indicateurs V2 indisponibles</strong>
-      <p>L'accès à l'API de suivi doit être vérifié. Les anciennes corrections V1 restent opérationnelles.</p></div></div>:
+    {!summary?<div className="v2-progress-empty"><ClipboardCheck size={19}/><div><strong>Indicateurs du parcours indisponibles</strong>
+      <p>L'accès à l'API de suivi doit être vérifié. Les autres corrections restent accessibles.</p></div></div>:
       <>
         <div className="v2-trainer-summary-stats">
           <div><span><GraduationCap size={16}/> Apprenants inscrits</span><strong>{summary.enrollments.total}</strong><small>{summary.enrollments.active} actif(s) · {summary.enrollments.completed} terminé(s)</small></div>
           <div><span><ClipboardCheck size={16}/> Livrables en attente</span><strong>{summary.assessments.pending}</strong><small>{summary.assessments.submissions} tentative(s) enregistrée(s)</small></div>
           <div><span><CheckCircle2 size={16}/> Ateliers validés</span><strong>{summary.assessments.approved}</strong><small>{summary.assessments.changes_requested} retour(s) à améliorer</small></div>
-          <div><span><Award size={16}/> XP V2 attribués</span><strong>{summary.xp_awarded}</strong><small>Sans les récompenses V1</small></div>
+          <div><span><Award size={16}/> XP attribués</span><strong>{summary.xp_awarded}</strong><small>Récompenses de ce parcours</small></div>
         </div>
         <div className="v2-trainer-recent">
-          <div><h3><RotateCcw size={17}/> Dernières corrections V2</h3><Link href="/espace/formateur/corrections-v2">Gérer les soumissions <ArrowRight size={14}/></Link></div>
-          {!summary.recent.length?<p>Aucune correction V2 enregistrée pour le moment. Les nouvelles validations apparaîtront ici.</p>:
+          <div><h3><RotateCcw size={17}/> Dernières corrections</h3><Link href="/espace/formateur/corrections">Gérer les soumissions <ArrowRight size={14}/></Link></div>
+          {!summary.recent.length?<p>Aucune correction enregistrée pour le moment. Les nouvelles validations apparaîtront ici.</p>:
           <div className="v2-trainer-recent-list">{summary.recent.map(item=><article key={item.id}>
             <div><span>SEMAINE {item.module_week} · {item.status==="approved"?"VALIDÉ":"À AMÉLIORER"}</span><time dateTime={item.reviewed_at}>{prettyDate(item.reviewed_at)}</time></div>
             <strong>{item.lesson_title}</strong>
