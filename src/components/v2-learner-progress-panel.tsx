@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowRight, Award, BookOpenCheck, CheckCircle2, Clock3, LockKeyhole, Sparkles, TrendingUp, AlertTriangle } from "lucide-react";
+import { ArrowRight, Award, BookOpenCheck, CheckCircle2, Clock3, LockKeyhole, Sparkles, TrendingUp, AlertTriangle, Trophy } from "lucide-react";
 import type { V2LearnerProgress as Progress, V2Submission } from "@/lib/v2-learner-progress";
 
 const pilotHref="/espace/parcours/ingenierie-produit-ia";
@@ -28,6 +28,7 @@ export function V2LearnerProgressPanel({progress,otherXp}:{progress:Progress;oth
   const pending=[...latest.values()].filter(s=>s.status==="pending").length;
   const revisions=[...latest.values()].filter(s=>s.status==="changes_requested").length;
   const total=lessonVersions.size||16;
+  const finished=total===16&&successes===16&&progress.xpTotal>=1600;
   const percent=enrolled&&progress.lessonAccess
     ?Math.min(100,Math.round(successes/total*100)):0;
   const lessonNames=new Map([...lessonVersions].map(([key,lesson])=>[key,lesson.title]));
@@ -55,6 +56,12 @@ export function V2LearnerProgressPanel({progress,otherXp}:{progress:Progress;oth
         <div className="v2-progress-stat"><span><Award size={15}/> XP CUMULÉS</span><strong>{progress.xpTotal+otherXp}</strong><p>{progress.xpTotal} XP du parcours · {otherXp} XP des autres réalisations</p></div>
         <div className="v2-progress-stat"><span><Clock3 size={15}/> En correction</span><strong>{pending}</strong><p>{revisions} atelier(s) à améliorer</p></div>
       </div>
+      {finished&&<section className="learner-finish-celebration" aria-label="Formation pratique terminée">
+        <Trophy size={28}/><div><span>PARCOURS PRATIQUE TERMINÉ</span>
+          <h3>16 ateliers validés · 1 600 XP vérifiés.</h3>
+          <p>Tes réalisations ont été approuvées par le formateur. Retrouve tes preuves dans le portfolio.</p>
+        </div><Link href="/espace/portfolio">Présenter mes projets <ArrowRight size={16}/></Link>
+      </section>}
       <div className="portfolio-progress-shortcut"><Link href="/espace/portfolio">
         <BookOpenCheck size={17}/> Voir mes réalisations vérifiées <ArrowRight size={15}/>
       </Link></div>

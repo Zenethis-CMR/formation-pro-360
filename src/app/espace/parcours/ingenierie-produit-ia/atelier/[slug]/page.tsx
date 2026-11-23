@@ -1,6 +1,6 @@
 import Link from "next/link";
 import {notFound} from "next/navigation";
-import {ArrowLeft,ArrowRight,ArrowUpRight,Award,BookOpen,CheckCircle2,ChevronRight,ClipboardCheck,Clock3,ExternalLink,Flag,LockKeyhole,MessageSquare,ShieldCheck,Sparkles,Target,TriangleAlert} from "lucide-react";
+import {ArrowLeft,ArrowRight,ArrowUpRight,Award,BookOpen,CheckCircle2,ChevronRight,ClipboardCheck,Clock3,ExternalLink,Flag,LockKeyhole,MessageSquare,ShieldCheck,Sparkles,Target,TriangleAlert,Trophy} from "lucide-react";
 import {requireRole} from "@/lib/auth/require-role";
 import {backendRequest} from "@/lib/auth/backend";
 import {pilotCourse} from "@/lib/v2-public-catalog";
@@ -95,6 +95,13 @@ export default async function V2WorkshopStudio({params,searchParams}:{
   const position=allLessons.findIndex(l=>l.slug===slug);
   const previous=position>0?allLessons[position-1]:null;
   const next=position>=0&&position<allLessons.length-1?allLessons[position+1]:null;
+  const verifiedLessons=new Set((data?.submissions||[]).filter(s=>s.status==="approved")
+    .map(s=>s.module_id+":"+s.lesson_slug));
+  const fullCourseValidated=accessible&&verifiedLessons.size===16&&Number(data?.xp_total??0)>=1600;
+  const primaryHref=approved?"#carnet":latest?.status==="pending"?"#livrable":
+    latest?.status==="changes_requested"?"#carnet":"#brief";
+  const primaryLabel=approved?"Revoir ma correction":latest?.status==="pending"?"Suivre mon évaluation":
+    latest?.status==="changes_requested"?"Reprendre après la correction":"Commencer par les consignes";
   const officialRubric=lesson?rubricTitles(lesson.rubric):[];
   // Only actual reviewed submissions, scoped to the signed-in learner, count.
   const latestReviewed=history.find(s=>s.status!=="pending"&&s.feedback&&
@@ -122,7 +129,7 @@ export default async function V2WorkshopStudio({params,searchParams}:{
           <span><Award size={15}/> 100 XP après validation</span>
           {lesson&&<span><ShieldCheck size={15}/> Leçon officielle publiée</span>}
         </div>
-        <div className="studio-hero-links"><a href="#livrable" className="studio-hero-main-link">Préparer mon livrable <ArrowRight size={16}/></a><Link href={base} className="studio-hero-secondary-link">Voir les 16 ateliers</Link></div>
+        <div className="studio-hero-links"><a href={primaryHref} className="studio-hero-main-link">{primaryLabel} <ArrowRight size={16}/></a><Link href={base} className="studio-hero-secondary-link">Voir les 16 ateliers</Link></div>
       </div>
       <div className="studio-hero-side"><span>TON OBJECTIF DE LA SEMAINE</span>
         <strong>{editorial.moduleTitle}</strong>
@@ -234,6 +241,14 @@ export default async function V2WorkshopStudio({params,searchParams}:{
             </article>)}
           </div>}
         </section>
+        {fullCourseValidated&&<section className="studio-journey-finish" aria-label="Parcours entier validé">
+          <Trophy size={29}/><div><span>16 ATELIERS APPROUVÉS · 1 600 XP ENREGISTRÉS</span>
+            <h2>Tu as terminé le parcours pratique.</h2>
+            <p>Constitue ton dossier de preuves et choisis les réalisations que tu souhaites présenter.
+              Ce portfolio ne constitue pas un diplôme.</p>
+            <Link href="/espace/portfolio">Préparer mon portfolio <ArrowRight size={16}/></Link>
+          </div>
+        </section>}
         <nav className="studio-next-nav" aria-label="Navigation entre ateliers">
           {previous?<Link href={base+"/atelier/"+previous.slug}><ArrowLeft size={16}/><span><small>ATELIER PRÉCÉDENT</small><strong>{previous.title}</strong></span></Link>:<span/>}
           {next?<Link href={base+"/atelier/"+next.slug}><span><small>ATELIER SUIVANT</small><strong>{next.title}</strong></span><ArrowRight size={16}/></Link>:<Link href={base}><span><small>FIN DU PARCOURS</small><strong>Revoir les huit semaines</strong></span><ArrowRight size={16}/></Link>}

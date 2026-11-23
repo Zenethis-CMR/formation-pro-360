@@ -3,7 +3,7 @@ import { ArrowLeft, ArrowRight, BadgeCheck, BookOpen, CheckCircle2, Clock3, Lock
 import { requireRole } from "@/lib/auth/require-role";
 import { backendRequest } from "@/lib/auth/backend";
 import { pilotCourse } from "@/lib/v2-public-catalog";
-import { enrollInV2Pilot, submitV2Lesson } from "@/app/espace/actions";
+import { enrollInV2Pilot } from "@/app/espace/actions";
 
 type TrainingModule={
   id:string;week:number;slug:string;title:string;outcome:string;skills:string[];
@@ -106,7 +106,7 @@ export default async function V2LearnerTrack({searchParams}:{
               return <details key={lesson.id} className="v2-track-lesson">
                 <summary><BookOpen size={17}/><span>{lesson.title}</span>
                   <small>{latest?.status==="approved"?"Validé":latest?.status==="pending"?"En correction":
-                    latest?.status==="changes_requested"?"À améliorer":"Atelier publié"}</small>
+                    latest?.status==="changes_requested"?"À améliorer":"À réaliser"}</small>
                 </summary>
                 <div className="v2-track-lesson-body">
                   <p><strong>Objectif :</strong> {lesson.objective}</p>
@@ -114,7 +114,12 @@ export default async function V2LearnerTrack({searchParams}:{
                   <h3>Travail autonome</h3><p>{lesson.independent_work}</p>
                   <h3>Livrable demandé</h3><p>{lesson.evidence_required}</p>
                   <Link href={"/espace/parcours/ingenierie-produit-ia/atelier/"+lesson.slug} className="v2-lesson-studio-entry">
-                    <BookOpen size={16}/> Entrer dans le studio pédagogique <ArrowRight size={16}/>
+                    <BookOpen size={16}/>
+                    {latest?.status==="pending"?"Suivre ma correction dans le studio":
+                      latest?.status==="approved"?"Revoir mon atelier validé":
+                      latest?.status==="changes_requested"?"Améliorer mon projet dans le studio":
+                      "Commencer dans le studio pédagogique"}
+                    <ArrowRight size={16}/>
                   </Link>
                   <p className="v2-track-notice">Dans le studio : cinq étapes pratiques, auto-contrôle, pièges à éviter, modèle de livrable et préparation à la correction.</p>
                   {latest?.feedback&&<div className="v2-track-feedback">
@@ -123,17 +128,11 @@ export default async function V2LearnerTrack({searchParams}:{
                   </div>}
                   {latest?.status==="pending"&&<p className="v2-track-notice">Ton travail est en attente de correction. Tu ne peux pas le soumettre une seconde fois.</p>}
                   {latest?.status==="approved"&&<p className="v2-track-approved"><CheckCircle2 size={16}/> Atelier validé par le formateur · 100 XP attribués</p>}
-                  {canSubmit&&<form action={submitV2Lesson} className="v2-track-submit">
-                    <input type="hidden" name="lessonId" value={lesson.id}/>
-                    <label>Lien de ton projet
-                      <input name="url" type="url" required maxLength={800} placeholder="https://github.com/… ou https://…"/>
-                    </label>
-                    <label>Explique ce que tu as réalisé
-                      <textarea name="note" rows={3} maxLength={1200} placeholder="Fonctionnalités, tests, limites et difficultés rencontrées."/>
-                    </label>
-                    <button className="primary-btn" type="submit">Soumettre ce livrable <BadgeCheck size={15}/></button>
-                    <small>Les XP sont attribués uniquement après une correction d'au moins 80/100.</small>
-                  </form>}
+                  {canSubmit&&<p className="v2-track-notice">
+                    Pour remettre ton projet, entre dans le studio : réalise les étapes,
+                    garde tes notes et vérifie le livrable. Le formulaire de remise
+                    se trouve à la fin de cet atelier. Une note d'au moins 80/100 attribue 100 XP.
+                  </p>}
                   {!data?.evaluation_open&&<p className="v2-track-notice">Les remises de projet et les corrections ne sont pas encore ouvertes sur cet environnement.</p>}
                 </div>
               </details>;
