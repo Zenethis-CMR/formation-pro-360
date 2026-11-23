@@ -242,3 +242,48 @@ export async function enrollInV2Pilot() {
   revalidatePath(destination);
   redirect(destination+"?inscription=confirmee");
 }
+
+/** Submission is accepted only by the CT420 API after checking enrollment. */
+export async function submitV2Lesson(formData:FormData) {
+  await requireRole("learner");
+  const path="/espace/parcours/ingenierie-produit-ia";
+  const lessonId=String(formData.get("lessonId")||"");
+  const url=String(formData.get("url")||"").trim();
+  const note=String(formData.get("note")||"").trim();
+  if(!idPattern.test(lessonId)||url.length>800||note.length>1200)
+    redirect(path+"?livrable=erreur");
+  let parsed:URL;
+  try{parsed=new URL(url)}catch{redirect(path+"?livrable=erreur")}
+  if(!["http:","https:"].includes(parsed.protocol))
+    redirect(path+"?livrable=erreur");
+  const res=await backendRequest(
+    "/v1/training/catalog/ingenierie-produit-ia/lessons/"+lessonId+"/submissions",
+    {method:"POST",headers:{"content-type":"application/json"},
+      body:JSON.stringify({url:parsed.href,note})}
+  ).catch(()=>null);
+  if(!res?.ok)redirect(path+"?livrable=erreur");
+  revalidatePath(path);
+  revalidatePath("/espace/formateur/corrections-v2");
+  redirect(path+"?livrable=envoye");
+}
+
+/** Review and XP award are one transaction performed by the backend. */
+export async function reviewV2Lesson(formData:FormData) {
+  await requireRole("trainer");
+  const path="/espace/formateur/corrections-v2";
+  const id=String(formData.get("submissionId")||"");
+  const scoreText=String(formData.get("score")||"");
+  const feedback=String(formData.get("feedback")||"").trim();
+  if(!idPattern.test(id)|| !/^\d{1,3}$/.test(scoreText)||
+    Number(scoreText)>100||feedback.length<3||feedback.length>1500)
+    redirect(path+"?correction=erreur");
+  const res=await backendRequest(
+    "/v1/training/catalog/ingenierie-produit-ia/submissions/"+id+"/review",
+    {method:"POST",headers:{"content-type":"application/json"},
+      body:JSON.stringify({score:Number(scoreText),feedback})}
+  ).catch(()=>null);
+  if(!res?.ok)redirect(path+"?correction=erreur");
+  revalidatePath(path);
+  revalidatePath("/espace/parcours/ingenierie-produit-ia");
+  redirect(path+"?correction=validee");
+}

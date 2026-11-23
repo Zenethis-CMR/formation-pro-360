@@ -3,7 +3,7 @@ import { ArrowLeft, ArrowRight, BadgeCheck, BookOpen, CheckCircle2, Clock3, Lock
 import { requireRole } from "@/lib/auth/require-role";
 import { backendRequest } from "@/lib/auth/backend";
 import { pilotCourse } from "@/lib/v2-public-catalog";
-import { enrollInV2Pilot } from "@/app/espace/actions";
+import { enrollInV2Pilot, submitV2Lesson } from "@/app/espace/actions";
 
 type TrainingModule={
   id:string;week:number;slug:string;title:string;outcome:string;skills:string[];
@@ -21,10 +21,16 @@ type CatalogDetail={
   enrollment:EnrollmentStatus;
   enrollment_open:boolean;
   lesson_access:"granted"|"locked";
+  evaluation_open?:boolean;
+  xp_total?:number;
+  submissions?:{
+    id:string;lesson_id:string;status:"pending"|"changes_requested"|"approved";
+    score:number|null;feedback:string|null;url:string;note:string;created_at:string
+  }[];
 };
 
 export default async function V2LearnerTrack({searchParams}:{
-  searchParams:Promise<{inscription?:string}>;
+  searchParams:Promise<{inscription?:string;livrable?:string}>;
 }) {
   await requireRole("learner");
   const params=await searchParams;
@@ -51,6 +57,8 @@ export default async function V2LearnerTrack({searchParams}:{
       <p>Construis ton produit numérique en huit semaines. Premier flux en ligne au jour 14, MVP au premier mois, puis premiers essais de commercialisation.</p>
       <div className="v2-track-facts"><span><BookOpen size={15}/> 8 modules</span><span><BadgeCheck size={15}/> 16 ateliers</span><span><Clock3 size={15}/> 8 semaines</span></div>
     </header>
+    {params.livrable==="envoye"&&<p className="alert success" role="status">Ton livrable a été transmis. Le formateur peut maintenant le corriger.</p>}
+    {params.livrable==="erreur"&&<p className="alert danger" role="alert">L'envoi n'a pas abouti. Vérifie ton inscription, le lien et l'état de l'atelier.</p>}
     {params.inscription==="confirmee"&&enrolled&&<p className="alert success" role="status">Ton inscription gratuite au parcours pilote est confirmée.</p>}
     {params.inscription==="indisponible"&&<p className="alert danger" role="alert">L'inscription n'est pas disponible actuellement. Vérifie que le parcours a été ouvert par l'administration.</p>}
     {!ready&&<section className="v2-track-status">
@@ -72,7 +80,9 @@ export default async function V2LearnerTrack({searchParams}:{
         </form>}
       </div>
     </section>}
-    {enrolled&&<p className="v2-track-eligibility" role="status"><CheckCircle2 size={17}/> Inscription {status==="completed"?"terminée":"active"} · {canRead?"Ateliers publiés accessibles":"Les leçons ne sont pas encore publiées."}</p>}
+    {enrolled&&<p className="v2-track-eligibility" role="status"><CheckCircle2 size={17}/> Inscription {status==="completed"?"terminée":"active"} · {canRead?"Ateliers publiés accessibles":"Les leçons ne sont pas encore publiées."}
+      {canRead&&<strong> · {data?.xp_total??0} XP V2 acquis</strong>}
+    </p>}
     <section className="v2-track-weeks" aria-label="Modules du cursus V2">
       {modList.map(mod=>{
         const live=lessons.filter(l=>l.module_id===mod.id);
@@ -81,16 +91,41 @@ export default async function V2LearnerTrack({searchParams}:{
           <div className="v2-track-module-heading"><span>S{String(mod.week).padStart(2,"0")}</span><div><h2>{mod.title}</h2><p>{mod.outcome}</p></div></div>
           <div className="v2-track-module-chips">{mod.skills.map(skill=><span key={skill}>{skill}</span>)}</div>
           {canRead?<div className="v2-track-lessons">
-            {live.length?live.map(lesson=><details key={lesson.id} className="v2-track-lesson">
-              <summary><BookOpen size={17}/><span>{lesson.title}</span><small>Atelier publié</small></summary>
-              <div className="v2-track-lesson-body">
-                <p><strong>Objectif :</strong> {lesson.objective}</p>
-                <h3>Exercice guidé</h3><p>{lesson.guided_work}</p>
-                <h3>Travail autonome</h3><p>{lesson.independent_work}</p>
-                <h3>Livrable demandé</h3><p>{lesson.evidence_required}</p>
-                <p className="v2-track-notice">La remise des livrables et les XP du nouveau cursus seront activés après la validation du système d'évaluation. Ils restent indépendants des XP déjà obtenus.</p>
-              </div>
-            </details>):<p className="v2-track-notice">Les ateliers de cette semaine ne sont pas encore publiés.</p>}
+            {live.length?live.map(lesson=>{
+              const latest=data?.submissions?.find(s=>s.lesson_id===lesson.id);
+              const canSubmit=Boolean(data?.evaluation_open)&&status==="active" &&
+                (!latest||latest.status==="changes_requested");
+              return <details key={lesson.id} className="v2-track-lesson">
+                <summary><BookOpen size={17}/><span>{lesson.title}</span>
+                  <small>{latest?.status==="approved"?"Validé":latest?.status==="pending"?"En correction":
+                    latest?.status==="changes_requested"?"À améliorer":"Atelier publié"}</small>
+                </summary>
+                <div className="v2-track-lesson-body">
+                  <p><strong>Objectif :</strong> {lesson.objective}</p>
+                  <h3>Exercice guidé</h3><p>{lesson.guided_work}</p>
+                  <h3>Travail autonome</h3><p>{lesson.independent_work}</p>
+                  <h3>Livrable demandé</h3><p>{lesson.evidence_required}</p>
+                  {latest?.feedback&&<div className="v2-track-feedback">
+                    <strong>Dernier retour du formateur : {latest.score}/100</strong>
+                    <p>{latest.feedback}</p>
+                  </div>}
+                  {latest?.status==="pending"&&<p className="v2-track-notice">Ton travail est en attente de correction. Tu ne peux pas le soumettre une seconde fois.</p>}
+                  {latest?.status==="approved"&&<p className="v2-track-approved"><CheckCircle2 size={16}/> Atelier validé par le formateur · 100 XP V2 attribués</p>}
+                  {canSubmit&&<form action={submitV2Lesson} className="v2-track-submit">
+                    <input type="hidden" name="lessonId" value={lesson.id}/>
+                    <label>Lien de ton projet
+                      <input name="url" type="url" required maxLength={800} placeholder="https://github.com/… ou https://…"/>
+                    </label>
+                    <label>Explique ce que tu as réalisé
+                      <textarea name="note" rows={3} maxLength={1200} placeholder="Fonctionnalités, tests, limites et difficultés rencontrées."/>
+                    </label>
+                    <button className="primary-btn" type="submit">Soumettre ce livrable <BadgeCheck size={15}/></button>
+                    <small>Les XP sont attribués uniquement après une correction d'au moins 80/100.</small>
+                  </form>}
+                  {!data?.evaluation_open&&<p className="v2-track-notice">Les remises de projet et les corrections V2 ne sont pas encore ouvertes sur cet environnement.</p>}
+                </div>
+              </details>;
+            }):<p className="v2-track-notice">Les ateliers de cette semaine ne sont pas encore publiés.</p>}
           </div>:<div className="v2-track-lessons">{preview?.lessons.map(lesson=><div key={lesson.slug} className="v2-track-locked-lesson">
             <LockKeyhole size={15}/><div><strong>{lesson.title}</strong><p>{lesson.objective}</p></div>
           </div>)}</div>}
