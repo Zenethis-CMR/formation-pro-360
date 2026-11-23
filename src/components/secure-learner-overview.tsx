@@ -45,7 +45,7 @@ export function SecureLearnerOverview({missions,submissions,approvedIds,dependen
   return <div className="real-overview" id="tableau-de-bord">
     <header className="academy-head">
       <div><span className="academy-kicker">MON ESPACE DE FORMATION</span>
-        <h1>Mes classes<span className="academy-dot">.</span></h1>
+        <h1>Mon apprentissage<span className="academy-dot">.</span></h1>
         <p>Avance à ton rythme, transforme chaque leçon en réalisation.</p></div>
       <div className="head-actions"><span className="academy-date">Cycle pratique · 8 semaines</span>
         <Link href="/espace/apprenant?onglet=missions" className="head-square-action" title="Mes missions" aria-label="Voir les missions"><Search size={18}/></Link>
@@ -95,6 +95,18 @@ export function SecureLearnerOverview({missions,submissions,approvedIds,dependen
       </div>
       <Link href="/espace/portfolio">Ouvrir mon portfolio <ArrowRight size={16}/></Link>
     </section>}
+    <section className="academy-milestone"><div className="milestone-marker"><Target size={20}/></div>
+      <div><span>OBJECTIF · JOUR 14</span><strong>Mettre ton premier scénario utilisateur en ligne.</strong>
+        <p>Une mission à la fois. Chaque étape donne lieu à un livrable évalué.</p></div>
+      <Link href={pilotHref} aria-label="Ouvrir le parcours"><ArrowRight size={20}/></Link>
+    </section>
+    {missions.length>0&&<details className="learner-legacy-details" open={xp>0||submissions.length>0}>
+      <summary><BookOpen size={17}/>
+        <span><strong>Mes réalisations complémentaires</strong>
+          <small>Tes anciens projets et graphiques sont conservés, mais restent secondaires au parcours principal.</small>
+        </span><ArrowRight size={17}/>
+      </summary>
+      <div className="learner-legacy-details-content">
     <div className="v2-legacy-heading"><div><span>AUTRES RÉALISATIONS · ACQUIS CONSERVÉS</span><h2>Mes projets et missions complémentaires</h2><p>Ces réalisations sont toujours accessibles avec leurs validations et récompenses.</p></div><Link href="/espace/apprenant?onglet=missions">Mes autres projets <ArrowRight size={15}/></Link></div>
     <section className="academy-metrics" aria-label="Indicateurs des réalisations complémentaires">
       <div className="metric"><div className="metric-icon blue"><GraduationCap size={20}/></div>
@@ -104,11 +116,7 @@ export function SecureLearnerOverview({missions,submissions,approvedIds,dependen
       <div className="metric"><div className="metric-icon mint"><BadgeCheck size={20}/></div>
         <div><span>Missions complémentaires validées</span><strong>{approved.size}<em> / {missions.length}</em></strong><small>{inReview} soumission(s) en attente</small></div></div>
     </section>
-    <section className="academy-milestone"><div className="milestone-marker"><Target size={20}/></div>
-      <div><span>OBJECTIF · JOUR 14</span><strong>Mettre ton premier scénario utilisateur en ligne.</strong>
-        <p>Une mission à la fois. Chaque étape donne lieu à un livrable évalué.</p></div>
-      <Link href={pilotHref} aria-label="Ouvrir le parcours"><ArrowRight size={20}/></Link>
-    </section>
+
     <div className="academy-content-grid real-overview-grid">
       <section className="academy-class-section" aria-label="Missions à poursuivre">
         <div className="academy-section-title"><div><h2>Mes autres réalisations</h2>
@@ -169,5 +177,7 @@ export function SecureLearnerOverview({missions,submissions,approvedIds,dependen
         </section>
       </div>
     </div>
+      </div>
+    </details>}
   </div>;
 }

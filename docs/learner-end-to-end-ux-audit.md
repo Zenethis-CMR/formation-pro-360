@@ -27,3 +27,6 @@ Avec un vrai compte apprenant et l'accord des responsables :
 7. Vérifier contraste, taille de texte, navigation clavier, défilement, états de chargement, menus mobiles et délais de réponse du coach Qwen3.
 
 **Aucun apprenant fictif, XP artificiel, diplôme ou publication publique n'a été créé par cette modification.**
+
+## Lisibilité du tableau de bord
+Les nouveaux comptes voient désormais le parcours principal et l'action du jour en priorité. Les missions complémentaires sont repliées, sans suppression, et se déplient automatiquement lorsqu'un apprenant possède déjà des soumissions ou XP historiques.

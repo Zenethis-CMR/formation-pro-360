@@ -45,6 +45,15 @@ test("true course completion requires all 16 validated workshops plus official 1
  assert.ok(studio.includes("Number(data?.xp_total??0)>=1600"));
  for(const s of [view,progress,studio])assert.ok(s.includes("/espace/portfolio"));
 });
+test("new learners see their principal course before supplementary history",()=>{
+ const ui=read("src/components/secure-learner-overview.tsx");
+ assert.ok(ui.includes("Mon apprentissage"));
+ assert.ok(ui.includes('open={xp>0||submissions.length>0}'));
+ assert.ok(ui.includes("learner-legacy-details-content"));
+ assert.ok(ui.includes("v2-legacy-heading"));
+ assert.ok(ui.includes("academy-donut"));
+ assert.ok(ui.indexOf("academy-milestone")<ui.indexOf("learner-legacy-details"));
+});
 test("new learner UX has responsive layout, keyboard focus and reduced motion controls",()=>{
  const css=read("src/app/premium.css");
  for(const marker of [".auth-verification-journey",".learner-journey-guide",
