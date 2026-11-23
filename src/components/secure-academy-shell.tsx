@@ -40,9 +40,10 @@ export function SecureAcademyShell({children,stats}:{children:React.ReactNode;st
     {href:"/catalogue",label:"Catalogue V2",icon:Sparkles}
   ]:[
     {href:base,label:"Tableau de bord",icon:LayoutDashboard},
-    {href:base+"?onglet=missions",label:"Mes missions",icon:BookOpen},
-    {href:base+"?onglet=progression",label:"Ma progression",icon:BarChart3},
-    {href:base+"?onglet=programme",label:"Programme",icon:CalendarDays},
+    {href:"/espace/parcours/ingenierie-produit-ia",label:"Mon parcours V2",icon:Sparkles},
+    {href:base+"?onglet=missions",label:"Missions V1",icon:BookOpen},
+    {href:base+"?onglet=progression",label:"Progression V1",icon:BarChart3},
+    {href:base+"?onglet=programme",label:"Programme V1",icon:CalendarDays},
     {href:"/catalogue",label:"Catalogue V2",icon:Sparkles}
   ];
   const learningPercent=stats.missionCount?Math.round(stats.approvedCount/stats.missionCount*100):0;
@@ -72,7 +73,7 @@ export function SecureAcademyShell({children,stats}:{children:React.ReactNode;st
       <div className="sidebar-ad"><div className="sidebar-ad-icon"><Sparkles size={21}/></div>
         <b>{trainer?"Chaque correction compte.":"Chaque projet compte."}</b>
         <p>{trainer?"Un retour précis aide chaque apprenant à progresser.":"Apprends en réalisant de vrais projets."}</p>
-        <Link href={trainer?base+"?onglet=evaluations":base+"?onglet=missions"}>{trainer?"Voir les évaluations":"Découvrir les missions"} <ArrowRight size={16}/></Link>
+        <Link href={trainer?base+"?onglet=evaluations":"/espace/parcours/ingenierie-produit-ia"}>{trainer?"Voir les évaluations":"Ouvrir le parcours V2"} <ArrowRight size={16}/></Link>
       </div>
       <form action={signOut} className="secure-sidebar-signout"><button type="submit"><LogOut size={16}/> Se déconnecter</button></form>
       <div className="sidebar-footer">© Formation Pro 360<br/><small>Espace personnel sécurisé</small></div>
@@ -93,9 +94,9 @@ export function SecureAcademyShell({children,stats}:{children:React.ReactNode;st
           {trainer?<><CircleStat label="Apprenants" value={String(stats.learners)} percent={Math.min(100,stats.learners*10)} color="#48c995"/>
             <CircleStat label="À corriger" value={String(stats.pending)} percent={Math.min(100,stats.pending*25)} color="#4387f5"/>
             <CircleStat label="Missions" value={String(stats.missionCount)} percent={Math.min(100,stats.missionCount/16*100)} color="#ffa56e"/></>
-          :<><CircleStat label="Validées" value={String(stats.approvedCount)} percent={learningPercent} color="#48c995"/>
-            <CircleStat label="XP" value={String(stats.xp)} percent={(stats.xp%300)/300*100} color="#4387f5"/>
-            <CircleStat label="En attente" value={String(stats.pending)} percent={Math.min(100,stats.pending*25)} color="#ffa56e"/></>}
+          :<><CircleStat label="V1 validées" value={String(stats.approvedCount)} percent={learningPercent} color="#48c995"/>
+            <CircleStat label="XP V1" value={String(stats.xp)} percent={(stats.xp%300)/300*100} color="#4387f5"/>
+            <CircleStat label="V1 attente" value={String(stats.pending)} percent={Math.min(100,stats.pending*25)} color="#ffa56e"/></>}
         </div>
       </div>
       <div className="rail-widget">
@@ -118,10 +119,10 @@ export function SecureAcademyShell({children,stats}:{children:React.ReactNode;st
       <Link href={base+"?onglet=evaluations"} className={pathname===base&&currentTab==="evaluations"?"on":""}><ClipboardCheck size={19}/>Corrections</Link>
       <Link href={base+"?onglet=apprenants"} className={pathname===base&&currentTab==="apprenants"?"on":""}><Users size={19}/>Apprenants</Link>
     </>:<>
-      <Link href={base+"?onglet=missions"} className={pathname===base&&currentTab==="missions"?"on":""}><BookOpen size={19}/>Missions</Link>
-      <Link href={base+"?onglet=progression"} className={pathname===base&&currentTab==="progression"?"on":""}><BarChart3 size={19}/>Progrès</Link>
+      <Link href={base+"?onglet=missions"} className={pathname===base&&currentTab==="missions"?"on":""}><BookOpen size={19}/>V1</Link>
+      <Link href={base+"?onglet=progression"} className={pathname===base&&currentTab==="progression"?"on":""}><BarChart3 size={19}/>XP V1</Link>
     </>}
-    <Link href={base+"?onglet=programme"} className={pathname===base&&currentTab==="programme"?"on":""}><CalendarDays size={19}/>Programme</Link>
+    <Link href={trainer?base+"?onglet=programme":"/espace/parcours/ingenierie-produit-ia"} className={(trainer?pathname===base&&currentTab==="programme":pathname==="/espace/parcours/ingenierie-produit-ia")?"on":""}><CalendarDays size={19}/>{trainer?"Programme":"Parcours V2"}</Link>
     <Link href="/espace/compte" className={pathname==="/espace/compte"?"on":""}><Settings2 size={19}/>Compte</Link>
   </nav>
   </div>;
