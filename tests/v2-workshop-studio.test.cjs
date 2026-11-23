@@ -52,3 +52,11 @@ test("studio navigation, checklist and AI prompts do not invent server XP",()=>{
   assert.match(actions,/workshopSlug/);
   assert.match(actions,/path\+"\?livrable=envoye"/);
 });
+
+test("CT410 release probes the private V2 studio without a session",()=>{
+  const workflow=read(".github/workflows/deploy.yml");
+  assert.match(workflow,/studio_code/);
+  assert.match(workflow,/atelier\/valider-probleme/);
+  assert.match(workflow,/302\|303\|307\|308\|401\|403/);
+  assert.match(workflow,/V2 studio security smoke failed/);
+});

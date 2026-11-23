@@ -26,3 +26,7 @@ Le contenu opérationnel est particulièrement approfondi pour les jalons **J14 
 Les seize suppléments se trouvent dans `src/lib/v2-workshop-guides.ts`, avec une vérification du nombre de leçons, de leurs slugs et de la présence des étapes dans `tests/v2-workshop-studio.test.cjs`. En cas de nouvelle version d'une leçon publiée, vérifier l'alignement éditorial avant déploiement du nouveau guide.
 
 Cette livraison ne nécessite aucune nouvelle migration de production ni modification des XP V1/V2. Elle améliore le parcours utilisateur et réutilise le backend déjà activé.
+
+## Contrôle HTTP après déploiement
+
+Le workflow CT410 contrôle les deux pages publiques du catalogue, puis effectue une requête **sans cookie** sur un studio de leçon réel. Un refus ou une redirection vers l'authentification est obligatoire ; un HTTP 200 non authentifié fait échouer le contrôle de publication. Aucun jeton ni donnée apprenant n'est affiché dans les journaux.
