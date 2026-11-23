@@ -15,6 +15,7 @@ import { LearnerWelcomeBanner } from "@/components/learner-welcome-banner";
 import { SecureLearnerOverview } from "@/components/secure-learner-overview";
 import { WorkspaceTabHeading } from "@/components/workspace-tab-heading";
 import { type LearnerPreferences } from "@/lib/learner-preferences";
+import { getV2DashboardPilot } from "@/lib/v2-dashboard-pilot";
 
 type Params = { error?: string; success?: string; welcome?: string; onglet?: string };
 type Mission = { id:string; title:string; domain:string; description:string; week:number;
@@ -51,6 +52,8 @@ export default async function LearnerSpace({searchParams}:{searchParams:Promise<
   const activeWeek = curriculumWeeks.find(w => missions.some(m => m.week===w.week && !approved.has(m.id)))?.week ?? 8;
   const currentMission = missions.find(m => !approved.has(m.id) &&
     !deps.some(d => d.mission_id===m.id && !approved.has(d.prerequisite_id)));
+  // V2 rights and XP are independent of the historical V1 mission ledger.
+  const pilot=tab==="dashboard"?await getV2DashboardPilot():null;
   const insight=learnerInsight({
     learnerId:user.id,missions,deps,
     awards:(rawXp||[]).map(x=>({learner_id:user.id,mission_id:x.mission_id})),
@@ -61,9 +64,9 @@ export default async function LearnerSpace({searchParams}:{searchParams:Promise<
   return <main className="page secure-learner-page">
     {tab!=="dashboard"&&<WorkspaceTabHeading role="learner" tab={tab}/>}
     {tab==="dashboard"&&<>
-      <SecureLearnerOverview missions={missions} submissions={submissions} approvedIds={[...approved]} dependencies={deps} xp={xp} level={level}/>
+      {pilot&&<SecureLearnerOverview missions={missions} submissions={submissions} approvedIds={[...approved]} dependencies={deps} xp={xp} level={level} pilot={pilot}/>}
       <LearnerWelcomeBanner preferences={rawPreferences as LearnerPreferences|null} mission={insight.nextMission}/>
-      <section className="v2-catalog-banner"><div><span>NOUVEAU CATALOGUE V2</span><h2>7 formations pour construire des projets concrets</h2><p>Découvre le parcours Ingénierie produit et IA, ses 8 semaines et ses 16 ateliers conçus. Tes missions et tes acquis actuels restent inchangés.</p></div><Link href="/catalogue" className="v2-catalog-banner-link">Explorer le catalogue <ArrowUpRight size={16}/></Link></section>
+      <section className="v2-catalog-banner"><div><span>LE CATALOGUE 360</span><h2>Sept formations, une première spécialisation active</h2><p>Découvre les six autres domaines, actuellement en préparation. Tes missions historiques et les XP obtenus restent conservés séparément.</p></div><Link href="/catalogue" className="v2-catalog-banner-link">Explorer le catalogue <ArrowUpRight size={16}/></Link></section>
     </>}
     <div className="secure-learner-alerts">
       {params.welcome && <p className="alert success" role="status">Tes préférences sont enregistrées. Tu peux maintenant continuer ton parcours.</p>}

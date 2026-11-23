@@ -1095,3 +1095,23 @@ button,a,input,textarea,select { -webkit-tap-highlight-color:transparent; }
 .v2-review-url{display:inline-flex;align-items:center;gap:6px;color:#2374cf;font-size:12px;font-weight:850;overflow-wrap:anywhere}
 .v2-review-form{margin-top:17px;padding-top:15px;border-top:1px solid #e5eef9;display:grid;gap:10px}
 @media(max-width:760px){.v2-review-list{grid-template-columns:1fr}.v2-track-submit button,.v2-review-form button{justify-self:stretch;justify-content:center}}
+
+/* V2 first: real status-based actions, V1 achievements clearly identified below. */
+.academy-feature-v2{background:linear-gradient(110deg,#193965,#236cbd)}
+.v2-feature-actions{display:flex;flex-wrap:wrap;gap:9px;align-items:center;margin-top:17px}
+.v2-feature-outline{display:inline-flex;align-items:center;gap:7px;color:#fff;border:1px solid #ffffff60;border-radius:10px;padding:10px 13px;font-weight:800;font-size:11px}
+.v2-feature-outline:hover{background:#ffffff1c;color:#fff}
+.v2-pilot-state{display:flex;align-items:center;gap:8px;color:#e1f0ff;font-size:11px;line-height:1.6;margin:14px 0 0;max-width:520px}
+.v2-pilot-state svg{flex:none}
+.v2-pilot-metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:11px;margin:13px 0 27px}
+.v2-pilot-metrics>div{border-radius:13px;background:#fff;border:1px solid #d7e7fa;padding:16px 19px;box-shadow:0 7px 16px #244f7b08}
+.v2-pilot-metrics span{color:#4c86bf;font-size:9px;letter-spacing:.8px;font-weight:900}
+.v2-pilot-metrics strong{display:block;margin:5px 0 2px;font-size:26px;line-height:1.4;color:#203e68}
+.v2-pilot-metrics strong small{font-size:12px;color:#8aa2bd}
+.v2-pilot-metrics p{font-size:10px;color:#8b9fb6;line-height:1.5;margin:0}
+.v2-legacy-heading{display:flex;justify-content:space-between;gap:14px;align-items:center;padding:4px 0 15px}
+.v2-legacy-heading span{font-size:9px;color:#5489c5;letter-spacing:.7px;font-weight:900}
+.v2-legacy-heading h2{font-size:17px;color:#294569;margin:5px 0}
+.v2-legacy-heading p{font-size:11px;color:#889eb7;margin:0;line-height:1.6}
+.v2-legacy-heading a{display:inline-flex;align-items:center;gap:8px;font-size:11px;font-weight:850;color:#3276c6;white-space:nowrap}
+@media(max-width:720px){.v2-pilot-metrics{grid-template-columns:1fr;gap:8px}.v2-legacy-heading{align-items:flex-start;flex-direction:column}.v2-feature-actions{align-items:stretch}.v2-feature-actions a{justify-content:center}}
