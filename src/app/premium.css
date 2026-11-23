@@ -1570,3 +1570,14 @@ button,a,input,textarea,select { -webkit-tap-highlight-color:transparent; }
 .learner-other-resources{margin-top:32px}.learner-other-resources>.v2-legacy-section-head{margin-bottom:18px}
 @media(max-width:850px){.learner-resources-lessons{grid-template-columns:1fr}.learner-resources-hero{flex-wrap:wrap}}
 @media(max-width:550px){.learner-resources-hero{padding:18px}.learner-resources-module>summary{padding:13px}.learner-resources-lessons{padding:0 12px 12px}.learner-resources-hero>a{white-space:normal}}
+
+/* All learner sections remain reachable on small screens without squeezing
+   seven icons into an inaccessible bottom bar. */
+.academy-mobile-more{flex:1;min-width:0;position:relative}
+.academy-mobile-more>summary{display:flex;flex-direction:column;justify-content:center;align-items:center;gap:5px;color:#8997ad;border-radius:9px;font-size:10px;font-weight:750;padding:5px 2px;cursor:pointer;list-style:none;min-height:42px}
+.academy-mobile-more>summary::-webkit-details-marker{display:none}
+.academy-mobile-more>summary.on,.academy-mobile-more[open]>summary{color:#3c87f2;background:#edf5ff}
+.academy-mobile-more-menu{position:fixed;bottom:calc(68px + env(safe-area-inset-bottom));right:10px;left:10px;z-index:20;display:grid;gap:4px;background:#fff;border:1px solid #d6e6f6;border-radius:14px;padding:11px;box-shadow:0 -12px 35px #275b9930}
+.academy-mobile-more-menu a{display:flex!important;flex-direction:row!important;align-items:center!important;justify-content:flex-start!important;gap:10px!important;padding:12px!important;font-size:12px!important;font-weight:850;color:#326da6!important;text-decoration:none;border-radius:8px;background:#f6faff}
+.academy-mobile-more-menu a:hover,.academy-mobile-more-menu a:focus-visible{background:#e7f3ff}
+@media(max-width:600px){.academy-mobile-more>summary{font-size:9px;letter-spacing:-.2px}}

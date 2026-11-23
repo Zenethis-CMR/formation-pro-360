@@ -125,8 +125,21 @@ export function SecureAcademyShell({children,stats}:{children:React.ReactNode;st
       <Link href={base+"?onglet=missions"} className={pathname===base&&currentTab==="missions"?"on":""}><BookOpen size={19}/>Missions</Link>
       <Link href={base+"?onglet=progression"} className={pathname===base&&currentTab==="progression"?"on":""}><BarChart3 size={19}/>Progression</Link>
     </>}
-    <Link href={trainer?base+"?onglet=programme":"/espace/parcours/ingenierie-produit-ia"} className={(trainer?pathname===base&&currentTab==="programme":pathname==="/espace/parcours/ingenierie-produit-ia")?"on":""}><CalendarDays size={19}/>{trainer?"Programme":"Parcours"}</Link>
-    <Link href="/espace/compte" className={pathname==="/espace/compte"?"on":""}><Settings2 size={19}/>Compte</Link>
+    <Link href={trainer?base+"?onglet=programme":"/espace/parcours/ingenierie-produit-ia"} className={(trainer?pathname===base&&currentTab==="programme":pathname.startsWith("/espace/parcours/ingenierie-produit-ia"))?"on":""}><CalendarDays size={19}/>{trainer?"Programme":"Parcours"}</Link>
+    {trainer?<Link href="/espace/compte" className={pathname==="/espace/compte"?"on":""}><Settings2 size={19}/>Compte</Link>:
+      <details className="academy-mobile-more">
+        <summary aria-label="Afficher les autres rubriques de mon espace" className={
+          (pathname==="/espace/portfolio"||pathname==="/espace/bienvenue"||
+          pathname==="/espace/compte"||(pathname===base&&currentTab==="programme"))?"on":""
+        }><Settings2 size={19}/>Plus</summary>
+        <nav className="academy-mobile-more-menu" aria-label="Autres rubriques apprenant">
+          <Link href="/espace/portfolio"><BriefcaseBusiness size={16}/> Mon portfolio</Link>
+          <Link href={base+"?onglet=programme"}><CalendarDays size={16}/> Mes ressources</Link>
+          <Link href="/espace/bienvenue"><Sparkles size={16}/> Mes objectifs</Link>
+          <Link href="/espace/compte"><Settings2 size={16}/> Mon compte</Link>
+          <Link href="/catalogue"><BookOpen size={16}/> Catalogue des formations</Link>
+        </nav>
+      </details>}
   </nav>
   </div>;
 }

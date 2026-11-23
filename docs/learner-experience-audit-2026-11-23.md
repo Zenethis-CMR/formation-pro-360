@@ -17,13 +17,14 @@ Inspection du code réel des dépôts `formation-pro-360` et `formation-pro-back
 | Mes objectifs | Préférences sauvegardées ; prochain atelier principal prioritaire, historique seulement en repli | **Corrigé** |
 | Mon compte | Page /espace/compte ; session protégée, changement de mot de passe, préférences | Contrôlé dans le code |
 | Mon portfolio | Uniquement projets approuvés liés au XP ; export local et partage explicite révoquable | Contrôlé par backend PostgreSQL et frontend |
-| Navigation ordinateur/mobile | Contrôle des destinations, de l'onglet actif, du retour au parcours et des accès sans session | Renforcé |
+| Navigation ordinateur/mobile | Contrôle des destinations, de l'onglet actif, du retour au parcours et des accès sans session ; menu « Plus » pour portfolio, ressources, objectifs et compte sur téléphone | Corrigé |
 
 ## Corrections apportées
 1. Le titre « Mes ressources » affichait encore principalement l'ancien calendrier. Une bibliothèque du cours principal ouvre désormais les ressources utiles de **chaque atelier publié** ; les anciens contenus restent accessibles en section complémentaire.
 2. « Mes objectifs » et le bandeau personnel pouvaient recommander la prochaine mission historique alors qu'un apprenant est inscrit au cours actuel. Ils privilégient désormais le premier atelier principal non terminé, puis les activités complémentaires.
 3. Les chiffres de la barre latérale, qui ne provenaient que des missions historiques, sont désormais explicitement libellés « Autres missions » et « XP autres », afin de ne pas donner l'impression qu'ils comptent tous les ateliers du programme.
 4. Le lien de navigation du parcours principal reste marqué comme actif pendant la consultation de ses ateliers.
+5. Le menu mobile avait seulement cinq raccourcis et ne permettait pas d'atteindre directement les ressources, le portfolio ou les objectifs. Un menu « Plus » fournit désormais les destinations restantes sans déplacer les rubriques principales.
 
 ## Garde-fous automatiques
 `tests/learner-complete-audit.test.cjs` recoupe les 8 modules du catalogue, les 16 slugs d'atelier, les 16 guides (étapes, preuves, critères, modèles), les destinations des onglets, les restrictions de rôle et d'inscription, les ressources V2, la cohérence du suivi, les anciennes missions et le portfolio privé/public.

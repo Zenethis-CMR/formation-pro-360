@@ -152,6 +152,10 @@ test("legacy supplementary missions, goals, profile, and mobile navigation remai
  assert.match(account,/Modifier mon mot de passe/);
  assert.match(shell,/academy-mobile-bottom/);
  assert.match(shell,/label="Navigation mobile de l'espace personnel"/);
+ assert.match(shell,/academy-mobile-more/);
+ assert.match(shell,/aria-label="Autres rubriques apprenant"/);
+ for(const route of ["/espace/portfolio","onglet=programme","/espace/bienvenue","/espace/compte","/catalogue"])
+   assert.ok(shell.includes(route),"Missing mobile navigation "+route);
  assert.match(shell,/Mes objectifs/);
  assert.match(shell,/XP autres/);
  assert.match(shell,/Autres missions/);
