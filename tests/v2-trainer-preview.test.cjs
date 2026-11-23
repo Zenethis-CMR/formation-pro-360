@@ -22,6 +22,12 @@ test("V2 preview never publishes or enrolls learners",()=>{
   assert.ok(component.includes("aucune inscription"));
   assert.ok(!component.includes('action={'));
   assert.ok(!component.includes('use client'));
+  assert.ok(component.includes("Voir les ateliers et les livrables attendus"));
+  assert.ok(component.includes("Preuve attendue"));
+  assert.ok(component.includes("<details"));
+  const page=read("src/app/espace/formateur/page.tsx");
+  assert.ok(page.includes('evidence_required'));
+  assert.ok(page.includes('lesson.status'));
 });
 
 test("feature flag is disabled by default in deployment template",()=>{
