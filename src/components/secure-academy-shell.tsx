@@ -100,11 +100,11 @@ export function SecureAcademyShell({children,stats}:{children:React.ReactNode;st
         </div>
       </div>
       <div className="rail-widget">
-        <div className="rail-widget-heading"><h3>{trainer?"À traiter":"À poursuivre"}</h3><span>{stats.pending>0?String(stats.pending).padStart(2,"0"):"01"}</span></div>
-        <div className="rail-next-icon">{trainer?<ClipboardCheck size={20}/>:<BookOpen size={20}/>}</div>
-        <strong>{stats.nextTitle|| (trainer?"Corrections à venir":"Parcours à jour")}</strong>
-        <p>{trainer?stats.pending?"Des livrables attendent une correction.":"Les nouvelles soumissions apparaîtront ici.":stats.nextTitle?"Une étape concrète pour avancer dans ton parcours.":"Consulte tes missions et les retours de ton formateur."}</p>
-        <Link className="rail-cta" href={stats.nextHref||base}>{trainer?"Voir les corrections":"Voir la mission"} <ArrowRight size={16}/></Link>
+        <div className="rail-widget-heading"><h3>{trainer?"À traiter":"Ton parcours V2"}</h3><span>{trainer?(stats.pending>0?String(stats.pending).padStart(2,"0"):"01"):"V2"}</span></div>
+        <div className="rail-next-icon">{trainer?<ClipboardCheck size={20}/>:<Sparkles size={20}/>}</div>
+        <strong>{trainer?(stats.nextTitle||"Corrections à venir"):"Ingénierie produit et IA"}</strong>
+        <p>{trainer?(stats.pending?"Des livrables attendent une correction.":"Les nouvelles soumissions apparaîtront ici."):"Ouvre les 16 ateliers, vérifie ton inscription et avance jusqu'au MVP avec ton formateur."}</p>
+        <Link className="rail-cta" href={trainer?(stats.nextHref||base):"/espace/parcours/ingenierie-produit-ia"}>{trainer?"Voir les corrections":"Ouvrir mon parcours"} <ArrowRight size={16}/></Link>
       </div>
       <div className="rail-widget rail-coach"><span className="rail-coach-label"><Sparkles size={15}/> CONSEIL DU COACH</span>
         <p>{trainer?"Un retour utile est précis, bienveillant et directement applicable.":"Une compétence s'acquiert quand tu sais expliquer et refaire ton travail."}</p>
