@@ -246,7 +246,11 @@ export async function enrollInV2Pilot() {
 /** Submission is accepted only by the CT420 API after checking enrollment. */
 export async function submitV2Lesson(formData:FormData) {
   await requireRole("learner");
-  const path="/espace/parcours/ingenierie-produit-ia";
+  const base="/espace/parcours/ingenierie-produit-ia";
+  const sourceSlug=String(formData.get("workshopSlug")||"");
+  // The destination is a fixed internal prefix, never a user-supplied URL.
+  const path=/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(sourceSlug)&&sourceSlug.length<=80
+    ?base+"/atelier/"+sourceSlug:base;
   const lessonId=String(formData.get("lessonId")||"");
   const url=String(formData.get("url")||"").trim();
   const note=String(formData.get("note")||"").trim();
@@ -261,8 +265,15 @@ export async function submitV2Lesson(formData:FormData) {
     {method:"POST",headers:{"content-type":"application/json"},
       body:JSON.stringify({url:parsed.href,note})}
   ).catch(()=>null);
-  if(!res?.ok)redirect(path+"?livrable=erreur");
+  if(!res?.ok){
+    const status=res?.status;
+    const problem=status===409?"existant":status===403?"acces":
+      status===429?"limite":"erreur";
+    redirect(path+"?livrable="+problem);
+  }
   revalidatePath(path);
+  revalidatePath(base);
+  revalidatePath("/espace/apprenant");
   revalidatePath("/espace/formateur/corrections-v2");
   redirect(path+"?livrable=envoye");
 }

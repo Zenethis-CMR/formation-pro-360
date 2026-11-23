@@ -24,7 +24,7 @@ type CatalogDetail={
   evaluation_open?:boolean;
   xp_total?:number;
   submissions?:{
-    id:string;lesson_id:string;status:"pending"|"changes_requested"|"approved";
+    id:string;lesson_id:string;module_id?:string;lesson_slug?:string;status:"pending"|"changes_requested"|"approved";
     score:number|null;feedback:string|null;url:string;note:string;created_at:string
   }[];
 };
@@ -92,7 +92,9 @@ export default async function V2LearnerTrack({searchParams}:{
           <div className="v2-track-module-chips">{mod.skills.map(skill=><span key={skill}>{skill}</span>)}</div>
           {canRead?<div className="v2-track-lessons">
             {live.length?live.map(lesson=>{
-              const latest=data?.submissions?.find(s=>s.lesson_id===lesson.id);
+              const latest=data?.submissions?.find(s=>
+                (s.module_id===lesson.module_id&&s.lesson_slug===lesson.slug)||
+                s.lesson_id===lesson.id);
               const canSubmit=Boolean(data?.evaluation_open)&&status==="active" &&
                 (!latest||latest.status==="changes_requested");
               return <details key={lesson.id} className="v2-track-lesson">
@@ -105,6 +107,10 @@ export default async function V2LearnerTrack({searchParams}:{
                   <h3>Exercice guidé</h3><p>{lesson.guided_work}</p>
                   <h3>Travail autonome</h3><p>{lesson.independent_work}</p>
                   <h3>Livrable demandé</h3><p>{lesson.evidence_required}</p>
+                  <Link href={"/espace/parcours/ingenierie-produit-ia/atelier/"+lesson.slug} className="v2-lesson-studio-entry">
+                    <BookOpen size={16}/> Entrer dans le studio pédagogique <ArrowRight size={16}/>
+                  </Link>
+                  <p className="v2-track-notice">Dans le studio : cinq étapes pratiques, auto-contrôle, pièges à éviter, modèle de livrable et préparation à la correction.</p>
                   {latest?.feedback&&<div className="v2-track-feedback">
                     <strong>Dernier retour du formateur : {latest.score}/100</strong>
                     <p>{latest.feedback}</p>
