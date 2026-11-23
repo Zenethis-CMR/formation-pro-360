@@ -13,33 +13,56 @@ import { SecureTrainerOverview } from "@/components/secure-trainer-overview";
 import { WorkspaceTabHeading } from "@/components/workspace-tab-heading";
 import { learnerInsight, type CoachMessage } from "@/lib/coaching-insights";
 
-type Params={error?:string;success?:string;onglet?:string};
+type Params={error?:string;success?:string;onglet?:string;page?:string};
 type Submission={id:string;mission_id:string;learner_id:string;url:string;note:string;created_at:string};
 type Mission={id:string;title:string;domain:string;xp:number;published:boolean;week:number};
 type MissionRubric={mission_id:string;rubric:string[]};
+type LearningProfile={learner_id:string;preferred_name:string|null;goal:string|null;minutes_per_day:number|null;regular_days:number[]|null;optional_days:number[]|null};
 export default async function TrainerSpace({searchParams}:{searchParams:Promise<Params>}) {
   if(!isBackendConfigured()) redirect("/espace");
   const {db} = await requireRole("trainer");
   const params=await searchParams;
   const tab=(["evaluations","apprenants","programme"].includes(params.onglet||"") ? params.onglet : "dashboard")||"dashboard";
-  const [{data:submissions,error:se},{data:missions,error:me},{data:learners,error:le},{data:awards,error:ae},{data:allSubmissions,error:allSe},{data:practice,error:pe},{data:guides,error:ge},{data:settings,error:settingsError},{data:deps,error:depsError},{data:steps,error:stepsError},{data:coachMessages,error:coachError},{data:badgeAwards,error:badgeAwardsError},{data:learningProfiles,error:learningProfilesError}] = await Promise.all([
-    db.from("submissions").select("id,mission_id,learner_id,url,note,created_at").eq("status","pending").order("created_at"),
+  // Avoid fetching cohort/history/authoring data on unrelated tabs.
+  // Evaluation history is paginated at the database level (not sliced in memory).
+  const requestedPage=Number(params.page);
+  const historyPage=Number.isSafeInteger(requestedPage)&&requestedPage>=1&&requestedPage<=1000?requestedPage:1;
+  const historySize=50;
+  const skipped=Promise.resolve({data:null,error:null,count:null});
+  const [{data:submissions,error:se,count:pendingCountFromDb},{data:missions,error:me},{data:learners,error:le,count:learnerCountFromDb},{data:awards,error:ae,count:awardCountFromDb},{data:allSubmissions,error:allSe,count:submissionCountFromDb},{data:practice,error:pe},{data:guides,error:ge,count:guideCountFromDb},{data:settings,error:settingsError},{data:deps,error:depsError},{data:steps,error:stepsError},{data:coachMessages,error:coachError},{data:badgeAwards,error:badgeAwardsError,count:badgeCountFromDb},{data:learningProfiles,error:learningProfilesError}] = await Promise.all([
+    tab==="dashboard"
+      ? db.from("submissions").select("id",{head:true,count:"exact"}).eq("status","pending")
+      : tab==="evaluations" ? db.from("submissions").select("id,mission_id,learner_id,url,note,created_at").eq("status","pending").order("created_at") : skipped,
     db.from("missions").select("id,title,domain,xp,published,week").order("week"),
-    db.from("profiles").select("id").eq("role","learner").order("created_at"),
-    db.from("xp_ledger").select("learner_id,mission_id,xp"),
-    db.from("submissions").select("id,learner_id,mission_id,status,score,feedback,created_at").order("created_at",{ascending:false}).limit(500),
-    db.from("practice_checkins").select("learner_id,practice_date"),
-    db.from("mission_guides").select("mission_id,rubric"),
-    db.from("training_settings").select("start_date").eq("id",true).maybeSingle(),
-    db.from("mission_prerequisites").select("mission_id,prerequisite_id"),
-    db.from("workshop_steps").select("learner_id,mission_id,completed_at"),
-    db.from("coach_messages").select("id,trainer_id,learner_id,body,created_at").order("created_at",{ascending:false}).limit(200),
-    db.from("learner_badges").select("badge_slug"),
-    db.from("learner_preferences").select("learner_id,preferred_name,goal,minutes_per_day,regular_days,optional_days")
+    tab==="dashboard"||tab==="programme"
+      ? db.from("profiles").select("id",{head:true,count:"exact"}).eq("role","learner")
+      : db.from("profiles").select("id").eq("role","learner").order("created_at"),
+    tab==="programme"
+      ? db.from("xp_ledger").select("mission_id",{head:true,count:"exact"})
+      : tab==="dashboard"||tab==="apprenants" ? db.from("xp_ledger").select("learner_id,mission_id,xp") : skipped,
+    tab==="programme"
+      ? db.from("submissions").select("id",{head:true,count:"exact"})
+      : tab==="evaluations"
+        ? db.from("submissions").select("id,learner_id,mission_id,status,score,feedback,created_at",{count:"exact"})
+          .neq("status","pending").order("created_at",{ascending:false}).range((historyPage-1)*historySize,historyPage*historySize-1)
+        : tab==="apprenants" ? db.from("submissions").select("id,learner_id,mission_id,status,score,feedback,created_at").order("created_at",{ascending:false}).limit(500) : skipped,
+    tab==="apprenants" ? db.from("practice_checkins").select("learner_id,practice_date") : skipped,
+    tab==="programme"
+      ? db.from("mission_guides").select("mission_id",{head:true,count:"exact"})
+      : tab==="evaluations" ? db.from("mission_guides").select("mission_id,rubric") : skipped,
+    tab==="programme"||tab==="apprenants" ? db.from("training_settings").select("start_date").eq("id",true).maybeSingle() : skipped,
+    tab==="apprenants" ? db.from("mission_prerequisites").select("mission_id,prerequisite_id") : skipped,
+    tab==="apprenants" ? db.from("workshop_steps").select("learner_id,mission_id,completed_at") : skipped,
+    tab==="apprenants" ? db.from("coach_messages").select("id,trainer_id,learner_id,body,created_at").order("created_at",{ascending:false}).limit(200) : skipped,
+    tab==="programme" ? db.from("learner_badges").select("badge_slug",{head:true,count:"exact"}) : skipped,
+    tab==="apprenants"||tab==="evaluations" ? db.from("learner_preferences").select("learner_id,preferred_name,goal,minutes_per_day,regular_days,optional_days") : skipped
   ]);
   if(se||me||le||ae||allSe||pe||ge||settingsError||depsError||stepsError||coachError||badgeAwardsError||learningProfilesError)return <main className="page"><p className="alert danger">Erreur de chargement. Vérifie les migrations SQL et les droits du compte.</p></main>;
   const pending=(submissions||[]) as Submission[], catalog=(missions||[]) as Mission[];
-  const preferencesById=new Map((learningProfiles||[]).map(p=>[p.learner_id,p]));
+  const pendingCount=tab==="dashboard"?(pendingCountFromDb??0):pending.length;
+  const learnerCount=tab==="dashboard"||tab==="programme"?(learnerCountFromDb??0):(learners||[]).length;
+  const historyTotal=tab==="evaluations"?(submissionCountFromDb??0):0;
+  const preferencesById=new Map<string,LearningProfile>(((learningProfiles||[]) as LearningProfile[]).map(p=>[p.learner_id,p]));
   const namedLearners=(learners||[]).map(l=>({
     ...l,
     preferred_name:preferencesById.get(l.id)?.preferred_name||null,
@@ -53,14 +76,14 @@ export default async function TrainerSpace({searchParams}:{searchParams:Promise<
   const reviewed=(allSubmissions||[]).filter(s=>s.status!=="pending");
   const rubricById = new Map(((guides||[]) as MissionRubric[]).map(g=>[g.mission_id,g.rubric]));
   const published=catalog.filter(m=>m.published);
-  const insights=(learners||[]).map(l=>learnerInsight({
+  const insights=(tab==="apprenants"?(learners||[]):[]).map(l=>learnerInsight({
     learnerId:l.id,missions:published,
     deps:deps||[],awards:awards||[],submissions:allSubmissions||[],
     practices:practice||[],steps:steps||[],startDate:settings?.start_date??null
   }));
   return <main className="page secure-trainer-page">
     {tab!=="dashboard"&&<WorkspaceTabHeading role="trainer" tab={tab}/>}
-    {tab==="dashboard"&&<SecureTrainerOverview pending={pending.length} learners={(learners||[]).length}
+    {tab==="dashboard"&&<SecureTrainerOverview pending={pendingCount} learners={learnerCount}
       missions={published.length} validatedXp={(awards||[]).reduce((sum,x)=>sum+Number(x.xp),0)}/>}
     {params.success&&<p className="alert success" role="status">{params.success==="message"?"Message pédagogique enregistré dans l'espace apprenant.":"Modification enregistrée dans la base de données."}</p>}
     {params.error&&<p className="alert danger" role="alert">Échec de l'opération. Vérifie les champs ou les droits d'accès.</p>}
@@ -96,7 +119,7 @@ export default async function TrainerSpace({searchParams}:{searchParams:Promise<
     </section>
     <section className="panel" id="historique-evaluations">
       <div className="section-head"><div><span className="eyebrow">HISTORIQUE PÉDAGOGIQUE</span><h2>Corrections précédentes</h2></div>
-        <span className="counter">{reviewed.length} évaluation(s)</span></div>
+        <span className="counter">{historyTotal} évaluation(s)</span></div>
       {reviewed.length===0
         ?<div className="empty-state"><h3>Pas encore de correction</h3><p>Les évaluations réalisées et leurs commentaires apparaîtront ici.</p></div>
         :<div className="workspace-review-history">{reviewed.map(s=><article key={s.id} className="workspace-history-item">
@@ -107,6 +130,11 @@ export default async function TrainerSpace({searchParams}:{searchParams:Promise<
             <span className={s.status==="approved"?"is-approved":"is-correction"}>{s.status==="approved"?"Validée":"Correction demandée"}</span>
             <time dateTime={s.created_at}>{new Intl.DateTimeFormat("fr-FR",{timeZone:"Africa/Douala",dateStyle:"medium"}).format(new Date(s.created_at))}</time></div>
         </article>)}</div>}
+      {historyTotal>historySize&&<nav className="workspace-history-pagination" aria-label="Pages de l'historique des évaluations">
+        {historyPage>1&&<Link href={"/espace/formateur?onglet=evaluations&page="+(historyPage-1)+"#historique-evaluations"}>← Corrections précédentes</Link>}
+        <span>Page {historyPage} sur {Math.ceil(historyTotal/historySize)}</span>
+        {historyPage*historySize<historyTotal&&<Link href={"/espace/formateur?onglet=evaluations&page="+(historyPage+1)+"#historique-evaluations"}>Corrections plus anciennes →</Link>}
+      </nav>}
     </section>
     </>}
     {tab==="apprenants"&&<>
@@ -147,9 +175,9 @@ export default async function TrainerSpace({searchParams}:{searchParams:Promise<
         <button className="primary-btn" type="submit">Enregistrer comme brouillon</button>
       </form>
     </section>
-    <LaunchReadiness publishedMissions={catalog.filter(m=>m.published).length} guidedMissions={(guides||[]).length}
-      learners={(learners||[]).length} submissions={(allSubmissions||[]).length} validatedMissions={(awards||[]).length}
-      awardedBadges={(badgeAwards||[]).length} startDate={settings?.start_date??null}/>
+    <LaunchReadiness publishedMissions={catalog.filter(m=>m.published).length} guidedMissions={guideCountFromDb??0}
+      learners={learnerCount} submissions={submissionCountFromDb??0} validatedMissions={awardCountFromDb??0}
+      awardedBadges={badgeCountFromDb??0} startDate={settings?.start_date??null}/>
     </>}
   </main>;
 }
