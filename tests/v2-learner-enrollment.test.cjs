@@ -11,7 +11,7 @@ test("V2 workspace fetches the authenticated catalog and fails closed",()=>{
   assert.match(code,/canRead\?/);
   assert.match(code,/enrollment_open&&!status/);
   assert.match(code,/enrollInV2Pilot/);
-  assert.match(code,/migrations|moteur pédagogique|parcours V2/i);
+  assert.match(code,/contenu détaillé|programme est consultable/i);
 });
 test("enrollment is mediated by Next.js server action and never writes XP",()=>{
   const actions=read("src/app/espace/actions.ts");

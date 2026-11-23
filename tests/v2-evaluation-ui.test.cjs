@@ -21,7 +21,7 @@ test("trainer correction UI is authenticated and never awards XP directly",()=>{
   assert.match(page,/V2TrainerScoreInputs/);
   assert.match(page,/item.evidence_required/);
   assert.match(page,/pending-submissions/);
-  assert.match(shell,/label:"Corrections V2"/);
+  assert.match(shell,/label:"Corriger les ateliers"/);
   assert.match(actions,/export async function reviewV2Lesson/);
   assert.match(actions,/export async function submitV2Lesson/);
   const newActions=actions.slice(actions.indexOf("export async function submitV2Lesson"));
