@@ -17,6 +17,7 @@ type Params={error?:string;success?:string;onglet?:string;page?:string};
 type Submission={id:string;mission_id:string;learner_id:string;url:string;note:string;created_at:string};
 type Mission={id:string;title:string;domain:string;xp:number;published:boolean;week:number};
 type MissionRubric={mission_id:string;rubric:string[]};
+type LearningProfile={learner_id:string;preferred_name:string|null;goal:string|null;minutes_per_day:number|null;regular_days:number[]|null;optional_days:number[]|null};
 export default async function TrainerSpace({searchParams}:{searchParams:Promise<Params>}) {
   if(!isBackendConfigured()) redirect("/espace");
   const {db} = await requireRole("trainer");
@@ -61,7 +62,7 @@ export default async function TrainerSpace({searchParams}:{searchParams:Promise<
   const pendingCount=tab==="dashboard"?(pendingCountFromDb??0):pending.length;
   const learnerCount=tab==="dashboard"||tab==="programme"?(learnerCountFromDb??0):(learners||[]).length;
   const historyTotal=tab==="evaluations"?(submissionCountFromDb??0):0;
-  const preferencesById=new Map((learningProfiles||[]).map(p=>[p.learner_id,p]));
+  const preferencesById=new Map<string,LearningProfile>(((learningProfiles||[]) as LearningProfile[]).map(p=>[p.learner_id,p]));
   const namedLearners=(learners||[]).map(l=>({
     ...l,
     preferred_name:preferencesById.get(l.id)?.preferred_name||null,
