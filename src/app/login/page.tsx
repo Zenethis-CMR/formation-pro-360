@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowLeft, BadgeCheck, BookOpenCheck, CheckCircle2, Code2, GraduationCap, LockKeyhole, ShieldCheck, Sparkles, UserPlus } from "lucide-react";
+import { ArrowLeft, ArrowRight, BadgeCheck, BookOpenCheck, CheckCircle2, Code2, GraduationCap, LockKeyhole, MailCheck, ShieldCheck, Sparkles, UserPlus } from "lucide-react";
 import { registerLearner, requestPasswordReset, resendVerificationEmail, signInWithPassword } from "@/app/auth/actions";
 import { AuthSubmitButton } from "@/components/auth-submit-button";
 import { AuthPasswordField } from "@/components/auth-password-field";
@@ -24,7 +24,8 @@ const messages:Record<string,string>={
   callback:"Le lien est invalide ou expiré. Demande un nouveau lien depuis cette page."
 };
 const confirmations:Record<string,string>={
-  signup:"Inscription enregistrée. Consulte ta boîte de réception et le dossier des spams pour confirmer ton adresse.",
+  signup:"Compte créé ! Un message de vérification a été envoyé. Confirme ton adresse avant de te connecter.",
+  verified:"Adresse e-mail confirmée ! Connecte-toi maintenant pour commencer ta formation.",
   resend:"Si cette adresse correspond à un compte en attente, un nouveau lien va arriver. Pense aussi à vérifier les spams.",
   reset:"Si un compte correspond à cette adresse, les instructions de récupération ont été envoyées."
 };
@@ -36,8 +37,10 @@ export default async function Login({searchParams}:{searchParams:Promise<Params>
   const configured=isBackendConfigured();
   const creating=mode==="inscription";
   const needsConfirmation=params.sent==="signup"||params.sent==="resend"
-    ||params.error==="confirm"||params.error==="verification"||params.error==="signup";
-  const title=mode==="connexion"?"Bienvenue à nouveau"
+    ||params.error==="confirm"||params.error==="verification";
+  const title=params.sent==="signup"?"Vérifie ton adresse e-mail"
+    :params.sent==="verified"?"Ton compte est prêt !"
+    :mode==="connexion"?"Bienvenue à nouveau"
     :creating?"Commence ton parcours"
     :"Retrouve ton accès";
   return <main className="auth-new-page">
@@ -48,7 +51,7 @@ export default async function Login({searchParams}:{searchParams:Promise<Params>
         <h1>Développe des compétences qui <em>prennent vie.</em></h1>
         <p className="auth-story-lead">Un environnement d'apprentissage où chaque mission mène à un projet concret, évalué par un véritable formateur.</p>
         <div className="auth-story-milestones">
-          <div><span><Code2 size={19}/></span><div><strong>16 missions, 8 semaines</strong><small>Un parcours structuré autour de vrais livrables.</small></div></div>
+          <div><span><Code2 size={19}/></span><div><strong>16 ateliers, 8 semaines</strong><small>Un parcours structuré autour de vrais livrables.</small></div></div>
           <div><span><BookOpenCheck size={19}/></span><div><strong>La pratique d'abord</strong><small>Construis, teste, améliore et publie tes projets.</small></div></div>
           <div><span><BadgeCheck size={19}/></span><div><strong>Des acquis vérifiés</strong><small>XP et badges après validation du formateur.</small></div></div>
         </div>
@@ -70,6 +73,9 @@ export default async function Login({searchParams}:{searchParams:Promise<Params>
         {mode==="recuperation"&&<Link href="/login" className="auth-back-link"><ArrowLeft size={15}/> Retour à la connexion</Link>}
         {!configured&&<p className="alert danger" role="alert">La connexion est momentanément indisponible.</p>}
         {params.sent&&confirmations[params.sent]&&<p className="auth-new-feedback success" role="status"><CheckCircle2 size={18}/>{confirmations[params.sent]}</p>}
+        {params.sent==="verified"&&<p className="auth-verified-next" role="status"><CheckCircle2 size={18}/>
+          <span>Étape 1 terminée : connecte-toi, choisis ton objectif (facultatif), puis découvre les 16 ateliers.</span>
+        </p>}
         {params.error&&<p className="auth-new-feedback danger" role="alert">{messages[params.error]||"Une erreur est survenue. Réessaie plus tard."}</p>}
         {configured&&<>
           {mode==="connexion"&&<form action={signInWithPassword} className="auth-new-form">
@@ -83,7 +89,7 @@ export default async function Login({searchParams}:{searchParams:Promise<Params>
             <label htmlFor="signup-email">Adresse e-mail</label>
             <input id="signup-email" name="email" type="email" autoComplete="email" placeholder="prenom@exemple.com" maxLength={254} required/>
             <AuthPasswordField name="password" label="Créer un mot de passe" autoComplete="new-password"/>
-            <p className="auth-password-rule">12 caractères minimum.</p>
+            <p className="auth-password-rule">12 caractères minimum, avec une majuscule, une minuscule et un chiffre.</p>
             <AuthPasswordField name="confirmPassword" label="Confirmer le mot de passe" autoComplete="new-password" confirm/>
             <AuthSubmitButton label="Créer mon compte apprenant" pendingLabel="Création du compte…"/>
             <p className="auth-new-legal">Après ton inscription, vérifie ta boîte de réception et les spams. Les rôles formateurs sont attribués uniquement par l'administration.</p>
@@ -94,13 +100,28 @@ export default async function Login({searchParams}:{searchParams:Promise<Params>
             <AuthSubmitButton label="Recevoir le lien de récupération" pendingLabel="Envoi en cours…"/>
             <p className="auth-new-legal">Si un compte correspond à cette adresse, tu recevras les instructions pour choisir un nouveau mot de passe.</p>
           </form>}
-          {needsConfirmation&&<form action={resendVerificationEmail} className="auth-new-form">
-            <label htmlFor="resend-verification-email">Adresse e-mail du compte</label>
-            <input id="resend-verification-email" name="email" type="email" autoComplete="email" placeholder="prenom@exemple.com" maxLength={254} required/>
-            <input type="hidden" name="mode" value={mode}/>
-            <AuthSubmitButton label="Renvoyer le lien de confirmation" pendingLabel="Envoi en cours…"/>
-            <p className="auth-new-legal">Tu ne vois pas le message ? Vérifie aussi le dossier des spams. Le lien expire après 24 heures.</p>
-          </form>}
+          {needsConfirmation&&<section className="auth-verification-journey" aria-label="Étapes de création du compte">
+            <p><MailCheck size={20}/> Confirme ton adresse, puis connecte-toi pour commencer.</p>
+            <ol className="auth-signup-steps">
+              <li><CheckCircle2 size={16}/> Compte créé</li>
+              <li className="is-current"><MailCheck size={16}/> Confirmer l'e-mail reçu</li>
+              <li><BookOpenCheck size={16}/> Se connecter et découvrir les ateliers</li>
+            </ol>
+            <Link href="/login?mode=connexion" className="auth-verification-next">
+              J'ai confirmé mon adresse : me connecter <ArrowRight size={16}/>
+            </Link>
+            <details className="auth-verification-retry">
+              <summary>Je n'ai pas reçu le message de confirmation</summary>
+              <form action={resendVerificationEmail} className="auth-new-form">
+                <label htmlFor="resend-verification-email">Adresse e-mail utilisée à l'inscription</label>
+                <input id="resend-verification-email" name="email" type="email" autoComplete="email"
+                  placeholder="prenom@exemple.com" maxLength={254} required/>
+                <input type="hidden" name="mode" value={mode}/>
+                <AuthSubmitButton label="Renvoyer le lien" pendingLabel="Envoi en cours…"/>
+                <p className="auth-new-legal">Vérifie aussi les spams. Le lien expire après 24 heures.</p>
+              </form>
+            </details>
+          </section>
         </>}
         <div className="auth-new-bottom"><span><ShieldCheck size={15}/> Authentification sécurisée</span><span>Accès réservé aux membres inscrits</span></div>
       </section>
