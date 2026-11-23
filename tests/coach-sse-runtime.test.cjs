@@ -32,7 +32,7 @@ function makeRoute({user={id:"ci-learner",role:"learner"},upstream}={}){
       throw new Error("Unexpected imported dependency: "+name);
     },
     process:{env:{NODE_ENV:"production"}},
-    TextEncoder,ReadableStream,Response,Headers,URL,AbortSignal,
+    TextEncoder,ReadableStream,Response,Headers,URL,AbortSignal,AbortController,
     setInterval,clearInterval
   },{filename:"src/app/api/coach/route.ts",timeout:2500});
   return exports.POST;
