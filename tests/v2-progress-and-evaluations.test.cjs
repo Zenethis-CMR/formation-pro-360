@@ -13,7 +13,7 @@ test("V2 progression is session-scoped and separate from learner V1 achievements
   assert.match(page,/HISTORIQUE V1/);
   assert.match(helper,/backendRequest\("\/v1\/training\/catalog\/ingenierie-produit-ia"\)/);
   assert.match(helper,/lesson_access==="granted"/);
-  assert.match(helper,/return unavailable/);
+  assert.match(helper,/return empty/);
   assert.match(panel,/status==="approved"/);
   assert.match(panel,/XP V2 attribués/);
   assert.match(panel,/latest\.has\(key\)/);
