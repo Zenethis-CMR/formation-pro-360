@@ -40,7 +40,8 @@ export function SecureAcademyShell({children,stats}:{children:React.ReactNode;st
     {href:base,label:"Tableau de bord",icon:LayoutDashboard},
     {href:base+"?onglet=missions",label:"Mes missions",icon:BookOpen},
     {href:base+"?onglet=progression",label:"Ma progression",icon:BarChart3},
-    {href:base+"?onglet=programme",label:"Programme",icon:CalendarDays}
+    {href:base+"?onglet=programme",label:"Programme",icon:CalendarDays},
+    {href:"/catalogue",label:"Catalogue V2",icon:Sparkles}
   ];
   const learningPercent=stats.missionCount?Math.round(stats.approvedCount/stats.missionCount*100):0;
   const profileName=stats.displayName|| (trainer?"Espace formateur":"Mon parcours");

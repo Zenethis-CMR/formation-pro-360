@@ -63,6 +63,7 @@ export default async function LearnerSpace({searchParams}:{searchParams:Promise<
     {tab==="dashboard"&&<>
       <SecureLearnerOverview missions={missions} submissions={submissions} approvedIds={[...approved]} dependencies={deps} xp={xp} level={level}/>
       <LearnerWelcomeBanner preferences={rawPreferences as LearnerPreferences|null} mission={insight.nextMission}/>
+      <section className="v2-catalog-banner"><div><span>NOUVEAU CATALOGUE V2</span><h2>7 formations pour construire des projets concrets</h2><p>Découvre le parcours Ingénierie produit et IA, ses 8 semaines et ses 16 ateliers conçus. Tes missions et tes acquis actuels restent inchangés.</p></div><Link href="/catalogue" className="v2-catalog-banner-link">Explorer le catalogue <ArrowUpRight size={16}/></Link></section>
     </>}
     <div className="secure-learner-alerts">
       {params.welcome && <p className="alert success" role="status">Tes préférences sont enregistrées. Tu peux maintenant continuer ton parcours.</p>}

@@ -52,6 +52,7 @@ export default async function Login({searchParams}:{searchParams:Promise<Params>
           <div><span><BookOpenCheck size={19}/></span><div><strong>La pratique d'abord</strong><small>Construis, teste, améliore et publie tes projets.</small></div></div>
           <div><span><BadgeCheck size={19}/></span><div><strong>Des acquis vérifiés</strong><small>XP et badges après validation du formateur.</small></div></div>
         </div>
+        <Link href="/catalogue" className="auth-story-catalog-link"><BookOpenCheck size={17}/> Découvrir les 7 formations <ArrowLeft size={14}/></Link>
         <div className="auth-story-footer"><ShieldCheck size={17}/> Tes progrès sont enregistrés et protégés dans ton espace personnel.</div>
         <div className="auth-story-orb auth-story-orb-one"/><div className="auth-story-orb auth-story-orb-two"/>
       </aside>
