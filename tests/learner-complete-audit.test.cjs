@@ -93,9 +93,9 @@ test("principal-course enrollment and permissions gate the eight modules and the
  assert.match(course,/requireRole\("learner"\)/);
  assert.match(course,/lesson_access==="granted"/);
  assert.match(course,/enrollInV2Pilot/);
- assert.match(course,/data\.enrollment_open/);
+ assert.match(course,/data\?\.enrollment_open/);
  assert.match(course,/data\?\.evaluation_open/);
- assert.match(course,/data\.modules\|\|pilotCourse/);
+ assert.match(course,/data\?\.modules\|\|pilotCourse/);
  assert.match(studio,/requireRole\("learner"\)/);
  assert.match(studio,/data\.lesson_access==="granted"/);
  assert.match(studio,/l.status==="published"/);
