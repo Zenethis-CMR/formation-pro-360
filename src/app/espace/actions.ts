@@ -274,14 +274,14 @@ export async function submitV2Lesson(formData:FormData) {
   revalidatePath(path);
   revalidatePath(base);
   revalidatePath("/espace/apprenant");
-  revalidatePath("/espace/formateur/corrections-v2");
+  revalidatePath("/espace/formateur/corrections");
   redirect(path+"?livrable=envoye");
 }
 
 /** Review and XP award are one transaction performed by the backend. */
 export async function reviewV2Lesson(formData:FormData) {
   await requireRole("trainer");
-  const path="/espace/formateur/corrections-v2";
+  const path="/espace/formateur/corrections";
   const id=String(formData.get("submissionId")||"");
   const feedback=String(formData.get("feedback")||"").trim();
   const criterionValues=[0,1,2,3].map(i=>formData.get("criterion"+i));

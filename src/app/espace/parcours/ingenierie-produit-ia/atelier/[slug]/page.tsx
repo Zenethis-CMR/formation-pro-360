@@ -106,7 +106,7 @@ export default async function V2WorkshopStudio({params,searchParams}:{
         <div className="studio-hero-tags"><span><BookOpen size={15}/> Atelier {position+1}/16</span>
           <span><Clock3 size={15}/> {v2WorkshopGuides[slug].minutes} min indicatives</span>
           <span><Award size={15}/> 100 XP après validation</span>
-          {lesson&&<span><ShieldCheck size={15}/> Leçon publiée · v{lesson.version}</span>}
+          {lesson&&<span><ShieldCheck size={15}/> Leçon officielle publiée</span>}
         </div>
         <div className="studio-hero-links"><a href="#livrable" className="studio-hero-main-link">Préparer mon livrable <ArrowRight size={16}/></a><Link href={base} className="studio-hero-secondary-link">Voir les 16 ateliers</Link></div>
       </div>
@@ -180,7 +180,7 @@ export default async function V2WorkshopStudio({params,searchParams}:{
             <Clock3 size={19}/><div><strong>Livrable en cours d'évaluation</strong><p>Le formateur examine ta preuve. Il n'est pas possible de déposer une deuxième version tant que cette correction est en attente.</p></div>
           </div>}
           {approved&&<div className="studio-evaluation-box is-approved">
-            <CheckCircle2 size={19}/><div><strong>Atelier validé · 100 XP V2</strong><p>Le formateur a validé cet atelier. Tu peux consulter la correction et poursuivre le programme.</p></div>
+            <CheckCircle2 size={19}/><div><strong>Atelier validé · 100 XP</strong><p>Le formateur a validé cet atelier. Tu peux consulter la correction et poursuivre le programme.</p></div>
           </div>}
           {latest?.status==="changes_requested"&&!approved&&<div className="studio-evaluation-box is-revision">
             <MessageSquare size={19}/><div><strong>Amélioration demandée</strong><p>Prends en compte le retour du formateur, corrige ta preuve et dépose une nouvelle version.</p></div>
@@ -197,7 +197,7 @@ export default async function V2WorkshopStudio({params,searchParams}:{
             <textarea id="studio-project-note" name="note" rows={5} maxLength={1200}
               placeholder="Réalisation concrète, tests exécutés, résultats observés, points à améliorer. Ne mets pas de données personnelles dans cette note."/>
             <button type="submit"><ClipboardCheck size={18}/> Soumettre pour correction <ArrowRight size={16}/></button>
-            <small>Une note d'au moins 80/100 attribue 100 XP V2, une seule fois pour cet atelier. Les coches d'autoévaluation ne sont pas transmises.</small>
+            <small>Une note d'au moins 80/100 attribue 100 XP, une seule fois pour cet atelier. Les coches d'autoévaluation ne sont pas transmises.</small>
           </form>}
           {!data?.evaluation_open&&<p className="studio-form-unavailable">Le dépôt est momentanément fermé ou ton compte ne possède pas le droit de soumettre. Les consignes restent accessibles en lecture.</p>}
           {history.length>0&&<div className="studio-review-history">

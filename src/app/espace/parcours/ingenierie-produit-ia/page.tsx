@@ -52,7 +52,7 @@ export default async function V2LearnerTrack({searchParams}:{
   return <main className="page v2-learner-track">
     <Link className="v2-track-back" href="/catalogue/ingenierie-produit-ia"><ArrowLeft size={15}/> Présentation de la formation</Link>
     <header className="v2-track-head">
-      <span className="journey-overline"><Sparkles size={15}/> PARCOURS V2 · PROJET FIL ROUGE</span>
+      <span className="journey-overline"><Sparkles size={15}/> FORMATION · PROJET FIL ROUGE</span>
       <h1>Ingénierie produit et IA<span>.</span></h1>
       <p>Construis ton produit numérique en huit semaines. Premier flux en ligne au jour 14, MVP au premier mois, puis premiers essais de commercialisation.</p>
       <div className="v2-track-facts"><span><BookOpen size={15}/> 8 modules</span><span><BadgeCheck size={15}/> 16 ateliers</span><span><Clock3 size={15}/> 8 semaines</span></div>
@@ -63,8 +63,8 @@ export default async function V2LearnerTrack({searchParams}:{
     {params.inscription==="indisponible"&&<p className="alert danger" role="alert">L'inscription n'est pas disponible actuellement. Vérifie que le parcours a été ouvert par l'administration.</p>}
     {!ready&&<section className="v2-track-status">
       <LockKeyhole size={20}/>
-      <div><h2>Le programme V2 est consultable ; les ateliers ouvrent prochainement.</h2>
-        <p>Le moteur pédagogique n'est pas encore activé pour ce compte. Tu peux découvrir les objectifs et les livrables, tout en continuant tes missions existantes sans perdre tes acquis.</p>
+      <div><h2>Le programme est consultable ; les ateliers sont temporairement indisponibles.</h2>
+        <p>Le contenu détaillé n'est pas accessible avec cette session. Tu peux découvrir les objectifs et les livrables, tout en continuant tes missions existantes sans perdre tes acquis.</p>
         <Link href="/catalogue/ingenierie-produit-ia">Consulter les 16 ateliers <ArrowRight size={15}/></Link>
       </div>
     </section>}
@@ -122,7 +122,7 @@ export default async function V2LearnerTrack({searchParams}:{
                     <p>{latest.feedback}</p>
                   </div>}
                   {latest?.status==="pending"&&<p className="v2-track-notice">Ton travail est en attente de correction. Tu ne peux pas le soumettre une seconde fois.</p>}
-                  {latest?.status==="approved"&&<p className="v2-track-approved"><CheckCircle2 size={16}/> Atelier validé par le formateur · 100 XP V2 attribués</p>}
+                  {latest?.status==="approved"&&<p className="v2-track-approved"><CheckCircle2 size={16}/> Atelier validé par le formateur · 100 XP attribués</p>}
                   {canSubmit&&<form action={submitV2Lesson} className="v2-track-submit">
                     <input type="hidden" name="lessonId" value={lesson.id}/>
                     <label>Lien de ton projet
@@ -134,7 +134,7 @@ export default async function V2LearnerTrack({searchParams}:{
                     <button className="primary-btn" type="submit">Soumettre ce livrable <BadgeCheck size={15}/></button>
                     <small>Les XP sont attribués uniquement après une correction d'au moins 80/100.</small>
                   </form>}
-                  {!data?.evaluation_open&&<p className="v2-track-notice">Les remises de projet et les corrections V2 ne sont pas encore ouvertes sur cet environnement.</p>}
+                  {!data?.evaluation_open&&<p className="v2-track-notice">Les remises de projet et les corrections ne sont pas encore ouvertes sur cet environnement.</p>}
                 </div>
               </details>;
             }):<p className="v2-track-notice">Les ateliers de cette semaine ne sont pas encore publiés.</p>}
@@ -144,6 +144,6 @@ export default async function V2LearnerTrack({searchParams}:{
         </article>;
       })}
     </section>
-    <footer className="v2-track-footer"><Link href="/espace/apprenant">Retour à mes missions actuelles <ArrowRight size={15}/></Link></footer>
+    <footer className="v2-track-footer"><Link href="/espace/apprenant">Retour à mon tableau de bord <ArrowRight size={15}/></Link></footer>
   </main>;
 }

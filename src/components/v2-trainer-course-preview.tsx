@@ -14,16 +14,16 @@ export function V2TrainerCoursePreview({course,unavailable}:{
 }) {
   return <section className="v2-trainer-preview panel" aria-labelledby="v2-preview-title">
     <header className="v2-preview-head">
-      <div><span className="journey-overline"><Sparkles size={15}/> CHANTIER V2 · INGÉNIERIE PRODUIT & IA</span>
-        <h2 id="v2-preview-title">Nouveau cursus en préparation</h2>
-        <p>Voici le programme versionné. Le parcours actuel et ses validations restent inchangés jusqu'à une publication contrôlée.</p>
+      <div><span className="journey-overline"><Sparkles size={15}/> INGÉNIERIE PRODUIT & IA · PROGRAMME</span>
+        <h2 id="v2-preview-title">Programme détaillé des ateliers</h2>
+        <p>Consulte les modules, ateliers et livrables publiés ou préparés pour cette formation.</p>
       </div>
       <span className="v2-preview-state"><LockKeyhole size={13}/> Lecture seule</span>
     </header>
     {unavailable
-      ? <p role="status" className="v2-preview-empty">Le moteur V2 n'est pas encore prêt sur cet environnement. Vérifier les migrations et les permissions en staging.</p>
+      ? <p role="status" className="v2-preview-empty">Les données du parcours ne sont pas disponibles sur cet environnement. Vérifier les migrations et les permissions en staging.</p>
       : !course
-        ? <p className="v2-preview-empty">Aucun parcours V2 n'a été initialisé sur cet environnement.</p>
+        ? <p className="v2-preview-empty">Aucun programme n'a été initialisé sur cet environnement.</p>
         : <>
           <div className="v2-preview-stats">
             <span><Layers3 size={17}/><strong>{course.modules.length}</strong> modules</span>
