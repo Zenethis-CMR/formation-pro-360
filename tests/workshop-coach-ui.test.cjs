@@ -50,3 +50,19 @@ test("studio has a local error boundary for browser-side exceptions",()=>{
  assert.match(fallback,/Retour au parcours/);
  assert.match(fallback,/role="alert"/);
 });
+
+test("three pedagogical modes and voluntary work summary are transmitted, never the notebook",()=>{
+ const client=read("src/components/workshop-coach.tsx");
+ const proxy=read("src/app/api/coach/route.ts");
+ assert.match(client,/type CoachMode="commencer"\|"debloquer"\|"verifier"/);
+ assert.match(client,/name="coachMode"/);
+ assert.match(client,/name="workSummary"/);
+ assert.match(client,/maxLength=\{400\}/);
+ assert.match(client,/mode,\s*\.\.\.\(workSummary.trim\(\)/);
+ assert.match(client,/lastSuccess\?\.mode===mode/);
+ assert.match(client,/navigator.clipboard.writeText/);
+ assert.match(proxy,/invalid_mode/);
+ assert.match(proxy,/invalid_work_summary/);
+ assert.match(proxy,/work_summary:body.work_summary.trim\(\)/);
+ assert.doesNotMatch(proxy,/workshop_notebooks|xp_ledger/);
+});

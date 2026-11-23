@@ -107,3 +107,30 @@ test("the SSE route forwards only one bounded previous exchange",async()=>{
   const response=await POST(fakeRequest({...valid,previous_exchange}));
   assert.match(await response.text(),/event: answer/);
 });
+
+test("targeted coaching forwards intent and a voluntary learner summary without notebook data",async()=>{
+  const POST=makeRoute({upstream:async(_path,init)=>{
+    const payload=JSON.parse(init.body);
+    assert.equal(payload.mode,"verifier");
+    assert.equal(payload.work_summary,"Prototype Figma avec erreurs à corriger");
+    assert.equal(payload.question,valid.question);
+    assert.equal(payload.notes,undefined);
+    assert.equal(payload.workbook,undefined);
+    return new Response(JSON.stringify({answer:"Piste : teste un formulaire vide."}),{status:200});
+  }});
+  const response=await POST(fakeRequest({...valid,mode:"verifier",
+    work_summary:" Prototype Figma avec erreurs à corriger "}));
+  assert.match(await response.text(),/event: answer/);
+});
+test("unknown modes and oversized learner context are rejected before contacting CT420",async()=>{
+  let contacted=false;
+  const POST=makeRoute({upstream:async()=>{contacted=true;throw Error("must not contact");}});
+  const wrongMode=await POST(fakeRequest({...valid,mode:"evaluer"}));
+  const longSummary=await POST(fakeRequest({...valid,mode:"verifier",
+    work_summary:"z".repeat(401)}));
+  const wrongType=await POST(fakeRequest({...valid,mode:"commencer",work_summary:{notes:"hidden"}}));
+  assert.equal(wrongMode.status,400);
+  assert.equal(longSummary.status,400);
+  assert.equal(wrongType.status,400);
+  assert.equal(contacted,false);
+});

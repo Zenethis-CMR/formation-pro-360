@@ -1,15 +1,30 @@
 "use client";
 import {useEffect,useRef,useState,type FormEvent} from "react";
-import {CircleHelp,Clock3,MessageCircle,Send,Sparkles,Timer,CheckCircle2,AlertTriangle} from "lucide-react";
+import {CircleHelp,Clock3,MessageCircle,Send,Sparkles,Timer,CheckCircle2,AlertTriangle,Clipboard,Target,ShieldCheck} from "lucide-react";
 
-const exampleQuestions=[
-  "Par quoi dois-je commencer pour réussir cet atelier ?",
-  "Comment vérifier que mon livrable fonctionne vraiment ?",
-  "Quel test concret permettrait de détecter un défaut ?"
+type CoachMode="commencer"|"debloquer"|"verifier";
+const modes:{id:CoachMode;title:string;subtitle:string}[]=[
+  {id:"commencer",title:"Commencer",subtitle:"Une première action concrète"},
+  {id:"debloquer",title:"Me débloquer",subtitle:"Un diagnostic et un test"},
+  {id:"verifier",title:"Vérifier mon travail",subtitle:"Deux tests et des preuves"}
 ];
+const exampleQuestions:Record<CoachMode,string[]>={
+  commencer:[
+    "Quelle première étape puis-je terminer en 10 minutes ?",
+    "Quel résultat concret dois-je produire aujourd'hui ?"
+  ],
+  debloquer:[
+    "Je n'arrive pas à réaliser cette étape, comment identifier le blocage ?",
+    "Quel test concret permettrait de détecter un défaut ?"
+  ],
+  verifier:[
+    "Comment vérifier que mon livrable fonctionne vraiment ?",
+    "Quels scénarios d'erreur et résultats attendus dois-je documenter ?"
+  ]
+};
 type Reply={status:"ok"|"busy"|"limit"|"access"|"invalid"|"unavailable";
   answer:string;question:string};
-type Success={question:string;answer:string};
+type Success={question:string;answer:string;mode:CoachMode};
 
 const fallback="La connexion au coach a été interrompue. Ton travail reste intact ; réessaie plus tard.";
 /** A bounded SSE protocol carrying only status, heartbeat and the final answer. */
@@ -32,6 +47,9 @@ function parseSsePacket(packet:string):{event:string;data:Record<string,unknown>
  */
 export function WorkshopCoach({lessonId}:{lessonId:string}){
   const [draft,setDraft]=useState("");
+  const [mode,setMode]=useState<CoachMode>("debloquer");
+  const [workSummary,setWorkSummary]=useState("");
+  const [copied,setCopied]=useState(false);
   const [reply,setReply]=useState<Reply|null>(null);
   const [lastSuccess,setLastSuccess]=useState<Success|null>(null);
   const [pending,setPending]=useState(false);
@@ -50,6 +68,10 @@ export function WorkshopCoach({lessonId}:{lessonId:string}){
     event.preventDefault();
     if(running.current)return;
     const question=draft.trim();
+    if(workSummary.trim().length>400){
+      setReply({status:"invalid",question,answer:"Le résumé de ton travail ne doit pas dépasser 400 caractères."});
+      return;
+    }
     if(question.length<8||question.length>1200){
       setReply({status:"invalid",question,answer:"Précise ta question en 8 à 1 200 caractères."});
       return;
@@ -58,6 +80,7 @@ export function WorkshopCoach({lessonId}:{lessonId:string}){
     running.current=controller;
     setPending(true);
     setReply(null);
+    setCopied(false);
     let complete=false;
     const receive=(packet:string)=>{
       const message=parseSsePacket(packet);
@@ -66,7 +89,7 @@ export function WorkshopCoach({lessonId}:{lessonId:string}){
         const answer=message.data.answer.slice(0,4000);
         if(!answer)return;
         setReply({status:"ok",question,answer});
-        setLastSuccess({question,answer});
+        setLastSuccess({question,answer,mode});
         complete=true;
       }
       if(message.event==="failure"&&typeof message.data.message==="string"){
@@ -78,14 +101,16 @@ export function WorkshopCoach({lessonId}:{lessonId:string}){
       }
     };
     try{
-      const previous_exchange=lastSuccess?{
+      const previous_exchange=lastSuccess?.mode===mode?{
         question:lastSuccess.question.slice(0,400),
         answer:lastSuccess.answer.slice(0,800)
       }:undefined;
       const response=await fetch("/api/coach",{
         method:"POST",credentials:"same-origin",
         headers:{"content-type":"application/json"},
-        body:JSON.stringify({lessonId,question,...(previous_exchange?{previous_exchange}:{})}),
+        body:JSON.stringify({lessonId,question,mode,
+          ...(workSummary.trim()?{work_summary:workSummary.trim()}:{}),
+          ...(previous_exchange?{previous_exchange}:{})}),
         signal:controller.signal
       });
       if(!response.ok){
@@ -128,21 +153,37 @@ export function WorkshopCoach({lessonId}:{lessonId:string}){
     <span className="studio-eyebrow"><Sparkles size={15}/> COACH PÉDAGOGIQUE INTERACTIF · QWEN3 LOCAL</span>
     <h2>Débloque ton atelier, une question à la fois.</h2>
     <p>Le coach propose des pistes et des tests à réaliser par toi-même. Il ne produit pas des résultats de terrain, n'attribue pas de points et ne remplace pas la correction du formateur.</p>
+    <fieldset className="studio-coach-modes">
+      <legend>Quelle aide veux-tu recevoir ?</legend>
+      <div className="studio-coach-mode-options">
+        {modes.map(option=><label key={option.id} className={mode===option.id?"is-selected":""}>
+          <input type="radio" name="coachMode" value={option.id} checked={mode===option.id}
+            onChange={()=>setMode(option.id)} disabled={pending}/>
+          <strong>{option.title}</strong><small>{option.subtitle}</small>
+        </label>)}
+      </div>
+    </fieldset>
     <div className="studio-coach-suggestions" aria-label="Questions suggérées">
-      {exampleQuestions.map((question,i)=>
+      {exampleQuestions[mode].map((question,i)=>
         <button type="button" key={i} disabled={pending}
           onClick={()=>setDraft(question)} aria-controls="studio-coach-question">
           <CircleHelp size={14}/>{question}
         </button>)}
     </div>
     <form onSubmit={ask} className="studio-coach-form">
+      <label htmlFor="studio-coach-work">Ce que j'ai déjà réalisé <small>facultatif · 400 caractères</small></label>
+      <textarea id="studio-coach-work" name="workSummary" rows={2} maxLength={400}
+        disabled={pending} value={workSummary} onChange={e=>setWorkSummary(e.target.value)}
+        placeholder="Exemple : j'ai un prototype Figma avec un état d'erreur, mais le bouton ne fonctionne pas."/>
+      <p className="studio-coach-work-hint"><Target size={14}/>
+        {workSummary.length}/400 · Décris uniquement ton travail, sans nom ni information sensible. Ce texte n'est pas repris automatiquement de ton carnet.</p>
       <label htmlFor="studio-coach-question">Quelle difficulté veux-tu résoudre ?</label>
       <textarea id="studio-coach-question" name="question" minLength={8} maxLength={1200}
         rows={4} required value={draft} disabled={pending}
         onChange={e=>setDraft(e.target.value)}
         placeholder="Décris ton blocage, ce que tu as déjà essayé et ce que tu voudrais vérifier."/>
       <p>Ta question est transmise au modèle local Qwen3 par CT420. Évite les données personnelles, les mots de passe et les clés API. Les échanges ne sont pas enregistrés durablement.</p>
-      {lastSuccess&&<p className="studio-coach-context"><CheckCircle2 size={14}/>
+      {lastSuccess?.mode===mode&&<p className="studio-coach-context"><CheckCircle2 size={14}/>
         Ta prochaine question peut reprendre le contexte du dernier conseil uniquement.</p>}
       <button className="studio-coach-submit" type="submit" disabled={pending}>
         <Send size={16}/>{pending?"Réponse en cours…":"Demander un conseil"}
@@ -164,6 +205,12 @@ export function WorkshopCoach({lessonId}:{lessonId:string}){
         reply.status==="access"?"Accès au coach refusé":"Coach momentanément indisponible"}</strong></div>
       {reply.status==="ok"&&<p className="studio-coach-original"><b>Ta question :</b> {reply.question}</p>}
       <p>{reply.answer}</p>
+      {reply.status==="ok"&&<div className="studio-coach-response-actions">
+        <button className="studio-coach-followup" type="button" onClick={async()=>{
+          try{await navigator.clipboard.writeText(reply.answer);setCopied(true);}catch{setCopied(false);}
+        }}><Clipboard size={14}/>{copied?"Conseil copié":"Copier le conseil"}</button>
+        <span><ShieldCheck size={14}/> À vérifier dans ton projet avant toute remise</span>
+      </div>}
       {reply.status==="ok"&&<button className="studio-coach-followup" type="button"
         onClick={()=>{setDraft("Peux-tu détailler la première étape et me donner un test concret ?");
           document.getElementById("studio-coach-question")?.focus();}}>

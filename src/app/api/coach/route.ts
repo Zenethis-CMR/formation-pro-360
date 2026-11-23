@@ -6,6 +6,8 @@ export const runtime="nodejs";
 
 type CoachBody={
   lessonId:string;question:string;
+  mode?:"commencer"|"debloquer"|"verifier";
+  work_summary?:string;
   previous_exchange?:{question:string;answer:string}
 };
 const uuid=/^[a-f0-9]{8}-[a-f0-9]{4}-[1-8][a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/i;
@@ -40,6 +42,12 @@ export async function POST(request:NextRequest){
     typeof body.question!=="string"||
     body.question.trim().length<8||body.question.trim().length>1200)
     return errorJson(400,"invalid_question");
+  if(body.mode!==undefined&&
+    !["commencer","debloquer","verifier"].includes(body.mode))
+    return errorJson(400,"invalid_mode");
+  if(body.work_summary!==undefined&&
+    (typeof body.work_summary!=="string"||body.work_summary.trim().length>400))
+    return errorJson(400,"invalid_work_summary");
   const previous=body.previous_exchange;
   if(previous!==undefined&&(
     !previous||typeof previous.question!=="string"||
@@ -50,6 +58,8 @@ export async function POST(request:NextRequest){
 
   const payload={
     question:body.question.trim(),
+    ...(body.mode?{mode:body.mode}:{}),
+    ...(body.work_summary?.trim()?{work_summary:body.work_summary.trim()}:{}),
     ...(previous?{previous_exchange:{
       question:previous.question.trim(),answer:previous.answer.trim()
     }}:{})
