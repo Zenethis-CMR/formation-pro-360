@@ -1,6 +1,6 @@
 "use client";
 import {useEffect,useRef,useState,type FormEvent} from "react";
-import {CircleHelp,Clock3,MessageCircle,Send,Sparkles,Timer,CheckCircle2,AlertTriangle,Clipboard,Target,ShieldCheck} from "lucide-react";
+import {CircleHelp,Clock3,MessageCircle,Send,Sparkles,Timer,CheckCircle2,AlertTriangle,Clipboard,Target,ShieldCheck,MessageSquare} from "lucide-react";
 
 type CoachMode="commencer"|"debloquer"|"verifier";
 const modes:{id:CoachMode;title:string;subtitle:string}[]=[

@@ -26,15 +26,13 @@ export function WorkshopNotebook({slug,lessonId,steps,initial,review,criteria=[]
   const [nextAction,setNextAction]=useState(initial.next_action);
   const [planStatus,setPlanStatus]=useState("");
   const planFromCorrection=(suggestion:string)=>{
-    setNextAction(current=>{
-      const combined=current.trim()?current.trim()+"\n"+suggestion:suggestion;
-      if(combined.length>1000){
-        setPlanStatus("Ton objectif actuel a été conservé : raccourcis-le avant d'ajouter cette suggestion.");
-        return current;
-      }
+    const combined=nextAction.trim()?nextAction.trim()+"\n"+suggestion:suggestion;
+    if(combined.length>1000){
+      setPlanStatus("Ton objectif actuel a été conservé : raccourcis-le avant d'ajouter cette suggestion.");
+    }else{
+      setNextAction(combined);
       setPlanStatus("Suggestion ajoutée. Relis-la, puis enregistre ton carnet pour la conserver.");
-      return combined;
-    });
+    }
     document.getElementById("workbook-next")?.focus();
   };
   return <form className="workbook-form" action={saveWorkshopNotebook} id="carnet">
