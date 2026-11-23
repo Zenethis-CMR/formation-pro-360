@@ -12,6 +12,7 @@ import { LaunchReadiness } from "@/components/launch-readiness";
 import { SecureTrainerOverview } from "@/components/secure-trainer-overview";
 import { WorkspaceTabHeading } from "@/components/workspace-tab-heading";
 import { learnerInsight, type CoachMessage } from "@/lib/coaching-insights";
+import { V2TrainerCoursePreview, type V2CoursePreview } from "@/components/v2-trainer-course-preview";
 
 type Params={error?:string;success?:string;onglet?:string};
 type Submission={id:string;mission_id:string;learner_id:string;url:string;note:string;created_at:string};
@@ -58,6 +59,38 @@ export default async function TrainerSpace({searchParams}:{searchParams:Promise<
     deps:deps||[],awards:awards||[],submissions:allSubmissions||[],
     practices:practice||[],steps:steps||[],startDate:settings?.start_date??null
   }));
+  // Preview is opt-in and read-only: the production database has not yet
+  // received the new training_tracks migration. Do not query new tables by default.
+  const showV2Preview=tab==="programme" && process.env.FORMATION_V2_PREVIEW_ENABLED==="true";
+  let v2Course:V2CoursePreview|null=null;
+  let v2Unavailable=false;
+  if(showV2Preview){
+    const trackR=await db.from("training_tracks")
+      .select("id,title,status").eq("slug","ingenierie-produit-ia").maybeSingle();
+    if(trackR.error) v2Unavailable=true;
+    else if(trackR.data) {
+      const track=trackR.data as {id:string;title:string;status:V2CoursePreview["status"]};
+      const modulesR=await db.from("track_modules")
+        .select("id,week,title,outcome").eq("track_id",track.id).order("week");
+      if(modulesR.error) v2Unavailable=true;
+      else {
+        const moduleRows=(modulesR.data||[]) as {id:string;week:number;title:string;outcome:string}[];
+        const ids=moduleRows.map(m=>m.id);
+        const lessonR=ids.length
+          ? await db.from("module_lessons").select("module_id").in("module_id",ids)
+          : {data:[] as {module_id:string}[],error:null};
+        if(lessonR.error) v2Unavailable=true;
+        else {
+          const counts=new Map<string,number>();
+          for(const lesson of lessonR.data||[]) counts.set(lesson.module_id,(counts.get(lesson.module_id)||0)+1);
+          v2Course={
+            title:track.title,status:track.status,
+            modules:moduleRows.map(m=>({...m,lessonCount:counts.get(m.id)||0}))
+          };
+        }
+      }
+    }
+  }
   return <main className="page secure-trainer-page">
     {tab!=="dashboard"&&<WorkspaceTabHeading role="trainer" tab={tab}/>}
     {tab==="dashboard"&&<SecureTrainerOverview pending={pending.length} learners={(learners||[]).length}
@@ -115,6 +148,7 @@ export default async function TrainerSpace({searchParams}:{searchParams:Promise<
     <CohortProgress learners={namedLearners} awards={awards||[]} submissions={allSubmissions||[]} practice={practice||[]} missions={catalog.filter(m=>m.published)} missionCount={catalog.filter(m=>m.published).length}/>
     </>}
     {tab==="programme"&&<>
+    {showV2Preview&&<V2TrainerCoursePreview course={v2Course} unavailable={v2Unavailable}/>}
     <div id="programme" className="secure-section-marker"/>
     <TrainingSchedule startDate={settings?.start_date??null} missions={catalog} variant="trainer"/>
     <CurriculumRoadmap missions={catalog} variant="trainer"/>
