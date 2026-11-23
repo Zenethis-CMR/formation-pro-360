@@ -18,7 +18,10 @@ test("authenticated coach server action only sends a question and never issues X
  assert.match(action,/requireRole\("learner"\)/);
  assert.match(action,/question.length<8/);
  assert.match(action,/question.length>1200/);
- assert.match(action,/method:"POST",body:JSON.stringify\(\{question\}\)/);
+ assert.match(action,/method:"POST",body:JSON.stringify\(previous_exchange/);
+ assert.match(action,/previousQuestion/);
+ assert.match(action,/previousAnswer/);
+ assert.match(action,/reason\?\.error==="coach_busy"/);
  assert.doesNotMatch(action,/xp_ledger|v2_lesson_xp|referenceUrl|completed_steps/);
 });
 test("client makes an explicit request and shows a model response or accurate unavailability",()=>{
@@ -27,6 +30,11 @@ test("client makes an explicit request and shows a model response or accurate un
  assert.match(s,/action=\{run\}/);
  assert.match(s,/Pose une question sur cet atelier/);
  assert.match(s,/state.answer/);
- assert.match(s,/En envoyant cette question/);
+ assert.match(s,/Ta question est transmise à Qwen3/);
+ assert.match(s,/useFormStatus/);
+ assert.match(s,/seconds/);
+ assert.match(s,/exampleQuestions/);
+ assert.match(s,/name="previousQuestion"/);
+ assert.match(s,/name="previousAnswer"/);
  assert.doesNotMatch(s,/localStorage|fetch\(|simulate|faker/i);
 });

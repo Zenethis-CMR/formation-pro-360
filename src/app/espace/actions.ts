@@ -352,25 +352,39 @@ export async function saveWorkshopNotebook(formData:FormData){
 }
 
 /** A real and optional per-lesson AI coach. No grading, XP or persistence. */
-export async function askWorkshopCoach(_previous:{status:string;answer:string},
-  formData:FormData):Promise<{status:string;answer:string}>{
+type CoachActionState={status:string;answer:string;question:string};
+/** Learner question and one optional previous exchange; neither writes XP or a chat log. */
+export async function askWorkshopCoach(_previous:CoachActionState,
+  formData:FormData):Promise<CoachActionState>{
   await requireRole("learner");
   const lessonId=String(formData.get("lessonId")||"");
   const question=String(formData.get("question")||"").trim();
   if(!idPattern.test(lessonId)||question.length<8||question.length>1200)
-    return {status:"invalid",answer:"La question doit contenir entre 8 et 1 200 caractères."};
+    return {status:"invalid",answer:"La question doit contenir entre 8 et 1 200 caractères.",question};
+  const priorQuestion=String(formData.get("previousQuestion")||"").trim();
+  const priorAnswer=String(formData.get("previousAnswer")||"").trim();
+  // Never trust client context. Bound its size, then let CT420 validate it too.
+  const previous_exchange=priorQuestion.length>=8&&priorAnswer.length>0?
+    {question:priorQuestion.slice(0,400),answer:priorAnswer.slice(0,800)}:undefined;
   const response=await backendRequest(
     "/v1/training/catalog/ingenierie-produit-ia/lessons/"+lessonId+"/coach",
-    {method:"POST",body:JSON.stringify({question})}
+    {method:"POST",body:JSON.stringify(previous_exchange?
+      {question,previous_exchange}:{question})}
   ).catch(()=>null);
-  if(response?.status===429)
-    return {status:"unavailable",answer:"Limite de questions atteinte. Reviens un peu plus tard."};
-  if(!response?.ok)
-    return {status:"unavailable",answer:response?.status===403?
-      "L'accès au coach nécessite une inscription active au parcours.":
-      "Le coach interactif n'est pas encore disponible sur cet environnement."};
+  if(response?.status===429){
+    const reason=await response.json().catch(()=>null) as {error?:string}|null;
+    return reason?.error==="coach_busy"
+      ?{status:"busy",answer:"Qwen3 traite une autre demande. Réessaie dans environ 30 secondes ; ta question reste dans le formulaire.",question}
+      :{status:"limit",answer:"Tu as atteint la limite de questions rapprochées. Reviens un peu plus tard.",question};
+  }
+  if(!response?.ok){
+    const detail=response?.status===403
+      ?"L'accès au coach nécessite une inscription active au parcours."
+      :"Le modèle local ne répond pas actuellement. Tu peux consulter les consignes et réessayer plus tard.";
+    return {status:"unavailable",answer:detail,question};
+  }
   const body=await response.json().catch(()=>null) as {answer?:unknown}|null;
   if(typeof body?.answer!=="string"||!body.answer.trim())
-    return {status:"unavailable",answer:"La réponse du coach n'a pas pu être affichée."};
-  return {status:"ok",answer:body.answer.slice(0,6000)};
+    return {status:"unavailable",answer:"Le coach n'a pas renvoyé de conseil exploitable.",question};
+  return {status:"ok",answer:body.answer.slice(0,4000),question};
 }

@@ -14,6 +14,7 @@ import { WorkspaceTabHeading } from "@/components/workspace-tab-heading";
 import { learnerInsight, type CoachMessage } from "@/lib/coaching-insights";
 import { V2TrainerCoursePreview, type V2CoursePreview } from "@/components/v2-trainer-course-preview";
 import { V2TrainerEvaluationOverview } from "@/components/v2-trainer-evaluation-overview";
+import { LocalCoachDiagnostics } from "@/components/local-coach-diagnostics";
 
 type Params={error?:string;success?:string;onglet?:string;page?:string};
 type Submission={id:string;mission_id:string;learner_id:string;url:string;note:string;created_at:string};
@@ -124,6 +125,7 @@ export default async function TrainerSpace({searchParams}:{searchParams:Promise<
     {tab!=="dashboard"&&<WorkspaceTabHeading role="trainer" tab={tab}/>}
     {tab==="dashboard"&&<>
       <V2TrainerEvaluationOverview/>
+      <LocalCoachDiagnostics/>
       <SecureTrainerOverview pending={pendingCount} learners={learnerCount}
         missions={published.length} validatedXp={(awards||[]).reduce((sum,x)=>sum+Number(x.xp),0)}/>
     </>}

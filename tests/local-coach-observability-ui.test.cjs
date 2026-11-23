@@ -1,0 +1,30 @@
+const test=require("node:test");
+const assert=require("node:assert/strict");
+const fs=require("node:fs");const path=require("node:path");
+const read=p=>fs.readFileSync(path.join(__dirname,"..",p),"utf8");
+test("formateur dashboard shows only aggregate local coach metrics",()=>{
+  const page=read("src/app/espace/formateur/page.tsx");
+  const panel=read("src/components/local-coach-diagnostics.tsx");
+  assert.match(page,/requireRole\("trainer"\)/);
+  assert.match(page,/LocalCoachDiagnostics/);
+  assert.match(panel,/backendRequest\("\/v1\/training\/coach\/diagnostics"\)/);
+  assert.match(panel,/average_duration_ms/);
+  assert.match(panel,/busy_rejections/);
+  assert.match(panel,/Aucune question d'apprenant/);
+  assert.match(panel,/Indicateurs indisponibles/);
+  assert.doesNotMatch(panel,/user\.email|learner_id|s\.question|s\.answer|xp_ledger/);
+});
+test("slow Qwen3 has real pending time, suggested questions and clear busy feedback",()=>{
+  const panel=read("src/components/workshop-coach.tsx");
+  const actions=read("src/app/espace/actions.ts");
+  assert.match(panel,/setInterval/);
+  assert.match(panel,/plusieurs dizaines de secondes/);
+  assert.match(panel,/sans progression simulée/);
+  assert.match(panel,/exampleQuestions/);
+  assert.match(panel,/previousQuestion/);
+  assert.match(panel,/previousAnswer/);
+  assert.match(panel,/Poser une question de suivi/);
+  assert.match(actions,/reason\?\.error==="coach_busy"/);
+  assert.match(actions,/status:"limit"/);
+  assert.doesNotMatch(panel,/localStorage|sessionStorage/);
+});
