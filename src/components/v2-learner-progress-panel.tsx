@@ -55,6 +55,9 @@ export function V2LearnerProgressPanel({progress,otherXp}:{progress:Progress;oth
         <div className="v2-progress-stat"><span><Award size={15}/> XP CUMULÉS</span><strong>{progress.xpTotal+otherXp}</strong><p>{progress.xpTotal} XP du parcours · {otherXp} XP des autres réalisations</p></div>
         <div className="v2-progress-stat"><span><Clock3 size={15}/> En correction</span><strong>{pending}</strong><p>{revisions} atelier(s) à améliorer</p></div>
       </div>
+      <div className="portfolio-progress-shortcut"><Link href="/espace/portfolio">
+        <BookOpenCheck size={17}/> Voir mes réalisations vérifiées <ArrowRight size={15}/>
+      </Link></div>
       <div className="v2-progress-bar" role="progressbar" aria-valuenow={successes} aria-valuemin={0} aria-valuemax={total} aria-label="Ateliers validés"><span style={{width:percent+"%"}}/></div>
       {(toImprove.length>0||toReview.length>0)&&
         <section className="v2-progress-priorities" aria-labelledby="v2-progress-priorities-title">

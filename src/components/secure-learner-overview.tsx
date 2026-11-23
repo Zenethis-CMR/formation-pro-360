@@ -77,6 +77,13 @@ export function SecureLearnerOverview({missions,submissions,approvedIds,dependen
       <div><span>XP CUMULÉS</span><strong>{xp+pilot.xp}</strong><p>{xp} XP de tes autres réalisations · {pilot.xp} XP du parcours</p></div>
       <div><span>EN CORRECTION</span><strong>{enrolled?pilot.pending:"—"}</strong><p>{enrolled?"Livrables en attente":"Suivi après inscription"}</p></div>
     </section>
+    {enrolled&&<section className="portfolio-dashboard-shortcut">
+      <div><span><BadgeCheck size={16}/> RÉALISATIONS VÉRIFIÉES</span>
+        <h2>Constitue ton portfolio professionnel</h2>
+        <p>Retrouve uniquement les projets approuvés et leurs preuves. Aucun certificat n'est créé automatiquement.</p>
+      </div>
+      <Link href="/espace/portfolio">Ouvrir mon portfolio <ArrowRight size={16}/></Link>
+    </section>}
     <div className="v2-legacy-heading"><div><span>AUTRES RÉALISATIONS · ACQUIS CONSERVÉS</span><h2>Mes projets et missions complémentaires</h2><p>Ces réalisations sont toujours accessibles avec leurs validations et récompenses.</p></div><Link href="/espace/apprenant?onglet=missions">Mes autres projets <ArrowRight size={15}/></Link></div>
     <section className="academy-metrics" aria-label="Indicateurs des réalisations complémentaires">
       <div className="metric"><div className="metric-icon blue"><GraduationCap size={20}/></div>

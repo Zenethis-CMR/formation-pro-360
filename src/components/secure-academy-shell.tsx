@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
-import { ArrowRight, BadgeCheck, BarChart3, BookOpen, CalendarDays, ClipboardCheck, GraduationCap, LayoutDashboard, LogOut, Settings2, Sparkles, Users } from "lucide-react";
+import { ArrowRight, BadgeCheck, BarChart3, BookOpen, BriefcaseBusiness, CalendarDays, ClipboardCheck, GraduationCap, LayoutDashboard, LogOut, Settings2, Sparkles, Users } from "lucide-react";
 import { signOut } from "@/app/auth/actions";
 
 export type SecureWorkspaceStats={
@@ -41,6 +41,7 @@ export function SecureAcademyShell({children,stats}:{children:React.ReactNode;st
   ]:[
     {href:base,label:"Tableau de bord",icon:LayoutDashboard},
     {href:"/espace/parcours/ingenierie-produit-ia",label:"Mon parcours",icon:Sparkles},
+    {href:"/espace/portfolio",label:"Mon portfolio",icon:BriefcaseBusiness},
     {href:base+"?onglet=missions",label:"Mes réalisations",icon:BookOpen},
     {href:base+"?onglet=progression",label:"Ma progression",icon:BarChart3},
     {href:base+"?onglet=programme",label:"Mes ressources",icon:CalendarDays},
