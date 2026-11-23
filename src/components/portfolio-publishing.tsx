@@ -28,6 +28,7 @@ export function PortfolioPublishing({projects}:{projects:VerifiedProject[]}){
   const [scores,setScores]=useState(false);
   const [links,setLinks]=useState(false);
   const [copied,setCopied]=useState(false);
+  const projectIdsKey=projects.map(item=>item.id).join("|");
   const url=publication?
     "https://formation.zenithis.tech/p/"+publication.token:"";
   useEffect(()=>{
@@ -56,7 +57,7 @@ export function PortfolioPublishing({projects}:{projects:VerifiedProject[]}){
       }
     })();
     return ()=>controller.abort();
-  },[projects,reloadKey]);
+  },[projectIdsKey,reloadKey]);
 
   const toggle=(id:string)=>{
     setChosen(current=>current.includes(id)?current.filter(x=>x!==id):[...current,id]);

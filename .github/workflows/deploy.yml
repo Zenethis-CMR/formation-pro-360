@@ -135,6 +135,21 @@ jobs:
             302|303|307|308|401|403) echo "V2 private studio correctly requires an authenticated session." ;;
             *) echo "V2 studio security smoke failed: unexpected HTTP $studio_code." >&2; exit 1 ;;
           esac
+          # No owner publication settings may be read without an authenticated learner.
+          share_code="$(curl --silent --show-error --output /dev/null --write-out '%{http_code}' \
+            http://127.0.0.1:3000/api/portfolio-publication)"
+          test "$share_code" = 401 || { echo "Portfolio share settings exposed without session: $share_code" >&2; exit 1; }
+          # Invalid public capability must be non-sensitive and must not redirect to login.
+          public_html="$(mktemp)"
+          curl --retry 5 --retry-connrefused --retry-delay 2 --fail --silent --show-error \
+            http://127.0.0.1:3000/p/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA -o "$public_html"
+          grep -Fq "Ce portfolio n'est plus accessible." "$public_html" || {
+            rm -f "$public_html"
+            echo "Public share not-found page is missing or reveals a protected page." >&2
+            exit 1
+          }
+          rm -f "$public_html"
+          echo "Anonymous portfolio settings and invalid share link verified on CT410."
           # The slow local AI route must refuse unauthenticated POSTs immediately.
           # This is an HTTP auth smoke, not a real learner inference test.
           coach_status="$(curl --silent --show-error --output /dev/null --write-out '%{http_code}' \

@@ -78,8 +78,9 @@ export function LearnerVerifiedPortfolio({portfolio}:{portfolio:VerifiedPortfoli
       <div>
         <span><ShieldCheck size={16}/> TON EXPORT, TON CHOIX</span>
         <h2>Présente tes réalisations à ton rythme.</h2>
-        <p>Le portfolio est privé. Rien n'est publié sur Internet : l'impression ou
-          l'enregistrement au format PDF est déclenché uniquement par toi.</p>
+        <p>Ton dossier reste privé par défaut. L'impression ou l'enregistrement
+          en PDF se fait sur ton appareil ; le partage public ci-dessous demande
+          une publication séparée et volontaire.</p>
         <div className="portfolio-export-options">
           <label><input type="checkbox" checked={includeUrls}
             onChange={e=>setIncludeUrls(e.target.checked)}/>
