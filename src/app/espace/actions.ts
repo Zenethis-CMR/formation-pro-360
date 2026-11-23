@@ -283,15 +283,31 @@ export async function reviewV2Lesson(formData:FormData) {
   await requireRole("trainer");
   const path="/espace/formateur/corrections-v2";
   const id=String(formData.get("submissionId")||"");
-  const scoreText=String(formData.get("score")||"");
   const feedback=String(formData.get("feedback")||"").trim();
-  if(!idPattern.test(id)|| !/^\d{1,3}$/.test(scoreText)||
-    Number(scoreText)>100||feedback.length<3||feedback.length>1500)
+  const criterionValues=[0,1,2,3].map(i=>formData.get("criterion"+i));
+  const detailed=criterionValues.some(v=>v!==null);
+  let score=Number(String(formData.get("score")||""));
+  let recordedFeedback=feedback;
+  if(detailed){
+    if(criterionValues.some(v=>typeof v!=="string"||
+      !/^\d{1,2}$/.test(v)||Number(v)>25))
+      redirect(path+"?correction=erreur");
+    const points=criterionValues.map(Number);
+    score=points.reduce((sum,value)=>sum+value,0);
+    recordedFeedback=feedback+"\n\nGrille formative : "+points
+      .map((value,i)=>"C"+(i+1)+" "+value+"/25").join(" · ")+" · Total "+score+"/100";
+  }else{
+    const raw=String(formData.get("score")||"");
+    if(!/^\d{1,3}$/.test(raw))redirect(path+"?correction=erreur");
+    score=Number(raw);
+  }
+  if(!idPattern.test(id)||!Number.isInteger(score)||score<0||score>100||
+    feedback.length<3||recordedFeedback.length>1500)
     redirect(path+"?correction=erreur");
   const res=await backendRequest(
     "/v1/training/catalog/ingenierie-produit-ia/submissions/"+id+"/review",
     {method:"POST",headers:{"content-type":"application/json"},
-      body:JSON.stringify({score:Number(scoreText),feedback})}
+      body:JSON.stringify({score,feedback:recordedFeedback})}
   ).catch(()=>null);
   if(!res?.ok)redirect(path+"?correction=erreur");
   revalidatePath(path);

@@ -18,6 +18,8 @@ test("trainer correction UI is authenticated and never awards XP directly",()=>{
   const shell=read("src/components/secure-academy-shell.tsx");
   assert.match(page,/requireRole\("trainer"\)/);
   assert.match(page,/action=\{reviewV2Lesson\}/);
+  assert.match(page,/V2TrainerScoreInputs/);
+  assert.match(page,/item.evidence_required/);
   assert.match(page,/pending-submissions/);
   assert.match(shell,/label:"Corrections V2"/);
   assert.match(actions,/export async function reviewV2Lesson/);

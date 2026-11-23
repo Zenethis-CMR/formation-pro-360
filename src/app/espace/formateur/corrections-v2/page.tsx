@@ -3,10 +3,14 @@ import { ArrowLeft, BadgeCheck, CheckCircle2, ClipboardCheck, ExternalLink } fro
 import { backendRequest } from "@/lib/auth/backend";
 import { requireRole } from "@/lib/auth/require-role";
 import { reviewV2Lesson } from "@/app/espace/actions";
+import { v2WorkshopGuides } from "@/lib/v2-workshop-guides";
+import { V2TrainerScoreInputs } from "@/components/v2-trainer-score-inputs";
 
 type Pending={
   id:string;learner_id:string;lesson_id:string;lesson_title:string;
-  module_week:number;module_title:string;url:string;note:string;created_at:string;
+  lesson_slug:string;objective?:string;evidence_required?:string;
+  rubric?:unknown[];module_week:number;module_title:string;
+  url:string;note:string;created_at:string;
 };
 export default async function V2TrainerCorrections({searchParams}:{
   searchParams:Promise<{correction?:string}>;
@@ -44,17 +48,31 @@ export default async function V2TrainerCorrections({searchParams}:{
           <a href={item.url} target="_blank" rel="noopener noreferrer" className="v2-review-url">
             Ouvrir le livrable <ExternalLink size={15}/>
           </a>
+          <div className="v2-review-guidance">
+            <span>CONSIGNE OFFICIELLE DE L'ATELIER</span>
+            <p>{item.objective||"Consulte le résultat concret attendu avant de noter."}</p>
+            <strong>Preuve attendue</strong><p>{item.evidence_required||"Le livrable décrit dans le parcours V2."}</p>
+          </div>
           <form action={reviewV2Lesson} className="v2-review-form">
             <input type="hidden" name="submissionId" value={item.id}/>
-            <label>Note /100
-              <input name="score" type="number" min={0} max={100} step={1} required/>
-            </label>
+            <V2TrainerScoreInputs criteria={(()=>{
+              const official=Array.isArray(item.rubric)?item.rubric.flatMap(x=>
+                typeof x==="string"?[x]:x&&typeof x==="object"&&"label" in x&&typeof x.label==="string"?[x.label]:[]
+              ):[];
+              const editorial=v2WorkshopGuides[item.lesson_slug]?.checks;
+              return official.length===4?official:editorial||[
+                "Adéquation au problème et à l'objectif",
+                "Qualité de la réalisation",
+                "Preuves et tests vérifiables",
+                "Clarté du livrable et explications"
+              ];
+            })()}/>
             <label>Retour pédagogique
-              <textarea name="feedback" minLength={3} maxLength={1500} required rows={3}
-                placeholder="Points forts, écarts et pistes concrètes d'amélioration."/>
+              <textarea name="feedback" minLength={3} maxLength={1300} required rows={4}
+                placeholder="Ce qui fonctionne, les écarts constatés, et la prochaine amélioration concrète."/>
             </label>
             <button type="submit" className="primary-btn">Enregistrer la correction <BadgeCheck size={15}/></button>
-            <small>80/100 minimum pour valider. Chaque validation attribue 100 XP V2.</small>
+            <small>Les quatre repères sur 25 sont additionnés côté serveur. Le total et leur détail sont consignés dans le commentaire. À partir de 80/100, l'atelier est validé (+100 XP V2).</small>
           </form>
         </article>)}
       </section>
