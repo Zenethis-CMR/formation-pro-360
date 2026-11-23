@@ -121,7 +121,7 @@ export default async function Login({searchParams}:{searchParams:Promise<Params>
                 <p className="auth-new-legal">Vérifie aussi les spams. Le lien expire après 24 heures.</p>
               </form>
             </details>
-          </section>
+          </section>}
         </>}
         <div className="auth-new-bottom"><span><ShieldCheck size={15}/> Authentification sécurisée</span><span>Accès réservé aux membres inscrits</span></div>
       </section>
