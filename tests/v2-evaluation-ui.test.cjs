@@ -9,7 +9,9 @@ test("V2 learner submissions depend on backend granted enrollment and evaluation
   assert.match(page,/data\?\.evaluation_open/);
   assert.match(page,/latest\.status==="changes_requested"/);
   assert.match(page,/latest\?\.status==="approved"/);
-  assert.match(page,/action=\{submitV2Lesson\}/);
+  const studio=read("src/app/espace/parcours/ingenierie-produit-ia/atelier/[slug]/page.tsx");
+  assert.doesNotMatch(page,/action=\{submitV2Lesson\}/);
+  assert.match(studio,/action=\{submitV2Lesson\}/);
   assert.match(page,/xp_total/);
 });
 test("trainer correction UI is authenticated and never awards XP directly",()=>{
