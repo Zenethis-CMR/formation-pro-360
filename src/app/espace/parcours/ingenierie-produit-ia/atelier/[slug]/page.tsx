@@ -7,6 +7,8 @@ import {pilotCourse} from "@/lib/v2-public-catalog";
 import {v2WorkshopGuides} from "@/lib/v2-workshop-guides";
 import {V2WorkshopChecklist,V2WorkshopCopyTools} from "@/components/v2-workshop-tools";
 import {WorkshopNotebook} from "@/components/workshop-notebook";
+import {WorkshopTrainerFeedback} from "@/components/workshop-trainer-feedback";
+import type {WorkshopReview} from "@/lib/workshop-feedback";
 import {WorkshopCoach} from "@/components/workshop-coach";
 import {submitV2Lesson} from "@/app/espace/actions";
 
@@ -94,6 +96,16 @@ export default async function V2WorkshopStudio({params,searchParams}:{
   const previous=position>0?allLessons[position-1]:null;
   const next=position>=0&&position<allLessons.length-1?allLessons[position+1]:null;
   const officialRubric=lesson?rubricTitles(lesson.rubric):[];
+  // Only actual reviewed submissions, scoped to the signed-in learner, count.
+  const latestReviewed=history.find(s=>s.status!=="pending"&&s.feedback&&
+    s.reviewed_at!==null);
+  const review:WorkshopReview|null=latestReviewed?{
+    status:latestReviewed.status==="approved"?"approved":"changes_requested",
+    score:latestReviewed.score,feedback:latestReviewed.feedback,
+    reviewed_at:latestReviewed.reviewed_at
+  }:null;
+  const feedbackCriteria=officialRubric.length===4?
+    officialRubric:(guide?.checks||[]);
   return <main className="page studio-page">
     <nav className="studio-breadcrumb" aria-label="Fil d'Ariane">
       <Link href="/espace/apprenant">Mon espace</Link><ChevronRight size={13}/>
@@ -145,8 +157,10 @@ export default async function V2WorkshopStudio({params,searchParams}:{
           <div className="studio-objective-card is-independent"><span>CONSIGNE OFFICIELLE · TRAVAIL AUTONOME</span><p>{lesson?.independent_work}</p></div>
         </section>
         {guide&&(workbook&&lesson&&data?.enrollment==="active"?
-          <WorkshopNotebook slug={slug} lessonId={lesson.id} steps={guide.steps} initial={workbook}/>:
+          <WorkshopNotebook slug={slug} lessonId={lesson.id} steps={guide.steps}
+            initial={workbook} review={review} criteria={feedbackCriteria}/>:
           <>
+            {review&&<WorkshopTrainerFeedback review={review} criteria={feedbackCriteria}/>}
             <V2WorkshopChecklist steps={guide.steps}/>
             <section id="carnet" className="studio-section studio-workbook-fallback">
               <LockKeyhole size={20}/><div><h2>{data?.enrollment==="completed"?"Carnet en lecture seule":"La sauvegarde du carnet est indisponible"}</h2>
@@ -173,7 +187,8 @@ export default async function V2WorkshopStudio({params,searchParams}:{
           {guide&&<V2WorkshopCopyTools prompt={guide.prompt} template={guide.template}/>}
         </section>
         {lesson&&data?.coach_available?
-          <WorkshopCoach lessonId={lesson.id}/>:
+          <WorkshopCoach lessonId={lesson.id}
+            trainerFeedback={review?.status==="changes_requested"?review.feedback:null}/>:
           <section id="coach" className="studio-section studio-coach-disabled">
             <span className="studio-eyebrow"><Sparkles size={15}/> ACCOMPAGNEMENT PERSONNALISÉ</span>
             <h2>Le coach interactif n'est pas encore activé.</h2>

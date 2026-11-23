@@ -2,6 +2,8 @@
 import {useState} from "react";
 import {useFormStatus} from "react-dom";
 import {CheckCircle2,Clipboard,Save,ShieldCheck} from "lucide-react";
+import {WorkshopTrainerFeedback} from "@/components/workshop-trainer-feedback";
+import type {WorkshopReview} from "@/lib/workshop-feedback";
 import {saveWorkshopNotebook} from "@/app/espace/actions";
 
 type Step={title:string;action:string;proof:string;verify:string};
@@ -16,13 +18,30 @@ function SaveButton(){
   </button>;
 }
 /** All edits stay local until an explicit authenticated server action. */
-export function WorkshopNotebook({slug,lessonId,steps,initial}:{
-  slug:string;lessonId:string;steps:Step[];initial:Notebook
+export function WorkshopNotebook({slug,lessonId,steps,initial,review,criteria=[]}:{
+  slug:string;lessonId:string;steps:Step[];initial:Notebook;
+  review?:WorkshopReview|null;criteria?:string[]
 }){
   const [checked,setChecked]=useState<number[]>(initial.completed_steps);
+  const [nextAction,setNextAction]=useState(initial.next_action);
+  const [planStatus,setPlanStatus]=useState("");
+  const planFromCorrection=(suggestion:string)=>{
+    setNextAction(current=>{
+      const combined=current.trim()?current.trim()+"\n"+suggestion:suggestion;
+      if(combined.length>1000){
+        setPlanStatus("Ton objectif actuel a été conservé : raccourcis-le avant d'ajouter cette suggestion.");
+        return current;
+      }
+      setPlanStatus("Suggestion ajoutée. Relis-la, puis enregistre ton carnet pour la conserver.");
+      return combined;
+    });
+    document.getElementById("workbook-next")?.focus();
+  };
   return <form className="workbook-form" action={saveWorkshopNotebook} id="carnet">
     <input type="hidden" name="lessonId" value={lessonId}/>
     <input type="hidden" name="workshopSlug" value={slug}/>
+    {review&&<WorkshopTrainerFeedback review={review} criteria={criteria}
+      onPlan={review.status==="changes_requested"?planFromCorrection:undefined}/>}
     <section className="studio-checklist" aria-labelledby="studio-checklist-title">
       <div className="studio-checklist-top"><div>
         <span className="studio-eyebrow"><CheckCircle2 size={15}/> PRATIQUE · ÉTAPES SAUVEGARDABLES</span>
@@ -62,7 +81,9 @@ export function WorkshopNotebook({slug,lessonId,steps,initial}:{
         defaultValue={initial.notes} placeholder="Ce que j'ai réalisé, les tests effectués, mes difficultés…"/>
       <label htmlFor="workbook-next">Prochaine action <small>1 000 caractères</small></label>
       <textarea name="nextAction" id="workbook-next" maxLength={1000} rows={3}
-        defaultValue={initial.next_action} placeholder="Ma prochaine étape vérifiable…"/>
+        value={nextAction} onChange={e=>setNextAction(e.target.value)}
+        placeholder="Ma prochaine étape vérifiable…"/>
+      {planStatus&&<p className="workbook-plan-status" role="status">{planStatus}</p>}
       <label htmlFor="workbook-reference">Lien de travail <small>facultatif, HTTP(S)</small></label>
       <input name="referenceUrl" id="workbook-reference" type="url" maxLength={800}
         defaultValue={initial.reference_url||""} placeholder="https://github.com/…"/>

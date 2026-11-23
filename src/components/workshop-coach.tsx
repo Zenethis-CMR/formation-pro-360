@@ -45,7 +45,7 @@ function parseSsePacket(packet:string):{event:string;data:Record<string,unknown>
  * same-origin SSE route sends heartbeats so slow inference cannot silently
  * leave the learner with an unresponsive page.
  */
-export function WorkshopCoach({lessonId}:{lessonId:string}){
+export function WorkshopCoach({lessonId,trainerFeedback}:{lessonId:string;trainerFeedback?:string|null}){
   const [draft,setDraft]=useState("");
   const [mode,setMode]=useState<CoachMode>("debloquer");
   const [workSummary,setWorkSummary]=useState("");
@@ -171,6 +171,14 @@ export function WorkshopCoach({lessonId}:{lessonId:string}){
         </button>)}
     </div>
     <form onSubmit={ask} className="studio-coach-form">
+      {trainerFeedback&&<button className="studio-coach-use-feedback" type="button"
+        disabled={pending} onClick={()=>{
+          const plain=trainerFeedback.split("\n\nGrille formative : ")[0].trim();
+          setWorkSummary(plain.slice(0,400));
+          setMode("verifier");
+        }}>
+        <MessageSquare size={15}/> Reprendre volontairement le retour du formateur
+      </button>}
       <label htmlFor="studio-coach-work">Ce que j'ai déjà réalisé <small>facultatif · 400 caractères</small></label>
       <textarea id="studio-coach-work" name="workSummary" rows={2} maxLength={400}
         disabled={pending} value={workSummary} onChange={e=>setWorkSummary(e.target.value)}

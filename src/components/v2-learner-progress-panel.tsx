@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowRight, Award, BookOpenCheck, CheckCircle2, Clock3, LockKeyhole, Sparkles, TrendingUp } from "lucide-react";
+import { ArrowRight, Award, BookOpenCheck, CheckCircle2, Clock3, LockKeyhole, Sparkles, TrendingUp, AlertTriangle } from "lucide-react";
 import type { V2LearnerProgress as Progress, V2Submission } from "@/lib/v2-learner-progress";
 
 const pilotHref="/espace/parcours/ingenierie-produit-ia";
@@ -32,6 +32,8 @@ export function V2LearnerProgressPanel({progress,otherXp}:{progress:Progress;oth
     ?Math.min(100,Math.round(successes/total*100)):0;
   const lessonNames=new Map([...lessonVersions].map(([key,lesson])=>[key,lesson.title]));
   const recent=progress.submissions.slice(0,4);
+  const toImprove=[...latest.values()].filter(s=>s.status==="changes_requested");
+  const toReview=[...latest.values()].filter(s=>s.status==="pending");
   return <section className="v2-progress-hub" aria-labelledby="v2-progress-heading">
     <header className="v2-progress-head">
       <div><span className="journey-overline"><Sparkles size={15}/> MON PARCOURS · INGÉNIERIE PRODUIT ET IA</span>
@@ -54,6 +56,31 @@ export function V2LearnerProgressPanel({progress,otherXp}:{progress:Progress;oth
         <div className="v2-progress-stat"><span><Clock3 size={15}/> En correction</span><strong>{pending}</strong><p>{revisions} atelier(s) à améliorer</p></div>
       </div>
       <div className="v2-progress-bar" role="progressbar" aria-valuenow={successes} aria-valuemin={0} aria-valuemax={total} aria-label="Ateliers validés"><span style={{width:percent+"%"}}/></div>
+      {(toImprove.length>0||toReview.length>0)&&
+        <section className="v2-progress-priorities" aria-labelledby="v2-progress-priorities-title">
+          <header><AlertTriangle size={17}/>
+            <div><h3 id="v2-progress-priorities-title">Mes prochaines priorités</h3>
+              <p>Ces statuts viennent des vrais dépôts et corrections de ton parcours.</p>
+            </div></header>
+          <div className="v2-progress-priority-grid">
+            {toImprove.map(item=><Link key={item.id}
+              href={pilotHref+"/atelier/"+item.lesson_slug+"#retour-formateur"}
+              className="v2-progress-priority is-revision">
+              <span>À CORRIGER · {item.score!==null?item.score+"/100":"Retour disponible"}</span>
+              <strong>{lessonNames.get(item.module_id+":"+item.lesson_slug)||"Atelier"}</strong>
+              <small>Relire la correction, définir une action et préparer une nouvelle preuve.</small>
+              <b>Voir les remarques <ArrowRight size={14}/></b>
+            </Link>)}
+            {toReview.map(item=><Link key={item.id}
+              href={pilotHref+"/atelier/"+item.lesson_slug+"#livrable"}
+              className="v2-progress-priority">
+              <span>EN CORRECTION</span>
+              <strong>{lessonNames.get(item.module_id+":"+item.lesson_slug)||"Atelier"}</strong>
+              <small>Le livrable attend une décision du formateur. Aucun XP anticipé.</small>
+              <b>Suivre ma remise <ArrowRight size={14}/></b>
+            </Link>)}
+          </div>
+        </section>}
       <div className="v2-progress-grid">
         <div className="v2-progress-weeks"><div className="v2-progress-subhead"><TrendingUp size={17}/><h3>Mes huit semaines</h3></div>
           {progress.modules.map(module=>{

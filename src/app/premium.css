@@ -1335,3 +1335,38 @@ button,a,input,textarea,select { -webkit-tap-highlight-color:transparent; }
 .studio-coach-response-actions{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:10px}
 .studio-coach-response-actions>span{display:inline-flex;align-items:center;gap:5px;font-size:10px;color:#598c78}
 @media(max-width:640px){.studio-coach-mode-options{grid-template-columns:1fr}.studio-coach-response-actions{flex-direction:column;align-items:flex-start}}
+
+/* Feedback → remediation → private learner notebook, no automatic grading. */
+.studio-trainer-feedback{border-color:#d5e6fa;background:#fff}
+.studio-trainer-feedback-head{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap}
+.studio-trainer-feedback-head h2{margin:4px 0 7px;color:#294b74}.studio-trainer-feedback-head p{font-size:11px;color:#8197ae;line-height:1.65}
+.studio-trainer-score{font-size:25px;font-weight:900;color:#245a92;background:#eef6ff;padding:11px 15px;border-radius:11px;white-space:nowrap}
+.studio-trainer-score small{font-size:11px;color:#6588b0}
+.studio-trainer-verdict{display:flex;gap:9px;align-items:center;margin-top:15px;padding:12px;border-radius:10px;background:#e8f8ef;color:#33866b;font-size:11px;line-height:1.6}
+.studio-trainer-verdict.needs-work{background:#fff5e9;color:#a06e35}
+.studio-trainer-message{margin:15px 0;border-left:3px solid #6096d3;background:#f5f9fe;padding:16px;border-radius:0 9px 9px 0}
+.studio-trainer-message strong{display:block;font-size:11px;color:#356b9e}.studio-trainer-message p{font-size:12px;white-space:pre-wrap;overflow-wrap:anywhere;color:#557393;line-height:1.75;margin:9px 0 0}
+.studio-trainer-criteria{margin:17px 0;display:grid;gap:12px}
+.studio-trainer-criteria h3{display:flex;gap:8px;align-items:center;font-size:12px;color:#315f8b;margin:0 0 4px}
+.studio-trainer-criterion>div:first-child{display:flex;align-items:center;justify-content:space-between;gap:12px;font-size:11px;color:#527598;margin-bottom:6px}
+.studio-trainer-criterion strong{white-space:nowrap;color:#346ca6}.studio-trainer-bar{height:7px;border-radius:8px;overflow:hidden;background:#e8f0fa}
+.studio-trainer-bar>span{height:100%;background:#4c92d6;border-radius:8px;display:block}
+.studio-trainer-criteria>p{font-size:10px;line-height:1.6;color:#8ba0b6}
+.studio-trainer-next{background:#f0f7ff;border:1px solid #d9e8fa;border-radius:11px;padding:15px;display:grid;gap:9px}
+.studio-trainer-next>span{display:flex;gap:7px;align-items:center;font-size:10px;font-weight:900;letter-spacing:.4px;color:#4177af}
+.studio-trainer-next p{font-size:12px;line-height:1.7;color:#496c92;margin:0}.studio-trainer-next small{font-size:10px;color:#7897b4;line-height:1.6}
+.studio-trainer-next button{display:inline-flex;align-items:center;justify-content:center;gap:8px;justify-self:start;background:#327bd2;border:0;border-radius:9px;color:#fff;font-weight:850;font-size:11px;padding:11px 14px;cursor:pointer}
+.workbook-plan-status{font-size:11px!important;color:#347c67!important;background:#ecf9f2;padding:10px 12px;border-radius:8px}
+.studio-coach-use-feedback{display:flex;align-items:center;gap:8px;justify-self:start;border:1px solid #c3dcf4;border-radius:9px;background:white;padding:10px 12px;font-size:11px;font-weight:850;color:#3d76ae;cursor:pointer}
+.studio-coach-use-feedback:disabled{opacity:.6}
+.v2-progress-priorities{margin:18px 0 24px;background:#fff;border:1px solid #d9e8fa;border-radius:13px;padding:18px}
+.v2-progress-priorities>header{display:flex;align-items:flex-start;gap:10px;color:#3878b4}
+.v2-progress-priorities h3{font-size:14px;margin:0 0 4px}.v2-progress-priorities header p{font-size:10px;color:#8499b2;margin:0}
+.v2-progress-priority-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px;margin-top:16px}
+.v2-progress-priority{padding:15px;border:1px solid #dae7f6;border-radius:10px;background:#f5faff;display:grid;gap:6px;text-decoration:none}
+.v2-progress-priority.is-revision{background:#fff8f0;border-color:#f1e2ce}
+.v2-progress-priority>span{color:#5790c7;font-size:9px;font-weight:950;letter-spacing:.3px}
+.v2-progress-priority.is-revision>span{color:#ad7636}
+.v2-progress-priority strong{font-size:12px;color:#315c87}.v2-progress-priority small{font-size:10px;line-height:1.7;color:#7993ac}
+.v2-progress-priority>b{display:flex;gap:7px;align-items:center;font-size:10px;color:#397fb7;margin-top:4px}
+@media(max-width:650px){.v2-progress-priority-grid{grid-template-columns:1fr}.studio-trainer-next button{justify-self:stretch}}
