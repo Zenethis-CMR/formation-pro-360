@@ -21,7 +21,7 @@ test("project coaching needs explicit consent and bounded voluntary context",()=
  assert.ok(api.includes('body.consent!==true'));
  assert.ok(api.includes('body.previous_exchange!==undefined'));
  assert.ok(api.includes('project?600:1200'));
- assert.ok(api.includes('/ingenierie-produit-ia/project/coach'));
+ assert.ok(api.includes('encodeURIComponent(body.trackSlug??"ingenierie-produit-ia")+"/project/coach"'));
  assert.ok(api.includes('if(origin!==allowed)'));
  assert.ok(ui.includes('scope:"project",consent:true'));
  assert.ok(ui.includes('setConsent(false)'));
