@@ -52,6 +52,7 @@ export function SecureAcademyShell({children,stats}:{children:React.ReactNode;st
   const profileName=stats.displayName|| (trainer?"Espace formateur":"Mon parcours");
   const isActive=(href:string)=>{
     const [path,query]=href.split("?");
+    if(!trainer&&path==="/espace/projet"&&(pathname===path||pathname.startsWith(path+"/")))return true;
     if(!trainer&&path==="/espace/parcours/ingenierie-produit-ia"&&
       pathname.startsWith(path))return true;
     if(path!==pathname)return false;
