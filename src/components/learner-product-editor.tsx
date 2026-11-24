@@ -1,6 +1,6 @@
 "use client";
 import {useEffect,useState,useRef} from "react";
-import {Download,Save,ArrowRight,CheckCircle2} from "lucide-react";
+import {Download,Save,ArrowRight} from "lucide-react";
 import {emptyDossier,projectSections,type ProductDossier,type ProductProject,type ProjectKey,safeProjectLink} from "@/lib/learner-product-project";
 import {saveProductProject} from "@/app/espace/projet/actions";
 
@@ -26,7 +26,7 @@ export function LearnerProductEditor({initial,editable}:{initial:ProductProject|
   saving.current=true;setPending(true);setStatus(null);
   try{
    const result=await saveProductProject(revision,draft);
-   if(result.ok){setDraft(result.project.dossier);setBaseline(result.project.dossier);setRevision(result.project.revision);setSavedAt(result.project.updated_at);setStatus({kind:"ok",message:"Ton dossier a été enregistré."});}
+   if(result.ok===true){setDraft(result.project.dossier);setBaseline(result.project.dossier);setRevision(result.project.revision);setSavedAt(result.project.updated_at);setStatus({kind:"ok",message:"Ton dossier a été enregistré."});}
    else setStatus({kind:"error",message:errors[result.error]});
   }catch{setStatus({kind:"error",message:errors.unavailable});}
   finally{saving.current=false;setPending(false);}
