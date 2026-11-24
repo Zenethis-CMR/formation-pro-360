@@ -31,7 +31,7 @@ export default async function LearnerFormations({searchParams}:{searchParams:Pro
  <div className="ul-metrics"><article><CheckCircle2 size={20}/><small>Ateliers validés</small><strong>{summary.approved}/{summary.total}</strong></article><article><Award size={20}/><small>XP de cette formation</small><strong>{data.xp}</strong></article><article><Clock3 size={20}/><small>En correction</small><strong>{summary.pending}</strong></article></div>
  {summary.total>0?<><div className="ul-progress" role="progressbar" aria-label="Ateliers validés" aria-valuemin={0} aria-valuemax={summary.total} aria-valuenow={summary.approved}><span style={{width:percent+"%"}}/></div><p>{percent}% des ateliers publiés validés · {summary.changes_requested} à améliorer · {summary.total-summary.approved-summary.pending-summary.changes_requested} à réaliser.</p></>:<p>Aucun atelier publié dans ce parcours.</p>}
  </>}
- {selected.slug==="ingenierie-produit-ia"&&data?<Link href="/espace/parcours/ingenierie-produit-ia" className="ul-link">Ouvrir mon Learning Studio <ArrowRight size={16}/></Link>:<p className="ul-note">La consultation du studio de ce parcours sera proposée lorsque son intégration sera disponible. Cette page ne publie ni n’ouvre de formation.</p>}
+ {data?<Link href={selected.slug==="ingenierie-produit-ia"?"/espace/parcours/ingenierie-produit-ia":base+"/"+encodeURIComponent(selected.slug)+"/studio"} className="ul-link">Ouvrir mon Learning Studio <ArrowRight size={16}/></Link>:<p className="ul-note">L’accès au studio doit être confirmé par le serveur. Cette page ne publie ni n’ouvre de formation.</p>}
  </>}</section></div>}
  </main>;
 }
