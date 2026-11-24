@@ -19,3 +19,7 @@ The learner chooses an active enrolled published track through an authenticated 
 ## Phase 5 — Universal Project & Portfolio
 
 Per-learner, per-track existing schema reused. Explicit track-scoped project and portfolio URLs with specialization-oriented labels. Private versioned dossier, active-only edits, no XP on save. Verified proofs require trainer approval and ledger, opt-in public sharing (16 selected proofs maximum), independent revocation even on suspension. Pilot pages remain intact. Backlog, project coach, collaborative reviews remain pilot-only. No publication or enrollment changes.
+
+## Phase 6a — Universal Trainer Cockpit
+
+Trainer-only aggregate endpoint covers published tracks and returns null metrics for drafts/archived. Counts are per enrollment, latest logical submission and verified XP ledger; no private notes. Global dashboard, explicit track selection, dynamic roster week columns, per-track individual reports and exports. Existing pilot details preserved. No changes to enrollment or publication. Sessions, personal briefs, support, collaborative reviews and backlog still require their own multi-track integration. Authenticated visual QA outstanding.

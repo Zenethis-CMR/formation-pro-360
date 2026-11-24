@@ -1,7 +1,7 @@
 import {projectMilestones} from "./learner-product-project";
-export type Workshop={slug:string;title:string;objective:string;week:number;module_title:string;skills:string[];status:string;score:number|null;feedback:string|null;reviewed_at:string|null;last_submission_at:string|null;xp:number;evidence_id:string|null;evidence_url:string|null;attempt_count:number};
+export type Workshop={module_id?:string;slug:string;title:string;objective:string;week:number;module_title:string;skills:string[];status:string;score:number|null;feedback:string|null;reviewed_at:string|null;last_submission_at:string|null;xp:number;evidence_id:string|null;evidence_url:string|null;attempt_count:number};
 export type Supplementary={briefs:{total:number;accepted:number;submitted:number;revision_requested:number;assigned:number};support:{total:number;resolved:number;waiting_trainer:number;waiting_learner:number};reviews:{versions:number;recommendations:number;responded:number}|null};
-export type LearningReport={source:"official_workshop_submissions_and_xp";generated_at:string;learner:{id:string;name:string|null;status:string;enrolled_at:string};course_title:string;workshops:Workshop[];supplementary:Supplementary|null};
+export type LearningReport={source:"official_workshop_submissions_and_xp";generated_at:string;learner:{id:string;name:string|null;status:string;enrolled_at:string};course_slug?:string;course_title:string;workshops:Workshop[];supplementary:Supplementary|null};
 export const statusLabel:Record<string,string>={verified:"Preuve vérifiée",pending:"En correction",changes_requested:"À reprendre",approved:"XP à rapprocher",not_started:"Aucun dépôt"};
 export const enrollmentLabel:Record<string,string>={active:"Actif",completed:"Terminé",paused:"Suspendu",revoked:"Révoqué"};
 export function isVerified(w:Workshop){return w.status==="verified"&&w.score!==null&&w.score>=80&&w.xp===100&&!!w.evidence_id;}

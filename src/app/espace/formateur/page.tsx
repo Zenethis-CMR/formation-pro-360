@@ -15,6 +15,7 @@ import { WorkspaceTabHeading } from "@/components/workspace-tab-heading";
 import { learnerInsight, type CoachMessage } from "@/lib/coaching-insights";
 import { V2TrainerCoursePreview, type V2CoursePreview } from "@/components/v2-trainer-course-preview";
 import { V2TrainerEvaluationOverview } from "@/components/v2-trainer-evaluation-overview";
+import { UniversalTrainerCockpit } from "@/components/universal-trainer-cockpit";
 import { LocalCoachDiagnostics } from "@/components/local-coach-diagnostics";
 
 type Params={error?:string;success?:string;onglet?:string;page?:string};
@@ -126,7 +127,8 @@ export default async function TrainerSpace({searchParams}:{searchParams:Promise<
     {tab!=="dashboard"&&<WorkspaceTabHeading role="trainer" tab={tab}/>}
     {tab==="dashboard"&&<>
       <DashboardHeader trainer/>
-      <V2TrainerEvaluationOverview dashboard/>
+      <UniversalTrainerCockpit/>
+      <DashboardDisclosure title="Détail des corrections du pilote" description="Historique du parcours Ingénierie produit et IA"><V2TrainerEvaluationOverview dashboard/></DashboardDisclosure>
       <DashboardQuickLinks trainer/>
       <DashboardDisclosure title="Réalisations complémentaires" description="Missions historiques, statistiques et corrections">
         <SecureTrainerOverview pending={pendingCount} learners={learnerCount}
@@ -191,7 +193,7 @@ export default async function TrainerSpace({searchParams}:{searchParams:Promise<
     </section>
     </>}
     {tab==="apprenants"&&<>
-    <section className="panel"><h2>Suivi individuel du parcours pilote</h2><p className="muted">Les résultats V2 sont distincts des missions complémentaires historiques.</p><Link className="primary-btn" href="/espace/formateur/suivi">Consulter les apprenants V2</Link></section>
+    <section className="panel"><h2>Suivi individuel multiformation</h2><p className="muted">Les résultats par formation sont distincts des missions complémentaires historiques.</p><Link className="primary-btn" href="/espace/formateur/suivi">Consulter les apprenants par formation</Link></section>
     <TrainerCoachingPanel learners={namedLearners} insights={insights} messages={(coachMessages||[]) as CoachMessage[]} startDate={settings?.start_date??null}/>
     <div id="cohorte" className="secure-section-marker"/>
     <CohortProgress learners={namedLearners} awards={awards||[]} submissions={allSubmissions||[]} practice={practice||[]} missions={catalog.filter(m=>m.published)} missionCount={catalog.filter(m=>m.published).length}/>
