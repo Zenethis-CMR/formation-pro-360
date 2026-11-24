@@ -207,3 +207,7 @@
 @media(max-width:820px){.secure-academy-content .studio-page{padding:18px 16px 104px}.studio-page .studio-hero{flex-direction:column}.studio-page .studio-hero-side{flex:none;max-width:none}.studio-layout-v3 .studio-command-bar{padding:10px;border-radius:10px}.studio-command-top strong{font-size:12px}.studio-command-links>a{font-size:11px;padding:8px 10px}.studio-layout-v3 :is(#brief,#studio-checklist-title,#retour-formateur,#carnet,#qualite,#boite-outils,#coach,#livrable){scroll-margin-top:165px}}
 @media(max-width:370px){.studio-command-top{align-items:flex-start}.studio-command-status{max-width:110px;white-space:normal}.studio-human-note{padding:12px}}
 @media print{.studio-layout-v3 .studio-command-bar{position:static;box-shadow:none}.studio-command-links{display:none}}
+
+@media(max-width:1279px){.workspace-learner-shell .secure-academy-content:has(>.workspace-profile-bottom) .page{padding-bottom:24px}}
+@media(min-width:821px) and (max-width:1279px){.workspace-profile-bottom{padding-bottom:28px}}
+@media(max-height:500px){.studio-layout-v3 .studio-command-bar{position:static}.studio-layout-v3 :is(#brief,#studio-checklist-title,#retour-formateur,#carnet,#qualite,#boite-outils,#coach,#livrable){scroll-margin-top:16px}}
