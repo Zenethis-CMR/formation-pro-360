@@ -80,8 +80,8 @@ export function SecureLearnerOverview({missions,submissions,approvedIds,dependen
         <p>Rassemble tes projets vérifiés et présente tes preuves dans ton portfolio.</p>
       </div><Link href="/espace/portfolio">Présenter mes réalisations <ArrowRight size={16}/></Link>
     </section>}
-    {primaryAction}
     {workspace}
+    {primaryAction}
     <section className="academy-milestone"><div className="milestone-marker"><Target size={20}/></div>
       <div><span>OBJECTIF · JOUR 14</span><strong>Mettre ton premier scénario utilisateur en ligne.</strong>
         <p>Une mission à la fois. Chaque étape donne lieu à un livrable évalué.</p></div>
