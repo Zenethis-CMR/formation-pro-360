@@ -1,12 +1,12 @@
 /** Editorial curriculum drafts. Not published database lessons or enrollment rights. */
 export type CurriculumLesson={slug:string;title:string;objective:string;evidence:string;criteria:string[]};
 export type CurriculumModule={week:number;title:string;outcome:string;lessons:CurriculumLesson[]};
-export type SpecializationProgram={slug:string;tools:string;milestones:string;modules:CurriculumModule[]};
+export type SpecializationProgram={slug:string;tools:string;milestones:string;durationWeeks:number;daysPerWeek:number;hoursPerDay:number;aiWorkflow:string;modules:CurriculumModule[]};
 export const specializationPrograms:SpecializationProgram[]=[
   {
     "slug": "design-produit-ux-ui-motion",
     "tools": "Figma, FigJam, outils de contraste, navigateur",
-    "milestones": "Prototype testé du flux central au jour 14; bibliothèque de composants et écrans responsive au mois 1; design intégré, testé et documenté au mois 2.",
+    "milestones": "Semaine 1 : flux testé, identité et bibliothèque de composants. Semaine 2 : interface responsive, motion utile, recette et étude de cas.",
     "modules": [
       {
         "week": 1,
@@ -40,7 +40,7 @@ export const specializationPrograms:SpecializationProgram[]=[
         ]
       },
       {
-        "week": 2,
+        "week": 1,
         "title": "Prototypage",
         "outcome": "Tester un scénario central avant de détailler l'interface.",
         "lessons": [
@@ -71,7 +71,7 @@ export const specializationPrograms:SpecializationProgram[]=[
         ]
       },
       {
-        "week": 3,
+        "week": 1,
         "title": "Identité visuelle",
         "outcome": "Définir un langage graphique cohérent.",
         "lessons": [
@@ -102,7 +102,7 @@ export const specializationPrograms:SpecializationProgram[]=[
         ]
       },
       {
-        "week": 4,
+        "week": 1,
         "title": "Design system",
         "outcome": "Créer une bibliothèque exploitable.",
         "lessons": [
@@ -133,7 +133,7 @@ export const specializationPrograms:SpecializationProgram[]=[
         ]
       },
       {
-        "week": 5,
+        "week": 2,
         "title": "Accessibilité et qualité",
         "outcome": "Vérifier le confort de lecture et d'interaction.",
         "lessons": [
@@ -164,7 +164,7 @@ export const specializationPrograms:SpecializationProgram[]=[
         ]
       },
       {
-        "week": 6,
+        "week": 2,
         "title": "Motion design",
         "outcome": "Donner un retour utile sans distraire.",
         "lessons": [
@@ -195,7 +195,7 @@ export const specializationPrograms:SpecializationProgram[]=[
         ]
       },
       {
-        "week": 7,
+        "week": 2,
         "title": "Livraison design",
         "outcome": "Passer du fichier à une interface utilisable.",
         "lessons": [
@@ -226,7 +226,7 @@ export const specializationPrograms:SpecializationProgram[]=[
         ]
       },
       {
-        "week": 8,
+        "week": 2,
         "title": "Portfolio et soutenance",
         "outcome": "Défendre le processus et les résultats.",
         "lessons": [
@@ -256,12 +256,16 @@ export const specializationPrograms:SpecializationProgram[]=[
           }
         ]
       }
-    ]
+    ],
+    "durationWeeks": 2,
+    "daysPerWeek": 5,
+    "hoursPerDay": 6,
+    "aiWorkflow": "IA pour synthétiser les observations anonymisées, explorer des directions visuelles, générer des variantes et accélérer le prototypage. Vérifier les choix, contrastes et interactions avec de vrais tests."
   },
   {
     "slug": "copywriting-communication-contenu-ia",
     "tools": "Éditeur de texte, CMS, outil de recherche, analytics, IA supervisée",
-    "milestones": "Message et page testable au jour 14; système éditorial au mois 1; parcours de conversion mesuré au mois 2.",
+    "milestones": "Jours 1–2 : positionnement, message, landing et charte. Jours 3–4 : contenus, SEO et distribution. Jour 5 : mesure initiale, kit éditorial et démonstration. Les résultats de conversion se suivent après le sprint.",
     "modules": [
       {
         "week": 1,
@@ -295,7 +299,7 @@ export const specializationPrograms:SpecializationProgram[]=[
         ]
       },
       {
-        "week": 2,
+        "week": 1,
         "title": "Copywriting de conversion",
         "outcome": "Construire une page qui explique une offre.",
         "lessons": [
@@ -326,7 +330,7 @@ export const specializationPrograms:SpecializationProgram[]=[
         ]
       },
       {
-        "week": 3,
+        "week": 1,
         "title": "Identité éditoriale",
         "outcome": "Rendre la voix de marque reproductible.",
         "lessons": [
@@ -357,7 +361,7 @@ export const specializationPrograms:SpecializationProgram[]=[
         ]
       },
       {
-        "week": 4,
+        "week": 1,
         "title": "Production éditoriale",
         "outcome": "Organiser un calendrier réalisable.",
         "lessons": [
@@ -388,7 +392,7 @@ export const specializationPrograms:SpecializationProgram[]=[
         ]
       },
       {
-        "week": 5,
+        "week": 1,
         "title": "SEO et découverte",
         "outcome": "Produire du contenu utile et découvrable.",
         "lessons": [
@@ -419,7 +423,7 @@ export const specializationPrograms:SpecializationProgram[]=[
         ]
       },
       {
-        "week": 6,
+        "week": 1,
         "title": "Distribution",
         "outcome": "Décliner un contenu sans spam.",
         "lessons": [
@@ -450,7 +454,7 @@ export const specializationPrograms:SpecializationProgram[]=[
         ]
       },
       {
-        "week": 7,
+        "week": 1,
         "title": "Mesure et itération",
         "outcome": "Relier les contenus aux objectifs sans inventer de résultats.",
         "lessons": [
@@ -481,7 +485,7 @@ export const specializationPrograms:SpecializationProgram[]=[
         ]
       },
       {
-        "week": 8,
+        "week": 1,
         "title": "Système et soutenance",
         "outcome": "Livrer un système de contenu transmissible.",
         "lessons": [
@@ -511,12 +515,16 @@ export const specializationPrograms:SpecializationProgram[]=[
           }
         ]
       }
-    ]
+    ],
+    "durationWeeks": 1,
+    "daysPerWeek": 5,
+    "hoursPerDay": 8,
+    "aiWorkflow": "IA pour rechercher des angles, rédiger des variantes, adapter les formats et assister le SEO. Vérification des sources, réécriture humaine et tests de compréhension obligatoires."
   },
   {
     "slug": "marketing-acquisition-ia",
     "tools": "Tableur, analytics, CRM, outils créatifs et comptes de test",
-    "milestones": "Offre et canal testable au jour 14; campagne et CRM au mois 1; acquisition mesurée au mois 2.",
+    "milestones": "Semaine 1 : offre, landing instrumentée, créatifs et CRM. Semaine 2 : campagne autorisée ou en environnement test, analyse et optimisation. Le suivi des conversions réelles continue après la formation.",
     "modules": [
       {
         "week": 1,
@@ -550,7 +558,7 @@ export const specializationPrograms:SpecializationProgram[]=[
         ]
       },
       {
-        "week": 2,
+        "week": 1,
         "title": "Entonnoir et landing",
         "outcome": "Créer un parcours mesurable.",
         "lessons": [
@@ -581,7 +589,7 @@ export const specializationPrograms:SpecializationProgram[]=[
         ]
       },
       {
-        "week": 3,
+        "week": 1,
         "title": "Création et contenu",
         "outcome": "Produire des créatifs adaptés à la cible.",
         "lessons": [
@@ -612,7 +620,7 @@ export const specializationPrograms:SpecializationProgram[]=[
         ]
       },
       {
-        "week": 4,
+        "week": 1,
         "title": "CRM et qualification",
         "outcome": "Structurer la relation prospect.",
         "lessons": [
@@ -643,7 +651,7 @@ export const specializationPrograms:SpecializationProgram[]=[
         ]
       },
       {
-        "week": 5,
+        "week": 2,
         "title": "Expérimentations payantes",
         "outcome": "Préparer des campagnes sans dépenses non autorisées.",
         "lessons": [
@@ -674,7 +682,7 @@ export const specializationPrograms:SpecializationProgram[]=[
         ]
       },
       {
-        "week": 6,
+        "week": 2,
         "title": "Mesure et attribution",
         "outcome": "Interpréter les signaux avec prudence.",
         "lessons": [
@@ -705,7 +713,7 @@ export const specializationPrograms:SpecializationProgram[]=[
         ]
       },
       {
-        "week": 7,
+        "week": 2,
         "title": "Optimisation",
         "outcome": "Prioriser les expériences utiles.",
         "lessons": [
@@ -736,7 +744,7 @@ export const specializationPrograms:SpecializationProgram[]=[
         ]
       },
       {
-        "week": 8,
+        "week": 2,
         "title": "Campagne et jury",
         "outcome": "Présenter une stratégie et ses résultats vérifiables.",
         "lessons": [
@@ -766,12 +774,16 @@ export const specializationPrograms:SpecializationProgram[]=[
           }
         ]
       }
-    ]
+    ],
+    "durationWeeks": 2,
+    "daysPerWeek": 5,
+    "hoursPerDay": 6,
+    "aiWorkflow": "IA pour segmenter des données anonymisées, créer des angles de campagne, préparer les scénarios CRM et analyser les indicateurs. Le formateur valide les hypothèses, les dépenses et les conclusions."
   },
   {
     "slug": "automatisation-integrations-agents-ia",
     "tools": "API de test, n8n ou équivalent, Node.js, Git, journaux, modèle IA",
-    "milestones": "Flux de test au jour 14; automatisation supervisée au mois 1; fiabilité et évaluation au mois 2.",
+    "milestones": "Semaine 1 : workflow API/webhook, gestion d'erreurs et approbation humaine. Semaine 2 : agent limité, évaluation, sécurité, supervision et démonstration.",
     "modules": [
       {
         "week": 1,
@@ -805,7 +817,7 @@ export const specializationPrograms:SpecializationProgram[]=[
         ]
       },
       {
-        "week": 2,
+        "week": 1,
         "title": "API et webhooks",
         "outcome": "Connecter deux services de test.",
         "lessons": [
@@ -836,7 +848,7 @@ export const specializationPrograms:SpecializationProgram[]=[
         ]
       },
       {
-        "week": 3,
+        "week": 1,
         "title": "Orchestration",
         "outcome": "Construire des workflows maintenables.",
         "lessons": [
@@ -867,7 +879,7 @@ export const specializationPrograms:SpecializationProgram[]=[
         ]
       },
       {
-        "week": 4,
+        "week": 1,
         "title": "Automatisation supervisée",
         "outcome": "Livrer un flux contrôlé par un humain.",
         "lessons": [
@@ -898,7 +910,7 @@ export const specializationPrograms:SpecializationProgram[]=[
         ]
       },
       {
-        "week": 5,
+        "week": 2,
         "title": "Agents IA",
         "outcome": "Limiter l'agent à un périmètre vérifiable.",
         "lessons": [
@@ -929,7 +941,7 @@ export const specializationPrograms:SpecializationProgram[]=[
         ]
       },
       {
-        "week": 6,
+        "week": 2,
         "title": "Évaluation",
         "outcome": "Mesurer l'utilité et les erreurs.",
         "lessons": [
@@ -960,7 +972,7 @@ export const specializationPrograms:SpecializationProgram[]=[
         ]
       },
       {
-        "week": 7,
+        "week": 2,
         "title": "Observabilité et sécurité",
         "outcome": "Rendre le service exploitable.",
         "lessons": [
@@ -991,7 +1003,7 @@ export const specializationPrograms:SpecializationProgram[]=[
         ]
       },
       {
-        "week": 8,
+        "week": 2,
         "title": "Livraison et jury",
         "outcome": "Démontrer un système supervisé fiable.",
         "lessons": [
@@ -1021,12 +1033,16 @@ export const specializationPrograms:SpecializationProgram[]=[
           }
         ]
       }
-    ]
+    ],
+    "durationWeeks": 2,
+    "daysPerWeek": 5,
+    "hoursPerDay": 6,
+    "aiWorkflow": "IA pour préparer les contrats JSON, écrire du code d'intégration, construire les workflows et générer des cas de test. Vérifier les permissions, signatures, sorties et actions sensibles dans un environnement isolé."
   },
   {
     "slug": "infrastructure-devops-cybersecurite",
     "tools": "Git, Linux, Docker, CI/CD, VPS ou VM de test, observabilité",
-    "milestones": "Service reproductible en test au jour 14; livraison et sauvegarde au mois 1; exploitation résiliente au mois 2.",
+    "milestones": "Semaine 1 : service conteneurisé et CI/CD. Semaine 2 : restauration, durcissement et observabilité. Semaine 3 : reconstruction, tests de capacité, runbook et jury.",
     "modules": [
       {
         "week": 1,
@@ -1060,7 +1076,7 @@ export const specializationPrograms:SpecializationProgram[]=[
         ]
       },
       {
-        "week": 2,
+        "week": 1,
         "title": "Conteneurs et réseau",
         "outcome": "Déployer un service isolé.",
         "lessons": [
@@ -1091,7 +1107,7 @@ export const specializationPrograms:SpecializationProgram[]=[
         ]
       },
       {
-        "week": 3,
+        "week": 1,
         "title": "Intégration continue",
         "outcome": "Fiabiliser les changements.",
         "lessons": [
@@ -1122,7 +1138,7 @@ export const specializationPrograms:SpecializationProgram[]=[
         ]
       },
       {
-        "week": 4,
+        "week": 2,
         "title": "Sauvegarde et reprise",
         "outcome": "Prouver que les données sont restaurables.",
         "lessons": [
@@ -1153,7 +1169,7 @@ export const specializationPrograms:SpecializationProgram[]=[
         ]
       },
       {
-        "week": 5,
+        "week": 2,
         "title": "Sécurité défensive",
         "outcome": "Réduire l'exposition des services autorisés.",
         "lessons": [
@@ -1184,7 +1200,7 @@ export const specializationPrograms:SpecializationProgram[]=[
         ]
       },
       {
-        "week": 6,
+        "week": 2,
         "title": "Observabilité",
         "outcome": "Détecter les dégradations sans fuite de données.",
         "lessons": [
@@ -1215,7 +1231,7 @@ export const specializationPrograms:SpecializationProgram[]=[
         ]
       },
       {
-        "week": 7,
+        "week": 3,
         "title": "Infrastructure reproductible",
         "outcome": "Automatiser l'exploitation et maîtriser les coûts.",
         "lessons": [
@@ -1246,7 +1262,7 @@ export const specializationPrograms:SpecializationProgram[]=[
         ]
       },
       {
-        "week": 8,
+        "week": 3,
         "title": "Exploitation et jury",
         "outcome": "Présenter un service fiable et défendable.",
         "lessons": [
@@ -1276,12 +1292,16 @@ export const specializationPrograms:SpecializationProgram[]=[
           }
         ]
       }
-    ]
+    ],
+    "durationWeeks": 3,
+    "daysPerWeek": 5,
+    "hoursPerDay": 6,
+    "aiWorkflow": "IA pour expliquer et préparer les scripts Linux, Docker, CI/CD, alertes et documentation. Exécuter uniquement sur laboratoire autorisé, relire les commandes et prouver restauration et sécurité par les tests."
   },
   {
     "slug": "entrepreneuriat-numerique-monetisation",
     "tools": "Tableur, CRM, outil de prototypage, documents commerciaux et paiement sandbox",
-    "milestones": "Offre testée au jour 14; système de vente au mois 1; essais commerciaux documentés au mois 2.",
+    "milestones": "Jours 1–2 : marché, offre et prototype. Jours 3–4 : prix, processus commercial, livraison et acquisition. Jour 5 : modèle économique, risques et présentation. Les essais commerciaux réels se poursuivent selon les retours du marché.",
     "modules": [
       {
         "week": 1,
@@ -1315,7 +1335,7 @@ export const specializationPrograms:SpecializationProgram[]=[
         ]
       },
       {
-        "week": 2,
+        "week": 1,
         "title": "Offre et prototype",
         "outcome": "Tester une proposition avant d'investir.",
         "lessons": [
@@ -1346,7 +1366,7 @@ export const specializationPrograms:SpecializationProgram[]=[
         ]
       },
       {
-        "week": 3,
+        "week": 1,
         "title": "Prix et économie",
         "outcome": "Comprendre les coûts et la marge.",
         "lessons": [
@@ -1377,7 +1397,7 @@ export const specializationPrograms:SpecializationProgram[]=[
         ]
       },
       {
-        "week": 4,
+        "week": 1,
         "title": "Vente et opérations",
         "outcome": "Construire un processus de vente simple.",
         "lessons": [
@@ -1408,7 +1428,7 @@ export const specializationPrograms:SpecializationProgram[]=[
         ]
       },
       {
-        "week": 5,
+        "week": 1,
         "title": "Livraison client",
         "outcome": "Organiser l'accueil et le support.",
         "lessons": [
@@ -1439,7 +1459,7 @@ export const specializationPrograms:SpecializationProgram[]=[
         ]
       },
       {
-        "week": 6,
+        "week": 1,
         "title": "Acquisition et croissance",
         "outcome": "Choisir un canal viable et mesurable.",
         "lessons": [
@@ -1470,7 +1490,7 @@ export const specializationPrograms:SpecializationProgram[]=[
         ]
       },
       {
-        "week": 7,
+        "week": 1,
         "title": "Pilotage économique",
         "outcome": "Décider à partir des données et contraintes.",
         "lessons": [
@@ -1501,7 +1521,7 @@ export const specializationPrograms:SpecializationProgram[]=[
         ]
       },
       {
-        "week": 8,
+        "week": 1,
         "title": "Soutenance entrepreneuriale",
         "outcome": "Présenter une offre réelle et les apprentissages.",
         "lessons": [
@@ -1531,7 +1551,13 @@ export const specializationPrograms:SpecializationProgram[]=[
           }
         ]
       }
-    ]
+    ],
+    "durationWeeks": 1,
+    "daysPerWeek": 5,
+    "hoursPerDay": 8,
+    "aiWorkflow": "IA pour structurer les entretiens, simuler des objections, préparer les documents commerciaux, le CRM et les scénarios financiers. Vérifier chaque hypothèse sur des preuves, sans inventer de ventes."
   }
 ];
 export function getSpecializationProgram(slug:string){return specializationPrograms.find(p=>p.slug===slug);}
+
+export function formatProgramDuration(weeks:number){return weeks===1?'1 semaine':weeks+' semaines';}
