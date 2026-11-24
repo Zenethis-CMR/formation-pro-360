@@ -1,0 +1,7 @@
+# Consignes et défis personnalisés
+## Expérience
+Les défis individuels complètent les ateliers officiels. Le formateur crée un brouillon, prévisualise le contenu, puis attribue explicitement le défi à un inscrit actif. L'apprenant consulte objectif, travail concret, critères et ressources, dépose une preuve HTTPS et une note, puis reçoit un retour humain. Une reprise permet une nouvelle tentative sans effacer la précédente. Aucun XP ni note officielle. Les consignes publiées ne sont pas modifiables; un défi encore à réaliser peut être annulé.
+## UI/UX
+Prochaine action en tête, compteurs par page, filtres et recherche, liste priorisée et panneau de détail, états textuels et couleurs, historique, aperçu avant publication et confirmation. Navigation desktop/mobile et focus clavier. Les modifications non enregistrées restent à l'écran en cas d'erreur. Les ressources sont du texte, pas des pièces jointes.
+## Recette à effectuer
+Desktop 1440/1280, tablette 768 et mobile 390/360 : vérifier le focus, les retours, le défilement, zoom et débordements. Tester le brouillon, l'attribution, un dépôt, une reprise, un second dépôt et l'acceptation. Tester les rôles, les conflits, une inscription suspendue, les états vides. Vérifier que ni l'XP ni les ateliers officiels ne changent. Déployer backend PR 15 avant le frontend. La CI n'est pas une recette visuelle authentifiée. Attribution collective et notifications non incluses.

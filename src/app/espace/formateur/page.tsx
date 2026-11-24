@@ -127,6 +127,7 @@ export default async function TrainerSpace({searchParams}:{searchParams:Promise<
       <V2TrainerEvaluationOverview/>
       <section className="panel"><span className="eyebrow">SÉANCES PRATIQUES</span><h2>Préparer mes prochaines séances</h2><p className="muted">Planifie les démonstrations, objectifs et travaux à réaliser avec tes apprenants.</p><Link className="primary-btn" href="/espace/formateur/seances">Ouvrir mes séances</Link></section>
       <section className="panel"><span className="eyebrow">PILOTAGE PÉDAGOGIQUE V2</span><h2>Préparer mes interventions</h2><p className="muted">Consulte les ateliers vérifiés, les dépôts à corriger et les travaux à reprendre pour chaque apprenant du parcours pilote.</p><Link className="primary-btn" href="/espace/formateur/suivi">Ouvrir le cockpit de suivi</Link></section>
+      <section className="panel"><span className="eyebrow">ACCOMPAGNEMENT INDIVIDUEL</span><h2>Consignes et défis pratiques</h2><p className="muted">Attribue des travaux ciblés, consulte les preuves et accompagne les reprises.</p><Link className="primary-btn" href="/espace/formateur/defis">Gérer mes défis</Link></section>
       <LocalCoachDiagnostics/>
       <SecureTrainerOverview pending={pendingCount} learners={learnerCount}
         missions={published.length} validatedXp={(awards||[]).reduce((sum,x)=>sum+Number(x.xp),0)}/>
