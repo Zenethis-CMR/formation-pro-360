@@ -8,12 +8,12 @@ test("product workspace has shared navigation and no panels ahead of the editor"
  assert.ok(page.includes('trainer_approved_with_xp_ledger'));
  for(const [route,active] of [["projet","dossier"],["projet/backlog","backlog"],["projet/accompagnement","accompagnement"],["projet/revues","revues"],["portfolio","portfolio"]]){
   const p=read("src/app/espace/"+route+"/page.tsx");
-  assert.ok(p.includes('<ProductWorkspaceNav active="'+active+'"/>'),route);
+  assert.ok(p.includes('<ProductWorkspaceNav active="'+active+'"'),route);
   assert.ok(p.includes('requireRole("learner")'),route);
   assert.ok(nav.includes('href:"/espace/'+route+'"'),route);
  }
  assert.ok(nav.includes('aria-current={active===id?"page":undefined}'));
- assert.ok(nav.includes('href={href}'));
+ assert.ok(nav.includes('href={destination(id,href)}'));
 });
 test("editor changes visible sections without discarding the full draft",()=>{
  const editor=read("src/components/learner-product-editor.tsx");
@@ -30,7 +30,7 @@ test("editor changes visible sections without discarding the full draft",()=>{
 test("board column filter does not change the saved task collection",()=>{
  const board=read("src/components/product-backlog-board.tsx"),css=read("src/app/espace/workspace-v3.css");
  assert.ok(board.includes('taskStatuses.filter(s=>statusFilter==="all"||s.id===statusFilter)'));
- assert.ok(board.includes("saveProductBacklog(revision,tasks)"));
+ assert.ok(board.includes("saveProductBacklog(revision,tasks,trackSlug)"));
  assert.ok(board.includes("Aucun statut Kanban n'attribue d'XP"));
  assert.ok(css.includes("@container (min-width:1000px)"));
  assert.ok(css.includes(".backlog-board.pw-board-single"));

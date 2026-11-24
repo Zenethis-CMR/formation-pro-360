@@ -5,6 +5,7 @@ import {backendRequest} from "@/lib/auth/backend";
 import {loadLearningDetail} from "@/lib/active-learning-context";
 import {validStudioTrackSlug} from "@/lib/universal-learning";
 import {LearnerVerifiedPortfolio,type VerifiedPortfolio} from "@/components/learner-verified-portfolio";
+import {ProductWorkspaceNav} from "@/components/product-workspace-nav";
 import {PortfolioPublishing} from "@/components/portfolio-publishing";
 import {projectWorkspaceBase} from "@/lib/universal-project";
 export const dynamic="force-dynamic";
@@ -23,6 +24,7 @@ export default async function UniversalPortfolioPage({params}:{params:Promise<{p
   if(lesson)links[proof.id]=base+"/studio?atelier="+encodeURIComponent(lesson.id);
  }
  return <main className="page portfolio-page"><div className="portfolio-navigation"><Link href="/espace/apprenant/formations"><ArrowLeft size={16}/> Mes formations</Link>{detail&&<Link href={base+"/projet"}>Mon dossier projet <ArrowRight size={16}/></Link>}</div>
+ {data&&<ProductWorkspaceNav active="portfolio" trackSlug={parcours}/>}
  {data?<LearnerVerifiedPortfolio key={parcours} portfolio={data} trackSlug={parcours} lessonCount={detail?.studio.lessons.length??null} moduleLinks={links}/>:<><section className="portfolio-unavailable" role="status"><LockKeyhole size={24}/><h1>Portfolio indisponible</h1><p>Aucune réalisation non confirmée n’est affichée. Vérifie ton inscription et la disponibilité du service.</p></section>{valid&&<PortfolioPublishing key={parcours} projects={[]} trackSlug={parcours} courseTitle={detail?.studio.title??"Mes projets"}/>}</>}
  </main>;
 }

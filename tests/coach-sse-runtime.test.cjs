@@ -143,3 +143,13 @@ test("coach proxy accepts an explicit validated course slug and rejects cross-sc
  assert.equal(target,"/v1/training/catalog/design-produit-ux-ui-motion/lessons/"+id+"/coach");
  assert.equal((await POST(fakeRequest({...valid,trackSlug:"../admin"}))).status,400);
 });
+
+test("project coach routes explicit authorized course and forwards no private fields",async()=>{
+ let path="",payload;
+ const POST=makeRoute({upstream:async(p,init)=>{path=p;payload=JSON.parse(init.body);return new Response(JSON.stringify({answer:"Piste : vérifie."}),{status:200});}});
+ const input={scope:"project",consent:true,mode:"verifier",domain:"ux",trackSlug:"design-produit-ux-ui-motion",question:"Comment tester mon prototype ?"};
+ assert.match(await (await POST(fakeRequest(input))).text(),/event: answer/);
+ assert.equal(path,"/v1/training/catalog/design-produit-ux-ui-motion/project/coach");
+ assert.deepEqual(payload,{consent:true,domain:"ux",question:input.question,mode:"verifier"});
+ for(const invalid of [{...input,trackSlug:"../admin"},{...input,consent:false},{...input,dossier:"private"}])assert.equal((await POST(fakeRequest(invalid))).status,400);
+});
