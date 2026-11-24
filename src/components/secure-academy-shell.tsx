@@ -30,7 +30,7 @@ export function SecureAcademyShell({children,stats}:{children:React.ReactNode;st
   const trainer=stats.role==="trainer";
   const base=trainer?"/espace/formateur":"/espace/apprenant";
   const detail=pathname.startsWith("/espace/atelier/")||pathname.includes("/atelier/")||
-    pathname.startsWith("/espace/compte")||pathname.startsWith("/espace/bienvenue")||pathname==="/espace/projet";
+    pathname.startsWith("/espace/compte")||pathname.startsWith("/espace/bienvenue")||pathname.startsWith("/espace/projet");
   const links=trainer?[
     {href:base,label:"Tableau de bord",icon:LayoutDashboard},
     {href:base+"?onglet=evaluations",label:"Évaluations",icon:ClipboardCheck},
@@ -52,6 +52,7 @@ export function SecureAcademyShell({children,stats}:{children:React.ReactNode;st
   const profileName=stats.displayName|| (trainer?"Espace formateur":"Mon parcours");
   const isActive=(href:string)=>{
     const [path,query]=href.split("?");
+    if(!trainer&&path==="/espace/projet"&&(pathname===path||pathname.startsWith(path+"/")))return true;
     if(!trainer&&path==="/espace/parcours/ingenierie-produit-ia"&&
       pathname.startsWith(path))return true;
     if(path!==pathname)return false;
@@ -130,7 +131,7 @@ export function SecureAcademyShell({children,stats}:{children:React.ReactNode;st
     {trainer?<Link href="/espace/compte" className={pathname==="/espace/compte"?"on":""}><Settings2 size={19}/>Compte</Link>:
       <details className="academy-mobile-more">
         <summary aria-label="Afficher les autres rubriques de mon espace" className={
-          (pathname==="/espace/projet"||pathname==="/espace/portfolio"||pathname==="/espace/bienvenue"||
+          (pathname.startsWith("/espace/projet")||pathname==="/espace/portfolio"||pathname==="/espace/bienvenue"||
           pathname==="/espace/compte"||(pathname===base&&currentTab==="programme"))?"on":""
         }><Settings2 size={19}/>Plus</summary>
         <nav className="academy-mobile-more-menu" aria-label="Autres rubriques apprenant">

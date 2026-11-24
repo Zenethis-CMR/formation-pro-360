@@ -1,0 +1,27 @@
+.backlog-page{color:#193957}
+.backlog-back{display:inline-flex;align-items:center;gap:8px;color:#175ca6;min-height:44px;font-size:13px;font-weight:700}
+.backlog-hero{padding:18px 0 22px}.backlog-hero>span{display:flex;align-items:center;gap:8px;font-size:12px;letter-spacing:.06em;font-weight:800;color:#2865b5}
+.backlog-hero h1{font-size:clamp(29px,4vw,42px);letter-spacing:-.04em;margin:8px 0;color:#193957}.backlog-hero h1 span{color:#2876d8}
+.backlog-hero p,.backlog-note{font-size:14px;line-height:1.65;color:#52677e}
+.backlog-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}.backlog-stats>div{display:flex;flex-direction:column;gap:8px;background:white;border:1px solid #dce8f7;border-radius:12px;padding:14px;min-width:0}.backlog-stats small{font-size:12px;color:#52677e}.backlog-stats strong{font-size:23px;color:#193957;overflow-wrap:anywhere}
+.backlog-toolbar{display:flex;flex-wrap:wrap;gap:10px;align-items:end;margin:18px 0}
+.backlog-toolbar label{flex:1;min-width:135px;max-width:100%}
+.backlog-page label{display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:700;color:#304d6b;min-width:0}
+.backlog-page input,.backlog-page select,.backlog-page textarea{box-sizing:border-box;width:100%;min-width:0;max-width:100%;border:1px solid #c5d7eb;border-radius:8px;padding:10px;font:inherit;font-size:14px;color:#193957;background:white;min-height:44px}
+.backlog-page textarea{resize:vertical}
+.backlog-page button{display:inline-flex;align-items:center;justify-content:center;gap:6px;border:1px solid #c5d7eb;background:white;color:#175ca6;border-radius:8px;padding:9px 12px;font-size:13px;font-weight:700;min-height:44px;cursor:pointer}
+.backlog-page button.backlog-primary{background:#2465b8;border-color:#2465b8;color:#fff}.backlog-page button:disabled{background:#eef2f6;color:#52677e;border-color:#dce4ed;cursor:not-allowed}
+.backlog-edit{background:#fff;border:1px solid #c5d7eb;border-radius:14px;padding:18px;margin:18px 0}.backlog-edit h2{font-size:20px;margin:0 0 15px}.backlog-edit-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.backlog-buttons{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.backlog-board{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;align-items:start;margin:18px 0}
+.backlog-column{background:#f0f5fb;border:1px solid #d6e5f7;border-radius:12px;padding:10px;min-width:0}
+.backlog-column h2{font-size:14px;display:flex;justify-content:space-between;gap:6px;margin:4px 0 12px}.backlog-column h2 span{color:#52677e}.backlog-column.doing{border-top:3px solid #2876d8}.backlog-column.testing{border-top:3px solid #ba851f}.backlog-column.done{border-top:3px solid #378a61}
+.backlog-empty{font-size:13px;color:#52677e;padding:7px}
+.backlog-task{background:white;border:1px solid #d9e4f1;border-radius:9px;padding:11px;margin:9px 0;overflow-wrap:anywhere;min-width:0}
+.backlog-task-top{display:flex;align-items:center;justify-content:space-between;gap:4px;flex-wrap:wrap;font-size:11px}.backlog-priority{background:#edf2f8;color:#415b75;padding:3px 7px;border-radius:5px;font-weight:700}.backlog-priority.critical{background:#fee8e8;color:#9c3030}.backlog-priority.high{background:#fff1dd;color:#805018}
+.backlog-task h3{font-size:14px;line-height:1.5;margin:9px 0}.backlog-task p,.backlog-task small{font-size:12px;color:#52677e;line-height:1.6;white-space:pre-wrap}.backlog-task a{display:flex;gap:5px;align-items:center;min-height:44px;color:#175ca6;font-size:12px;font-weight:700}
+.backlog-status{margin-top:8px}.backlog-delete{border:1px solid #e5b6b6;border-radius:8px;padding:8px;margin-top:8px}.backlog-delete button{margin:3px}.backlog-error{color:#a02b29!important}
+.backlog-save{position:sticky;bottom:0;z-index:2;display:flex;justify-content:space-between;align-items:center;gap:12px;background:#fff;padding:13px;border:1px solid #c8dcef;border-radius:12px}.backlog-save small{display:block;font-size:12px;color:#52677e}.backlog-save strong{font-size:14px}
+.backlog-page :focus-visible{outline:3px solid #256dbf;outline-offset:2px}
+@media(max-width:1150px){.backlog-board{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:650px){.backlog-board,.backlog-edit-grid{grid-template-columns:1fr}.backlog-stats{grid-template-columns:repeat(2,minmax(0,1fr))}.backlog-save{position:static;flex-direction:column;align-items:flex-start}.backlog-toolbar label{flex-basis:100%}}

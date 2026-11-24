@@ -45,6 +45,7 @@ export default async function ProductProjectPage(){
     </article>)}</div>
     <p className="product-note">Un atelier est compté uniquement s'il a été approuvé par le formateur avec une note d'au moins 80 et ses 100 XP enregistrés. Le dossier renseigné ne constitue pas une preuve de fonctionnement ou de vente.</p>
    </section>
+   <section className="product-panel"><div className="product-workspace-heading"><div><span className="journey-overline">ORGANISATION · BACKLOG</span><h2>Planifie les tâches de ton produit</h2><p>Priorise tes fonctionnalités, définis tes critères de vérification et suis ton travail dans le tableau Kanban.</p></div><Link href="/espace/projet/backlog">Ouvrir mon backlog <ArrowRight size={16}/></Link></div></section>
    <LearnerProductEditor initial={project.data.project} editable={project.data.editable}/>
    <section className="product-panel" aria-labelledby="project-evidence-title">
     <div className="product-workspace-heading"><div><span className="journey-overline">PREUVES ET RETOURS OFFICIELS</span><h2 id="project-evidence-title">Les 16 ateliers de mon produit</h2><p>Consulte les preuves déjà validées et les retours associés, sans les recopier dans ton dossier.</p></div><Link href="/espace/portfolio">Mon portfolio <ArrowRight size={16}/></Link></div>
