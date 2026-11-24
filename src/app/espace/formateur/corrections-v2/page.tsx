@@ -59,24 +59,20 @@ export default async function V2TrainerCorrections({searchParams}:{
           <form action={reviewV2Lesson} className="v2-review-form">
             <input type="hidden" name="trackSlug" value={selected?.slug}/>
             <input type="hidden" name="submissionId" value={item.id}/>
-            <V2TrainerScoreInputs criteria={(()=>{
+            {(()=>{
               const official=Array.isArray(item.rubric)?item.rubric.flatMap(x=>
                 typeof x==="string"?[x]:x&&typeof x==="object"&&"label" in x&&typeof x.label==="string"?[x.label]:[]
               ):[];
               const editorial=selected?.slug==="ingenierie-produit-ia"?v2WorkshopGuides[item.lesson_slug]?.checks:undefined;
-              return official.length===4?official:editorial||[
-                "Adéquation au problème et à l'objectif",
-                "Qualité de la réalisation",
-                "Preuves et tests vérifiables",
-                "Clarté du livrable et explications"
-              ];
-            })()}/>
+              const criteria=official.length===4?official:editorial;
+              return criteria?.length===4?<V2TrainerScoreInputs criteria={criteria}/>:<fieldset className="v2-review-rubric"><legend>Évaluation globale sur 100</legend>{official.length>0&&<ul>{official.map((criterion,i)=><li key={i}>{criterion}</li>)}</ul>}<p>La grille de quatre critères n’est pas disponible. N’invente pas de critères ; justifie la note à partir de la consigne officielle.</p><label>Note sur 100 <input type="number" name="score" min={0} max={100} step={1} required/></label></fieldset>;
+            })()}
             <label>Retour pédagogique
               <textarea name="feedback" minLength={3} maxLength={1300} required rows={4}
                 placeholder="Ce qui fonctionne, les écarts constatés, et la prochaine amélioration concrète."/>
             </label>
             <button type="submit" className="primary-btn">Enregistrer la correction <BadgeCheck size={15}/></button>
-            <small>Les quatre repères sur 25 sont additionnés côté serveur. Le total et leur détail sont consignés dans le commentaire. À partir de 80/100, l'atelier est validé (+100 XP).</small>
+            <small>La note est contrôlée côté serveur. Avec quatre critères, leur total et leur détail sont consignés dans le commentaire. À partir de 80/100, l'atelier est validé (+100 XP).</small>
           </form>
         </article>)}
       </section>

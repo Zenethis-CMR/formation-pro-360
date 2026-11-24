@@ -9,3 +9,5 @@ Generic authenticated route `/espace/apprenant/formations/[parcours]/studio?atel
 ## Phase 3 — interactive studio
 
 Track-scoped notebook, workshop coach, submissions and trainer corrections. The existing pilot forms and SSE proxy keep their default pilot route; explicit validated track slugs enable the universal studio. A notebook uses five stable supplementary preparation steps, not official grading. The coach only receives voluntary context and published lesson data. Submissions depend on active enrollment and exact actionable status; backend remains authoritative. Trainer correction queue filters the selected published course. Portfolio and project coach remain pilot-only; activation and enrollment are unchanged. Full authenticated production QA is still required.
+
+Compatibility: the generic pilot workshop URL redirects to the existing editorial studio so its persisted checklist cannot be reinterpreted. If a non-pilot lesson has no complete four-part rubric, the trainer uses an explicit global score justified by the official instructions, without fabricated criteria.

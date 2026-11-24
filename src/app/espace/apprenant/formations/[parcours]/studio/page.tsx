@@ -1,4 +1,5 @@
 import Link from "next/link";
+import {redirect} from "next/navigation";
 import {ArrowLeft,ArrowRight,BookOpen,CheckCircle2,ClipboardCheck,LockKeyhole,ShieldCheck,Sparkles,Target} from "lucide-react";
 import {requireRole} from "@/lib/auth/require-role";
 import {backendRequest} from "@/lib/auth/backend";
@@ -25,6 +26,9 @@ export default async function UniversalStudio({params,searchParams}:{params:Prom
  const base=directory+"/"+encodeURIComponent(parcours)+"/studio";
  if(!track)return <main className="page ul-page"><Link className="ul-back" href={directory}><ArrowLeft size={16}/> Mes formations</Link><section className="ul-card" role="status"><LockKeyhole size={24}/><h1>Studio indisponible</h1><p>Une inscription active ou terminée et un parcours publié sont nécessaires. Aucun atelier privé n’est affiché.</p><Link className="ul-link" href={directory}>Vérifier mes inscriptions <ArrowRight size={16}/></Link></section></main>;
  const lesson=selectStudioLesson(track.lessons,atelier);
+ // Existing pilot checkboxes are tied to its editorial guide. Keep its canonical studio
+ // so a second interface cannot reinterpret the same saved checklist.
+ if(parcours==="ingenierie-produit-ia"&&lesson)redirect("/espace/parcours/ingenierie-produit-ia/atelier/"+encodeURIComponent(lesson.slug));
  const saved=lesson&&track.notebookAvailable?await backendRequest("/v1/training/catalog/"+encodeURIComponent(parcours)+"/lessons/"+lesson.id+"/notebook").catch(()=>null):null;
  const workbook=saved?.ok?(await saved.json().catch(()=>null) as {notebook?:{notes:string;next_action:string;reference_url:string|null;completed_steps:number[];updated_at:string|null}}|null)?.notebook:null;
  const history=lesson?track.submissions.filter(s=>s.module_id===lesson.module_id&&s.lesson_slug===lesson.slug):[];
