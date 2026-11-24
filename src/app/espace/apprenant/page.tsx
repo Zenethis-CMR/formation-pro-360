@@ -86,6 +86,7 @@ export default async function LearnerSpace({searchParams}:{searchParams:Promise<
       <DashboardDisclosure title="Mes objectifs et mon rythme" description="Personnaliser mon parcours et mon planning">
         <LearnerWelcomeBanner preferences={rawPreferences as LearnerPreferences|null} mission={insight.nextMission} pilot={pilot}/>
       </DashboardDisclosure>
+      <section className="panel"><h2>Mes formations</h2><p>Retrouve tes inscriptions et consulte les résultats de chaque parcours séparément.</p><Link className="primary-btn" href="/espace/apprenant/formations">Gérer mes parcours <ArrowUpRight size={16}/></Link></section>
       <section className="v2-catalog-banner"><div><span>LE CATALOGUE 360</span><h2>Sept formations, une première spécialisation active</h2><p>Compare les charges et les durées estimées selon ton rythme personnel. Six spécialisations restent en préparation pour les inscriptions.</p></div><Link href="/catalogue" className="v2-catalog-banner-link">Explorer le catalogue <ArrowUpRight size={16}/></Link></section>
     </>}
     <div className="secure-learner-alerts">
@@ -94,6 +95,7 @@ export default async function LearnerSpace({searchParams}:{searchParams:Promise<
       {params.error && <p className="alert danger" role="alert">{params.error==="practice"?"Impossible d’enregistrer la séance. Essaie à nouveau.":"Impossible d’enregistrer cette soumission. Vérifie les informations et les prérequis."}</p>}
     </div>
     {tab==="progression"&&<>
+      <p><Link className="primary-btn" href="/espace/apprenant/formations">Progression par formation <ArrowUpRight size={16}/></Link></p>
       {v2Progress&&<V2LearnerProgressPanel progress={v2Progress} otherXp={xp}/>}
       <div className="v2-legacy-section-head"><span>MES AUTRES ACQUIS · RÉALISATIONS CONSERVÉES</span><h2>Mes compétences et récompenses</h2><p>Badges, exercices et retours de tes autres réalisations, conservés sur ton compte.</p></div>
       <LearnerCoachingPanel insight={insight} messages={(coachMessages||[]) as CoachMessage[]} startDate={settings?.start_date??null}/>

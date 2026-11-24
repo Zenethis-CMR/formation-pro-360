@@ -1,0 +1,3 @@
+# Universal Learning Engine 360 — phase 1
+
+Authenticated read-only learner directory at /espace/apprenant/formations, accessible from dashboard and progress. Actual published enrollments from CT420, URL-scoped selection validated against accessible enrollments, exact track-scoped counters from `progress_summary`, no fabricated progress or access. Paused/revoked tracks shown as locked. The existing pilot studio remains unchanged and linked only for authorized users. No other studio link until implemented. No publication or enrollment changes. Next: common studio, navigation context, planning from official remaining workload, corrections and controlled activation.
