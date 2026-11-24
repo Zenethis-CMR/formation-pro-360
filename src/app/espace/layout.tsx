@@ -2,7 +2,8 @@ import "./workspace-v3.css";
 import "./dashboard-v5.css";
 import "./workspace-sidebars.css";
 import "./workspace-excellence.css";
-import { loadLearningContext } from "@/lib/active-learning-context";
+import { loadLearningContext,loadLearningDetail } from "@/lib/active-learning-context";
+import {loadTrainerCockpit} from "@/lib/trainer-cockpit";
 import { requireRole } from "@/lib/auth/require-role";
 import { SecureAcademyShell, type SecureWorkspaceStats } from "@/components/secure-academy-shell";
 
@@ -23,9 +24,8 @@ export default async function SecureWorkspaceLayout({children}:{children:React.R
       db.from("learner_preferences").select("preferred_name").eq("learner_id",user.id).maybeSingle(),
       loadLearningContext()
     ]);
-    if(missionsR.error||awardsR.error||subsR.error||depsR.error||prefsR.error) {
-      throw new Error("Impossible de charger le profil sécurisé.");
-    }
+    const legacyAvailable=!missionsR.error&&!awardsR.error&&!subsR.error&&!depsR.error;
+    const detail=learning.active?await loadLearningDetail(learning.active.slug):null;
     const missions=(missionsR.data||[]) as Mission[];
     const approved=new Set((awardsR.data||[]).map(a=>a.mission_id));
     const submissions=(subsR.data||[]) as Submission[];
@@ -39,7 +39,9 @@ export default async function SecureWorkspaceLayout({children}:{children:React.R
     const next=available||awaiting;
     stats={
       ...stats,
-      displayName:prefsR.data?.preferred_name??null,
+      legacyAvailable,
+      courseStats:detail?.progress.summary?{...detail.progress.summary,xp:detail.progress.xp}:null,
+      displayName:prefsR.error?null:prefsR.data?.preferred_name??null,
       activeTrack:learning.active?{slug:learning.active.slug,title:learning.active.title}:null,
       missionCount:missions.length,
       approvedCount:approved.size,
@@ -49,13 +51,14 @@ export default async function SecureWorkspaceLayout({children}:{children:React.R
       nextHref:next?"/espace/atelier/"+next.id:"/espace/apprenant?onglet=missions"
     };
   }else{
-    const [countR,missionR,subsR]=await Promise.all([
+    const [countR,missionR,subsR,cockpit]=await Promise.all([
       db.from("profiles").select("id",{head:true,count:"exact"}).eq("role","learner"),
       db.from("missions").select("id",{head:true,count:"exact"}).eq("published",true),
-      db.from("submissions").select("id",{head:true,count:"exact"}).eq("status","pending")
+      db.from("submissions").select("id",{head:true,count:"exact"}).eq("status","pending"),loadTrainerCockpit()
     ]);
-    if(countR.error||missionR.error||subsR.error) throw new Error("Impossible de charger le suivi du formateur.");
-    stats={...stats,learners:countR.count??0,missionCount:missionR.count??0,pending:subsR.count??0,
+    const legacyAvailable=!countR.error&&!missionR.error&&!subsR.error;
+    const officialPending=cockpit?cockpit.reduce((n,t)=>n+(t.metrics?.pending??0),0):null;
+    stats={...stats,legacyAvailable,officialPending,learners:countR.count??0,missionCount:missionR.count??0,pending:subsR.count??0,
       nextTitle:(subsR.count??0)>0?(subsR.count??0)+" livrable(s) à corriger":"Aucune correction en attente",
       nextHref:"/espace/formateur?onglet=evaluations"};
   }

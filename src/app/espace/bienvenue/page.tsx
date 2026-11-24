@@ -10,26 +10,12 @@ import { LearnerOnboardingWizard } from "@/components/learner-onboarding-wizard"
 import "./onboarding.css";
 
 type Props={searchParams:Promise<{error?:string}>};
-type Mission={id:string;title:string;week:number;description:string};
 export default async function WelcomeLearner({searchParams}:Props) {
-  const {db}=await requireRole("learner");
+  const {db,user}=await requireRole("learner");
   const query=await searchParams;
-  const [{data:preferences,error:preferencesError},{data:missions,error:missionsError},
-    {data:dependencies,error:dependenciesError},{data:xp,error:xpError}]=await Promise.all([
-    db.from("learner_preferences").select("learner_id,preferred_name,goal,experience,minutes_per_day,regular_days,optional_days").maybeSingle(),
-    db.from("missions").select("id,title,week,description").eq("published",true).order("week").order("created_at"),
-    db.from("mission_prerequisites").select("mission_id,prerequisite_id"),
-    db.from("xp_ledger").select("mission_id")
-  ]);
-  if(preferencesError||missionsError||dependenciesError||xpError) {
-    return <main className="page"><p className="alert danger" role="alert">Ton espace d'accueil est momentanément indisponible. Tu peux toujours consulter tes missions.</p>
-      <Link href="/espace/apprenant">Accéder à mon parcours</Link></main>;
-  }
+  const {data:preferences,error:preferencesError}=await db.from("learner_preferences").select("learner_id,preferred_name,goal,experience,minutes_per_day,regular_days,optional_days").eq("learner_id",user.id).maybeSingle();
+  if(preferencesError)return <main className="page"><p className="alert danger" role="alert">Tes préférences sont momentanément indisponibles. Tu peux continuer ta formation sans les modifier.</p><Link href="/espace/apprenant/formations">Accéder à mes formations</Link></main>;
   const current=preferences as LearnerPreferences|null;
-  const completed=new Set((xp||[]).map(a=>a.mission_id));
-  const prerequisites=dependencies||[];
-  const next=(missions as Mission[]||[]).find(m=>!completed.has(m.id)&&
-    !prerequisites.some(p=>p.mission_id===m.id&&!completed.has(p.prerequisite_id)));
   const learning=await loadLearningContext();
   const active=learning.active;
   const detail=active?await loadLearningDetail(active.slug):null;
@@ -38,9 +24,9 @@ export default async function WelcomeLearner({searchParams}:Props) {
   const workload=work?.completeCoverage&&work.items.every(x=>x.state!=="unknown")&&remaining.every(x=>x.minutes!==null)?remaining.reduce((n,x)=>n+(x.minutes??0),0):null;
   const nextWorkshop=detail?.studio.lessons.find(x=>x.state==="changes_requested")??detail?.studio.lessons.find(x=>x.state==="not_started");
   const course=active?{slug:active.slug,title:active.title,remainingMinutes:workload,official:!!detail?.studio.lessons.length&&detail.studio.lessons.every(x=>x.pedagogy?.source==="sealed_release")}:null;
-  const pilot=await getV2DashboardPilot();
-  const enrolled=pilot.enrollment==="active"||pilot.enrollment==="completed";
-  const primaryLesson=enrolled&&pilot.resumeSlug?pilotCourse.modules.flatMap(
+  const pilot=active?.slug===pilotCourse.slug?await getV2DashboardPilot():null;
+  const enrolled=pilot?.enrollment==="active"||pilot?.enrollment==="completed";
+  const primaryLesson=enrolled&&pilot?.resumeSlug?pilotCourse.modules.flatMap(
     m=>m.lessons.map(l=>({...l,week:m.week}))
   ).find(l=>l.slug===pilot.resumeSlug):null;
   return <main className="page learner-welcome-page">
@@ -64,14 +50,7 @@ export default async function WelcomeLearner({searchParams}:Props) {
               Reprendre mon atelier principal <ArrowRight size={16}/></Link></>
           :enrolled?<><p>Tes ateliers principaux sont terminés ou en correction.</p>
             <Link href="/espace/parcours/ingenierie-produit-ia">Revoir mes ateliers <ArrowRight size={16}/></Link></>
-          :pilot.published?<><h3>Ingénierie produit et IA</h3>
-            <p>Ouvre le parcours pour découvrir les ateliers et vérifier ton inscription.</p>
-            <Link href="/espace/parcours/ingenierie-produit-ia">Ouvrir mon parcours <ArrowRight size={16}/></Link></>
-          :next?<><span className="learner-welcome-week">AUTRE RÉALISATION · SEMAINE {next.week}</span>
-            <h3>{next.title}</h3><p>{next.description}</p>
-            <Link href={"/espace/atelier/"+next.id}>Découvrir l'atelier complémentaire <ArrowRight size={16}/></Link></>
-          :<><p>Consulte tes réalisations et le calendrier des activités.</p>
-            <Link href="/espace/apprenant">Voir mon espace <ArrowRight size={16}/></Link></>}
+          :active?<><p>Le prochain atelier ne peut pas être confirmé.</p><Link href="/espace/apprenant/formations">Vérifier mon parcours <ArrowRight size={16}/></Link></>:<><p>Choisis d’abord une formation dont l’inscription est ouverte à ton compte. Tu peux définir ton rythme dès maintenant.</p><Link href="/espace/apprenant/formations#inscriptions">Choisir ma formation <ArrowRight size={16}/></Link></>}
         </div>
         <div className="learner-welcome-guide">
           <h3><Target size={17}/> Comment progresser ?</h3>

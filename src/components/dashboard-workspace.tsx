@@ -5,7 +5,7 @@ export function DashboardHeader({trainer,name}:{trainer:boolean;name?:string|nul
  return <header className="dash-header"><div><span className="dash-kicker"><GraduationCap size={16}/> {trainer?"STUDIO PÉDAGOGIQUE":"MON ESPACE DE FORMATION"}</span><h1>{trainer?"Pilotage de la formation":"Mon apprentissage"}<span>.</span></h1><p>{trainer?"Organise tes séances, accompagne les projets et suis les réalisations.":name?"Bienvenue, "+name+". Reprends ton travail et avance avec ton formateur.":"Reprends ton travail et avance avec ton formateur, une réalisation à la fois."}</p></div><Link className="dash-account" href="/espace/compte" aria-label="Mon compte"><Settings2 size={17}/> <span>Mon compte</span></Link></header>;
 }
 const learnerLinks=[
- {title:"Mon projet",desc:"Dossier produit, backlog et revues",href:"/espace/projet",icon:FolderKanban},
+ {title:"Mon projet",desc:"Dossier projet, backlog et revues",href:"/espace/projet",icon:FolderKanban},
  {title:"Mes séances",desc:"Préparer le travail avec mon formateur",href:"/espace/apprenant/seances",icon:CalendarDays},
  {title:"Mes défis",desc:"Exercices personnalisés et corrections",href:"/espace/apprenant/defis",icon:ClipboardCheck},
  {title:"Besoin d’aide",desc:"Signaler un blocage et suivre les échanges",href:"/espace/apprenant/aide",icon:MessageCircle},
@@ -18,7 +18,7 @@ const trainerLinks=[
  {title:"Consignes et défis",desc:"Attribuer et corriger les travaux",href:"/espace/formateur/defis",icon:ClipboardCheck},
  {title:"Suivi des blocages",desc:"Répondre aux difficultés signalées",href:"/espace/formateur/aide",icon:MessageCircle},
  {title:"Revues de projets",desc:"Examiner les versions partagées",href:"/espace/formateur/revues",icon:FolderKanban},
- {title:"Programme",desc:"Organiser les ateliers et ressources",href:"/espace/formateur?onglet=programme",icon:BookOpen},
+ {title:"Programme",desc:"Organiser les ateliers et ressources",href:"/espace/formateur/formations",icon:BookOpen},
 ];
 export function DashboardQuickLinks({trainer,enrolled=true,trackSlug}:{trainer:boolean;enrolled?:boolean;trackSlug?:string}){
  const projectBase=trackSlug&&trackSlug!=="ingenierie-produit-ia"?"/espace/apprenant/formations/"+encodeURIComponent(trackSlug):null;

@@ -22,7 +22,7 @@ export function LearnerWelcomeBanner({preferences,mission,pilot,adaptivePlanning
         ? "Bonjour "+preferences.preferred_name+", prêt pour la suite ?"
         : "Prêt à construire ton premier projet ?"}</h2>
       <p>{preferences
-        ? "Ton objectif : "+goalLabel(preferences.goal)+(adaptivePlanning?". Les ateliers et les livrables de ta formation active restent prioritaires.":". Priorité à la conception produit et à la réalisation de livrables vérifiés.")
+        ? "Ton objectif : "+goalLabel(preferences.goal)+(adaptivePlanning?". Les ateliers et les livrables de ta formation active restent prioritaires.":". Priorité aux réalisations et aux preuves vérifiées.")
         : "Quelques informations facultatives nous aideront à te guider. Tu peux aussi commencer directement ton premier atelier."}</p>
       <div className="learner-personal-actions">
         {nextLesson?<Link href={mainCourse+"/atelier/"+nextLesson.slug} className="learner-primary-start">
@@ -45,7 +45,7 @@ export function LearnerWelcomeBanner({preferences,mission,pilot,adaptivePlanning
     </div>
     <aside className="learner-personal-side">
       <div><Target size={19}/><span>OBJECTIF</span><strong>{preferences?goalLabel(preferences.goal):"À définir"}</strong></div>
-      <div><Timer size={19}/><span>RYTHME INTENSIF</span>
+      <div><Timer size={19}/><span>MON RYTHME</span>
         <strong>{preferences&&plannedWeeklyHours(preferences)!==null
           ?preferences.minutes_per_day/60+" h/jour · "+plannedWeeklyHours(preferences)+" h/semaine"
           :"Planning à compléter"}</strong></div>

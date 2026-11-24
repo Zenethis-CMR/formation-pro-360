@@ -18,6 +18,9 @@ export type SecureWorkspaceStats={
   nextTitle:string|null;
   nextHref:string|null;
   activeTrack?:{slug:string;title:string}|null;
+  legacyAvailable?:boolean;
+  courseStats?:{total:number;approved:number;pending:number;changes_requested:number;xp:number}|null;
+  officialPending?:number|null;
 };
 function ProfileStat({label,value}:{label:string;value:string}){
  return <div className="profile-mini-stat workspace-profile-stat"><b>{value}</b><span>{label}</span></div>;
@@ -32,11 +35,13 @@ function LearnerProfileWidgets({stats}:{stats:SecureWorkspaceStats}){
   <div className="profile-card">
    <div className="profile-avatar profile-avatar-pro" aria-hidden="true"><GraduationCap size={37} strokeWidth={1.8}/></div>
    <h3>{stats.displayName||"Mon parcours"}</h3><p>Apprenant · Compte sécurisé</p>
+   <div className="workspace-rail-label">Formation active · résultats officiels</div>
+   <div className="profile-mini-grid"><ProfileStat label="Validés" value={stats.courseStats?stats.courseStats.approved+"/"+stats.courseStats.total:"—"}/><ProfileStat label="XP" value={stats.courseStats?String(stats.courseStats.xp):"—"}/><ProfileStat label="En correction" value={stats.courseStats?String(stats.courseStats.pending):"—"}/></div>
    <div className="workspace-rail-label">Autres réalisations</div>
    <div className="profile-mini-grid">
-    <ProfileStat label="Validées" value={String(stats.approvedCount)}/>
-    <ProfileStat label="XP autres" value={String(stats.xp)}/>
-    <ProfileStat label="En attente" value={String(stats.pending)}/>
+    <ProfileStat label="Validées" value={stats.legacyAvailable===false?"—":String(stats.approvedCount)}/>
+    <ProfileStat label="XP autres" value={stats.legacyAvailable===false?"—":String(stats.xp)}/>
+    <ProfileStat label="En attente" value={stats.legacyAvailable===false?"—":String(stats.pending)}/>
    </div>
   </div>
   <div className="rail-widget">
@@ -74,7 +79,7 @@ export function SecureAcademyShell({children,stats}:{children:React.ReactNode;st
     pathname.startsWith("/espace/compte")||pathname.startsWith("/espace/bienvenue")||pathname.startsWith("/espace/projet")||pathname.endsWith("/seances")||pathname.endsWith("/defis")||pathname.endsWith("/aide")||pathname.endsWith("/revues")||pathname.endsWith("/bilan"));
   const links=trainer?[
     {href:base,label:"Tableau de bord",icon:LayoutDashboard},
-    {href:base+"?onglet=evaluations",label:"Évaluations",icon:ClipboardCheck},
+    {href:base+"?onglet=evaluations",label:"Autres évaluations",icon:ClipboardCheck},
     {href:"/espace/formateur/corrections",label:"Corriger les ateliers",icon:BadgeCheck},
     {href:base+"/suivi",label:"Suivi des apprenants",icon:Users},
     {href:base+"?onglet=apprenants",label:"Autres apprenants",icon:Users},
@@ -131,7 +136,7 @@ export function SecureAcademyShell({children,stats}:{children:React.ReactNode;st
     <aside className="academy-sidebar">
       <Link href={base} className="academy-brand"><span className="brand-flower"><GraduationCap size={23} strokeWidth={2.1}/></span><span>Formation <span>Pro 360</span></span></Link>
       <nav aria-label="Navigation de l'espace personnel" className="sidebar-navigation dash-nav">
-        {groups.map(g=><div className="dash-nav-group" key={g.label}><div className="sidebar-category">{g.label}</div>{g.items.map(({href,label,icon:Icon})=><Link key={href} href={href} className={"sidebar-link"+(isActive(href)?" is-active":"")} aria-current={isActive(href)?"page":undefined}><Icon size={18} strokeWidth={1.8}/><span>{label}</span>{label==="Évaluations"&&stats.pending>0&&<b>{stats.pending}</b>}<WorkspaceLinkPending/></Link>)}</div>)}
+        {groups.map(g=><div className="dash-nav-group" key={g.label}><div className="sidebar-category">{g.label}</div>{g.items.map(({href,label,icon:Icon})=><Link key={href} href={href} className={"sidebar-link"+(isActive(href)?" is-active":"")} aria-current={isActive(href)?"page":undefined}><Icon size={18} strokeWidth={1.8}/><span>{label}</span>{label==="Corriger les ateliers"&&stats.officialPending!=null&&stats.officialPending>0&&<b>{stats.officialPending}</b>}<WorkspaceLinkPending/></Link>)}</div>)}
       </nav>
       {!trainer?<details ref={desktopMore} className="workspace-desktop-more" open={secondaryActive} onKeyDown={e=>{if(e.key==="Escape"&&desktopMore.current?.open){e.preventDefault();desktopMore.current.open=false;desktopMore.current.querySelector("summary")?.focus();}}}><summary className={"sidebar-link"+(secondaryActive?" is-active":"")}><Settings2 size={18}/><span>Plus</span><ChevronDown size={15} className="workspace-more-chevron"/></summary><nav aria-label="Autres rubriques de mon espace" className="workspace-more-links">{secondary.map(({href,label,icon:Icon})=><Link key={href} href={href} className={"sidebar-link"+(isActive(href)?" is-active":"")} aria-current={isActive(href)?"page":undefined}><Icon size={16}/><span>{label}</span><WorkspaceLinkPending/></Link>)}</nav></details>:<><div className="sidebar-divider"/>
       <div className="sidebar-category">MON ESPACE</div>
@@ -142,7 +147,7 @@ export function SecureAcademyShell({children,stats}:{children:React.ReactNode;st
       <div className="sidebar-ad dash-secondary-promo"><div className="sidebar-ad-icon"><Sparkles size={21}/></div>
         <b>{trainer?"Chaque correction compte.":"Chaque projet compte."}</b>
         <p>{trainer?"Un retour précis aide chaque apprenant à progresser.":"Apprends en réalisant de vrais projets."}</p>
-        <Link href={trainer?base+"?onglet=evaluations":activeCourseHref(stats)}>{trainer?"Voir les évaluations":"Ouvrir mon parcours"} <ArrowRight size={16}/></Link>
+        <Link href={trainer?base+"/corrections":activeCourseHref(stats)}>{trainer?"Voir les évaluations":"Ouvrir mon parcours"} <ArrowRight size={16}/></Link>
       </div>
       <form action={signOut} className="secure-sidebar-signout"><button type="submit"><LogOut size={16}/> Se déconnecter</button></form>
       <div className="sidebar-footer">© Formation Pro 360<br/><small>Espace personnel sécurisé</small></div>
@@ -152,7 +157,7 @@ export function SecureAcademyShell({children,stats}:{children:React.ReactNode;st
         <span className="brand-flower"><GraduationCap size={23}/></span><span>Formation <span>Pro 360</span></span></Link>
         <Link className="secure-mobile-account" href="/espace/compte" aria-label="Mon compte"><Settings2 size={19}/></Link>
       </div>
-      {!trainer&&<div className="workspace-context-bar"><div className="workspace-context-course"><span>FORMATION ACTIVE</span><Link href="/espace/apprenant/formations">{stats.activeTrack?.title??"Choisir une formation"}<ChevronDown size={16}/></Link></div><div className="workspace-context-actions"><Link href={activeCourseHref(stats)} className="workspace-context-link">Mon studio <ArrowRight size={15}/></Link><button type="button" className="workspace-focus-toggle" aria-pressed={focused} onClick={()=>setFocusOverride({route:routeKey,value:!focused})}>{focused?"Afficher le panneau profil":"Agrandir mon espace"}</button></div></div>}
+      {!trainer&&<div className="workspace-context-bar"><div className="workspace-context-course"><span>FORMATION ACTIVE</span><Link href="/espace/apprenant/formations">{stats.activeTrack?.title??"Choisir une formation"}<ChevronDown size={16}/></Link></div><div className="workspace-context-actions"><Link href={activeCourseHref(stats)} className="workspace-context-link">{stats.activeTrack?"Mon studio":"Choisir une formation"} <ArrowRight size={15}/></Link><button type="button" className="workspace-focus-toggle" aria-pressed={focused} onClick={()=>setFocusOverride({route:routeKey,value:!focused})}>{focused?"Afficher le panneau profil":"Agrandir mon espace"}</button></div></div>}
       {children}
       {!trainer&&!learnerDashboard&&<div className="workspace-profile-bottom"><LearnerCompactProfile/></div>}
     </section>
@@ -162,20 +167,20 @@ export function SecureAcademyShell({children,stats}:{children:React.ReactNode;st
         <div className="profile-avatar profile-avatar-pro" aria-hidden="true"><GraduationCap size={37} strokeWidth={1.8}/></div>
         <h3>{profileName}</h3><p>{trainer?"Formateur":"Apprenant"} · Compte sécurisé</p>
         <div className="profile-mini-grid">
-          {trainer?<><ProfileStat label="Apprenants" value={String(stats.learners)}/>
-            <ProfileStat label="Autres à corriger" value={String(stats.pending)}/>
-            <ProfileStat label="Autres missions" value={String(stats.missionCount)}/></>
+          {trainer?<><ProfileStat label="Apprenants" value={stats.legacyAvailable===false?"—":String(stats.learners)}/>
+            <ProfileStat label="Autres à corriger" value={stats.legacyAvailable===false?"—":String(stats.pending)}/>
+            <ProfileStat label="Autres missions" value={stats.legacyAvailable===false?"—":String(stats.missionCount)}/></>
           :<><ProfileStat label="Autres missions" value={String(stats.approvedCount)}/>
             <ProfileStat label="XP autres" value={String(stats.xp)}/>
             <ProfileStat label="Autres en attente" value={String(stats.pending)}/></>}
         </div>
       </div>
       <div className="rail-widget">
-        <div className="rail-widget-heading"><h3>{trainer?"Autres corrections":"Mon parcours"}</h3><span>{trainer?(String(stats.pending).padStart(2,"0")):"16"}</span></div>
+        <div className="rail-widget-heading"><h3>{trainer?"Corrections des formations":"Mon parcours"}</h3><span>{trainer?(stats.officialPending==null?"—":String(stats.officialPending)):"16"}</span></div>
         <div className="rail-next-icon">{trainer?<ClipboardCheck size={20}/>:<Sparkles size={20}/>}</div>
-        <strong>{trainer?(stats.nextTitle||"Corrections à venir"):"Ingénierie produit et IA"}</strong>
-        <p>{trainer?(stats.pending?"Des livrables attendent une correction.":"Les nouvelles soumissions apparaîtront ici."):"Ouvre les 16 ateliers, vérifie ton inscription et avance jusqu'au MVP avec ton formateur."}</p>
-        <Link className="rail-cta" href={trainer?(stats.nextHref||base):"/espace/parcours/ingenierie-produit-ia"}>{trainer?"Voir les corrections":"Ouvrir mon parcours"} <ArrowRight size={16}/></Link>
+        <strong>{trainer?(stats.officialPending==null?"Indicateurs indisponibles":stats.officialPending+" livrable(s) à corriger"):"Ingénierie produit et IA"}</strong>
+        <p>{trainer?(stats.officialPending==null?"Consulte le cockpit pour vérifier la disponibilité.":stats.officialPending?"Des livrables attendent une correction.":"Les nouvelles soumissions apparaîtront ici."):"Ouvre les 16 ateliers, vérifie ton inscription et avance jusqu'au MVP avec ton formateur."}</p>
+        <Link className="rail-cta" href={trainer?base+"/corrections":activeCourseHref(stats)}>{trainer?"Voir les corrections":"Ouvrir mon parcours"} <ArrowRight size={16}/></Link>
       </div>
       <div className="rail-widget rail-coach"><span className="rail-coach-label"><Sparkles size={15}/> CONSEIL DU COACH</span>
         <p>{trainer?"Un retour utile est précis, bienveillant et directement applicable.":"Une compétence s'acquiert quand tu sais expliquer et refaire ton travail."}</p>

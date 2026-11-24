@@ -62,7 +62,8 @@ export default async function TrainerSpace({searchParams}:{searchParams:Promise<
     tab==="programme" ? db.from("learner_badges").select("badge_slug",{head:true,count:"exact"}) : skipped,
     tab==="apprenants"||tab==="evaluations" ? db.from("learner_preferences").select("learner_id,preferred_name,goal,minutes_per_day,regular_days,optional_days") : skipped
   ]);
-  if(se||me||le||ae||allSe||pe||ge||settingsError||depsError||stepsError||coachError||badgeAwardsError||learningProfilesError)return <main className="page"><p className="alert danger">Erreur de chargement. Vérifie les migrations SQL et les droits du compte.</p></main>;
+  const legacyError=!!(se||me||le||ae||allSe||pe||ge||settingsError||depsError||stepsError||coachError||badgeAwardsError||learningProfilesError);
+  if(tab!=="dashboard"&&legacyError)return <main className="page"><p className="alert danger">Les données complémentaires sont momentanément indisponibles.</p><Link href="/espace/formateur">Retour au cockpit</Link></main>;
   const pending=(submissions||[]) as Submission[], catalog=(missions||[]) as Mission[];
   const pendingCount=tab==="dashboard"?(pendingCountFromDb??0):pending.length;
   const learnerCount=tab==="dashboard"||tab==="programme"?(learnerCountFromDb??0):(learners||[]).length;
@@ -130,10 +131,10 @@ export default async function TrainerSpace({searchParams}:{searchParams:Promise<
       <UniversalTrainerCockpit/>
       <DashboardDisclosure title="Détail des corrections du pilote" description="Historique du parcours Ingénierie produit et IA"><V2TrainerEvaluationOverview dashboard/></DashboardDisclosure>
       <DashboardQuickLinks trainer/>
-      <DashboardDisclosure title="Réalisations complémentaires" description="Missions historiques, statistiques et corrections">
+      {legacyError?<p className="dash-note" role="status">Les données des missions complémentaires sont indisponibles. Le cockpit officiel reste indépendant.</p>:<DashboardDisclosure title="Réalisations complémentaires" description="Missions historiques, statistiques et corrections">
         <SecureTrainerOverview pending={pendingCount} learners={learnerCount}
           missions={published.length} validatedXp={(awards||[]).reduce((sum,x)=>sum+Number(x.xp),0)}/>
-      </DashboardDisclosure>
+      </DashboardDisclosure>}
       <DashboardDisclosure title="État technique du coach local" description="Diagnostic Qwen3 · réservé au formateur">
         <LocalCoachDiagnostics/>
       </DashboardDisclosure>

@@ -52,7 +52,8 @@ export default async function LearnerSpace({searchParams}:{searchParams:Promise<
     tab==="progression" ? db.from("workshop_steps").select("learner_id,mission_id,completed_at").eq("learner_id",user.id) : skipped,
     tab!=="missions" ? db.from("learner_preferences").select("learner_id,preferred_name,goal,experience,minutes_per_day,regular_days,optional_days").eq("learner_id",user.id).maybeSingle() : skipped
   ]);
-  if(missionError || subsError || xpError || depsError || badgeError || earnedError || practiceError || settingsError || messagesError || stepsError || preferencesError) return <main className="page"><p className="alert danger">Impossible de charger le parcours. Vérifie que les migrations SQL sont appliquées.</p></main>;
+  const legacyError=!!(missionError || subsError || xpError || depsError || badgeError || earnedError || practiceError || settingsError || messagesError || stepsError);
+  if(tab!=="dashboard"&&(legacyError||preferencesError)) return <main className="page"><p className="alert danger">Les réalisations complémentaires sont momentanément indisponibles.</p><Link href="/espace/apprenant/formations">Retrouver mes formations</Link></main>;
   const missions = (rawMissions || []) as Mission[];
   const submissions = (rawSubs || []) as Submission[];
   const approved = new Set((rawXp || []).map(x => x.mission_id as string));
@@ -86,15 +87,16 @@ export default async function LearnerSpace({searchParams}:{searchParams:Promise<
     {tab!=="dashboard"&&<WorkspaceTabHeading role="learner" tab={tab}/>}
     {tab==="dashboard"&&<>
       <DashboardHeader trainer={false} name={(rawPreferences as LearnerPreferences|null)?.preferred_name}/>
-      {nonPilot?(adaptive??<section className="panel" role="status"><h2>Formation active momentanément indisponible</h2><Link href="/espace/apprenant/formations">Vérifier mes formations</Link></section>):pilot?<SecureLearnerOverview missions={missions} submissions={submissions} approvedIds={[...approved]} dependencies={deps} xp={xp} level={level} pilot={pilot} rhythm={rawPreferences as LearnerPreferences|null}
+      {learning?.available&&!active?<section className="learner-start-panel"><span>TON POINT DE DÉPART</span><h2>Choisis ta formation.</h2><p>{learning.offers.length?"Les inscriptions disponibles sont confirmées pour ton compte. Choisis ton domaine pour commencer.":"Aucune nouvelle inscription n’est actuellement confirmée. Découvre les programmes et contacte ton formateur si nécessaire."}</p><div><Link className="primary-btn" href="/espace/apprenant/formations#inscriptions">Vérifier mes inscriptions <ArrowUpRight size={16}/></Link><Link href="/catalogue">Comparer les programmes</Link></div></section>:nonPilot?(adaptive??<section className="panel" role="status"><h2>Formation active momentanément indisponible</h2><Link href="/espace/apprenant/formations">Vérifier mes formations</Link></section>):pilot&&!legacyError?<SecureLearnerOverview missions={missions} submissions={submissions} approvedIds={[...approved]} dependencies={deps} xp={xp} level={level} pilot={pilot} rhythm={rawPreferences as LearnerPreferences|null}
         primaryAction={<DashboardDisclosure title="Les étapes de mon parcours" description="Objectifs, inscription, diagnostic facultatif et progression" initiallyOpen={pilot.published&&pilot.enrollment===null}><LearnerJourneyGuide pilot={pilot} profileSaved={!!rawPreferences}/></DashboardDisclosure>}
         workspace={<DashboardQuickLinks trainer={false} enrolled={pilot.enrollment==="active"||pilot.enrollment==="completed"}/>}/>
-        :<><section className="panel" role="status"><h2>Le parcours est momentanément indisponible</h2><p>Tu peux consulter tes réalisations et revenir au programme.</p><Link className="primary-btn" href="/espace/parcours/ingenierie-produit-ia">Voir le parcours</Link></section><LearnerCompactProfile/><DashboardQuickLinks trainer={false} enrolled={false}/></>}
+        :<>{active&&activeDetail?<section className="panel"><h2>{active.title}</h2><p>Les données complémentaires sont indisponibles. Ton parcours officiel reste accessible.</p><Link className="primary-btn" href="/espace/apprenant/formations">Ouvrir mes formations</Link></section>:<section className="panel" role="status"><h2>Le parcours est momentanément indisponible</h2><p>Tu peux consulter tes réalisations et revenir au programme.</p><Link className="primary-btn" href="/espace/parcours/ingenierie-produit-ia">Voir le parcours</Link></section>}<LearnerCompactProfile/><DashboardQuickLinks trainer={false} enrolled={false}/></>}
       {nonPilot&&active&&activeDetail&&<><DashboardQuickLinks trainer={false} enrolled={true} trackSlug={active.slug}/><LearnerCompactProfile/></>}
       {!nonPilot&&adaptive}
       <DashboardDisclosure title="Mes objectifs et mon rythme" description="Personnaliser mon parcours et mon planning">
-        <LearnerWelcomeBanner preferences={rawPreferences as LearnerPreferences|null} mission={insight.nextMission} pilot={nonPilot?null:pilot} adaptivePlanning={!!adaptive}/>
+        <LearnerWelcomeBanner preferences={rawPreferences as LearnerPreferences|null} mission={null} pilot={active&&!nonPilot?pilot:null} adaptivePlanning={!!adaptive}/>
       </DashboardDisclosure>
+      {legacyError&&<p className="dash-note" role="status">Les statistiques des réalisations complémentaires sont momentanément indisponibles.</p>}
       <section className="panel"><h2>Mes formations</h2><p>Retrouve tes inscriptions et consulte les résultats de chaque parcours séparément.</p><Link className="primary-btn" href="/espace/apprenant/formations">Gérer mes parcours <ArrowUpRight size={16}/></Link></section>
       <section className="v2-catalog-banner"><div><span>LE CATALOGUE 360</span><h2>Découvrir les sept formations</h2><p>Compare les charges et les durées estimées selon ton rythme personnel. Ton espace personnel confirme les inscriptions disponibles.</p></div><Link href="/catalogue" className="v2-catalog-banner-link">Explorer le catalogue <ArrowUpRight size={16}/></Link></section>
     </>}
@@ -127,7 +129,7 @@ export default async function LearnerSpace({searchParams}:{searchParams:Promise<
       </section>
     </>}
     {tab==="missions"&&<>
-    <div className="section-head" id="missions"><h2>Programme et missions</h2><span className="counter">Seuil : 80/100</span></div>
+    <div className="section-head" id="missions"><h2>Mes réalisations complémentaires</h2><span className="counter">Seuil : 80/100</span></div>
     <div className="curriculum-mission-list">{curriculumWeeks.map(w=>{
       const weekMissions = missions.filter(m=>m.week===w.week).sort((a,b)=>{
         if(deps.some(d=>d.mission_id===b.id&&d.prerequisite_id===a.id))return -1;
