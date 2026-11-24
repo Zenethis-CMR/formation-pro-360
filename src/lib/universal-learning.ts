@@ -35,7 +35,8 @@ export type WorkshopState="not_started"|"pending"|"approved"|"changes_requested"
 export type StudioModule={id:string;slug:string;title:string;outcome:string;week:number;skills:string[]};
 export type StudioCriterion={label:string;descriptor:string};
 export type StudioLesson={id:string;module_id:string;slug:string;version:number;title:string;objective:string;guided_work:string;independent_work:string;evidence_required:string;rubric:StudioCriterion[];state:WorkshopState};
-export type StudioTrack={title:string;summary:string;enrollment:"active"|"completed";modules:StudioModule[];lessons:StudioLesson[]};
+export type StudioTrack={title:string;summary:string;enrollment:"active"|"completed";modules:StudioModule[];lessons:StudioLesson[];notebookAvailable:boolean;coachAvailable:boolean;evaluationOpen:boolean;submissions:StudioSubmission[]};
+export type StudioSubmission={id:string;module_id:string;lesson_slug:string;status:"pending"|"approved"|"changes_requested";score:number|null;feedback:string|null;reviewed_at:string|null;created_at:string;url:string};
 const uuid=/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const str=(v:unknown):string=>typeof v==="string"?v:"";
 const validSlug=(v:unknown):v is string=>typeof v==="string"&&v.length<=100&&slugPattern.test(v);
@@ -69,9 +70,25 @@ export function parseStudioTrack(value:unknown,slug:string):StudioTrack|null{
  }
  // Preserve backend module order and lesson order within each module, without assuming two lessons or eight modules.
  const lessons=modules.flatMap(m=>[...latest.values()].filter(l=>l.module_id===m.id));
- return {title:str(track.title),summary:str(track.summary),enrollment:data.enrollment,modules,lessons};
+ const submissions:StudioSubmission[]=Array.isArray(data.submissions)?data.submissions.flatMap((raw:unknown)=>{
+  const s=record(raw);
+  if(!s||typeof s.id!=="string"||typeof s.module_id!=="string"||!moduleIds.has(s.module_id)||!validSlug(s.lesson_slug)||(s.status!=="pending"&&s.status!=="approved"&&s.status!=="changes_requested"))return [];
+  return [{id:s.id,module_id:s.module_id,lesson_slug:s.lesson_slug,status:s.status,score:typeof s.score==="number"?s.score:null,feedback:typeof s.feedback==="string"?s.feedback:null,reviewed_at:typeof s.reviewed_at==="string"?s.reviewed_at:null,created_at:str(s.created_at),url:/^https?:\/\//i.test(str(s.url))?str(s.url):""}];
+ }):[];
+ return {title:str(track.title),summary:str(track.summary),enrollment:data.enrollment,modules,lessons,notebookAvailable:data.notebook_available===true,coachAvailable:data.coach_available===true,evaluationOpen:data.evaluation_open===true&&data.enrollment==="active",submissions};
 }
 export function selectStudioLesson(lessons:StudioLesson[],requested:unknown):StudioLesson|null{
  if(requested!==undefined)return typeof requested==="string"&&uuid.test(requested)?lessons.find(l=>l.id===requested)??null:null;
  return lessons.find(l=>l.state==="changes_requested")??lessons.find(l=>l.state==="not_started")??lessons.find(l=>l.state==="pending")??lessons[0]??null;
 }
+
+export function studioSteps(lesson:StudioLesson){
+ return [
+  {title:"Cadrer la mission",action:lesson.objective,proof:"Une reformulation de l’objectif et du résultat attendu.",verify:"Compare ton cadrage aux consignes officielles."},
+  {title:"Réaliser l’exercice guidé",action:lesson.guided_work,proof:"Une réalisation documentée avec les résultats observés.",verify:"Contrôle le résultat avec la consigne guidée."},
+  {title:"Construire en autonomie",action:lesson.independent_work,proof:"Ta réalisation autonome et les choix que tu peux expliquer.",verify:"Vérifie les contraintes et les résultats, y compris les erreurs."},
+  {title:"Contrôler la qualité",action:lesson.rubric.map(c=>c.label+(c.descriptor?" — "+c.descriptor:"")).join(" ; ")||"Relis les consignes et demande les critères au formateur.",proof:"Les vérifications réalisées et les écarts corrigés.",verify:"Ne déclare aucun test réussi sans preuve réelle."},
+  {title:"Préparer la remise",action:lesson.evidence_required,proof:"Le livrable officiellement demandé.",verify:"Vérifie l’accès au lien et la présence des preuves."}
+ ];
+}
+export function studioCanSubmit(track:StudioTrack,lesson:StudioLesson){return track.evaluationOpen&&(lesson.state==="not_started"||lesson.state==="changes_requested");}

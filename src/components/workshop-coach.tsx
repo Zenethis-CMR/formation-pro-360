@@ -45,7 +45,7 @@ function parseSsePacket(packet:string):{event:string;data:Record<string,unknown>
  * same-origin SSE route sends heartbeats so slow inference cannot silently
  * leave the learner with an unresponsive page.
  */
-export function WorkshopCoach({lessonId,trainerFeedback}:{lessonId:string;trainerFeedback?:string|null}){
+export function WorkshopCoach({lessonId,trainerFeedback,trackSlug}:{lessonId:string;trainerFeedback?:string|null;trackSlug?:string}){
   const [draft,setDraft]=useState("");
   const [mode,setMode]=useState<CoachMode>("debloquer");
   const [workSummary,setWorkSummary]=useState("");
@@ -108,7 +108,7 @@ export function WorkshopCoach({lessonId,trainerFeedback}:{lessonId:string;traine
       const response=await fetch("/api/coach",{
         method:"POST",credentials:"same-origin",
         headers:{"content-type":"application/json"},
-        body:JSON.stringify({lessonId,question,mode,
+        body:JSON.stringify({lessonId,question,...(trackSlug?{trackSlug}:{}),mode,
           ...(workSummary.trim()?{work_summary:workSummary.trim()}:{}),
           ...(previous_exchange?{previous_exchange}:{})}),
         signal:controller.signal

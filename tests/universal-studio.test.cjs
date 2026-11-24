@@ -28,12 +28,26 @@ test("selection works for variable module counts and same slug in distinct modul
  assert.equal(studio.lessons.length,2);
  assert.equal(selectStudioLesson(studio.lessons,undefined).id,id(10));
 });
-test("generic route checks learner before API, is read-only and links from the directory",()=>{
+test("generic route checks learner before API and guards interactions by capabilities",()=>{
  const page=read("src/app/espace/apprenant/formations/[parcours]/studio/page.tsx");
  assert.ok(page.indexOf('await requireRole("learner")')<page.indexOf("await backendRequest"));
  assert.ok(page.includes("parseStudioTrack"));
  assert.ok(page.includes("if(!track)return"));
  assert.ok(!page.includes('method:"POST"'));
- assert.ok(!page.includes("action={submitV2Lesson}"));
+ assert.ok(page.includes("canSubmit?<form action={submitV2Lesson}"));
+ assert.ok(page.includes("track.notebookAvailable?await backendRequest"));
+ assert.ok(page.includes("track.coachAvailable?<WorkshopCoach"));
+ assert.ok(page.includes('trackSlug={parcours}'));
  assert.ok(read("src/app/espace/apprenant/formations/page.tsx").includes('+"/studio"'));
+});
+
+test("mutations require confirmed capability and an actionable exact state",()=>{
+ const {studioCanSubmit,studioSteps}=exportsObject;
+ const track=parseStudioTrack({...data,evaluation_open:true,notebook_available:true,coach_available:true},"design");
+ assert.equal(track.notebookAvailable,true);
+ assert.equal(track.coachAvailable,true);
+ assert.equal(studioCanSubmit(track,track.lessons[0]),true);
+ for(const state of ["unknown","approved","pending"])assert.equal(studioCanSubmit(track,{...track.lessons[0],state}),false);
+ assert.equal(studioCanSubmit({...track,evaluationOpen:false},track.lessons[0]),false);
+ assert.equal(studioSteps(track.lessons[0]).length,5);
 });

@@ -251,24 +251,35 @@ export async function enrollInV2Pilot() {
 }
 
 /** Submission is accepted only by the CT420 API after checking enrollment. */
+const workshopTrackPattern=/^[a-z0-9]+(?:-[a-z0-9]+)*$/;
+function workshopTrack(formData:FormData){
+  const raw=formData.get("trackSlug");
+  if(raw===null)return "ingenierie-produit-ia";
+  return typeof raw==="string"&&raw.length<=100&&workshopTrackPattern.test(raw)?raw:null;
+}
+function universalStudioPath(track:string){return "/espace/apprenant/formations/"+encodeURIComponent(track)+"/studio";}
 export async function submitV2Lesson(formData:FormData) {
   await requireRole("learner");
-  const base="/espace/parcours/ingenierie-produit-ia";
+  const track=workshopTrack(formData);
+  if(!track)redirect("/espace/apprenant/formations");
+  const universal=formData.has("trackSlug");
+  const base=universal?universalStudioPath(track):"/espace/parcours/ingenierie-produit-ia";
   const sourceSlug=String(formData.get("workshopSlug")||"");
   // The destination is a fixed internal prefix, never a user-supplied URL.
-  const path=/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(sourceSlug)&&sourceSlug.length<=80
+  const path=universal?base:/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(sourceSlug)&&sourceSlug.length<=80
     ?base+"/atelier/"+sourceSlug:base;
   const lessonId=String(formData.get("lessonId")||"");
+  const suffix=universal&&idPattern.test(lessonId)?"&atelier="+encodeURIComponent(lessonId):"";
   const url=String(formData.get("url")||"").trim();
   const note=String(formData.get("note")||"").trim();
   if(!idPattern.test(lessonId)||url.length>800||note.length>1200)
-    redirect(path+"?livrable=erreur");
+    redirect(path+"?livrable=erreur"+suffix);
   let parsed:URL;
-  try{parsed=new URL(url)}catch{redirect(path+"?livrable=erreur")}
+  try{parsed=new URL(url)}catch{redirect(path+"?livrable=erreur"+suffix)}
   if(!["http:","https:"].includes(parsed.protocol))
-    redirect(path+"?livrable=erreur");
+    redirect(path+"?livrable=erreur"+suffix);
   const res=await backendRequest(
-    "/v1/training/catalog/ingenierie-produit-ia/lessons/"+lessonId+"/submissions",
+    "/v1/training/catalog/"+encodeURIComponent(track)+"/lessons/"+lessonId+"/submissions",
     {method:"POST",headers:{"content-type":"application/json"},
       body:JSON.stringify({url:parsed.href,note})}
   ).catch(()=>null);
@@ -276,18 +287,21 @@ export async function submitV2Lesson(formData:FormData) {
     const status=res?.status;
     const problem=status===409?"existant":status===403?"acces":
       status===429?"limite":"erreur";
-    redirect(path+"?livrable="+problem);
+    redirect(path+"?livrable="+problem+suffix);
   }
   revalidatePath(path);
   revalidatePath(base);
   revalidatePath("/espace/apprenant");
   revalidatePath("/espace/formateur/corrections");
-  redirect(path+"?livrable=envoye");
+  redirect(path+"?livrable=envoye"+suffix);
 }
 
 /** Review and XP award are one transaction performed by the backend. */
 export async function reviewV2Lesson(formData:FormData) {
   await requireRole("trainer");
+  const track=workshopTrack(formData);
+  if(!track)redirect("/espace/formateur/corrections");
+  const suffix=formData.has("trackSlug")?"&parcours="+encodeURIComponent(track):"";
   const path="/espace/formateur/corrections";
   const id=String(formData.get("submissionId")||"");
   const feedback=String(formData.get("feedback")||"").trim();
@@ -298,64 +312,69 @@ export async function reviewV2Lesson(formData:FormData) {
   if(detailed){
     if(criterionValues.some(v=>typeof v!=="string"||
       !/^\d{1,2}$/.test(v)||Number(v)>25))
-      redirect(path+"?correction=erreur");
+      redirect(path+"?correction=erreur"+suffix);
     const points=criterionValues.map(Number);
     score=points.reduce((sum,value)=>sum+value,0);
     recordedFeedback=feedback+"\n\nGrille formative : "+points
       .map((value,i)=>"C"+(i+1)+" "+value+"/25").join(" · ")+" · Total "+score+"/100";
   }else{
     const raw=String(formData.get("score")||"");
-    if(!/^\d{1,3}$/.test(raw))redirect(path+"?correction=erreur");
+    if(!/^\d{1,3}$/.test(raw))redirect(path+"?correction=erreur"+suffix);
     score=Number(raw);
   }
   if(!idPattern.test(id)||!Number.isInteger(score)||score<0||score>100||
     feedback.length<3||recordedFeedback.length>1500)
-    redirect(path+"?correction=erreur");
+    redirect(path+"?correction=erreur"+suffix);
   const res=await backendRequest(
-    "/v1/training/catalog/ingenierie-produit-ia/submissions/"+id+"/review",
+    "/v1/training/catalog/"+encodeURIComponent(track)+"/submissions/"+id+"/review",
     {method:"POST",headers:{"content-type":"application/json"},
       body:JSON.stringify({score,feedback:recordedFeedback})}
   ).catch(()=>null);
-  if(!res?.ok)redirect(path+"?correction=erreur");
+  if(!res?.ok)redirect(path+"?correction=erreur"+suffix);
   revalidatePath(path);
+  revalidatePath(universalStudioPath(track));
   revalidatePath("/espace/parcours/ingenierie-produit-ia");
-  redirect(path+"?correction=validee");
+  redirect(path+"?correction=validee"+suffix);
 }
 
 /** Private work notes and checklist: never a submission, never XP. */
 export async function saveWorkshopNotebook(formData:FormData){
   await requireRole("learner");
-  const base="/espace/parcours/ingenierie-produit-ia";
+  const track=workshopTrack(formData);
+  if(!track)redirect("/espace/apprenant/formations");
+  const universal=formData.has("trackSlug");
+  const base=universal?universalStudioPath(track):"/espace/parcours/ingenierie-produit-ia";
   const slug=String(formData.get("workshopSlug")||"");
-  const destination=/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug)&&slug.length<=80
+  const destination=universal?base:/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug)&&slug.length<=80
     ?base+"/atelier/"+slug:base;
   const lessonId=String(formData.get("lessonId")||"");
+  const suffix=universal&&idPattern.test(lessonId)?"&atelier="+encodeURIComponent(lessonId):"";
   const notes=String(formData.get("notes")||"").trim();
   const nextAction=String(formData.get("nextAction")||"").trim();
   const rawUrl=String(formData.get("referenceUrl")||"").trim();
   const checked=formData.getAll("completedStep").map(String);
   if(!idPattern.test(lessonId)||notes.length>6000||nextAction.length>1000||
     rawUrl.length>800||checked.length>5||checked.some(v=>!/^[1-5]$/.test(v))||
-    new Set(checked).size!==checked.length)redirect(destination+"?carnet=invalide");
+    new Set(checked).size!==checked.length)redirect(destination+"?carnet=invalide"+suffix);
   let url:string|null=null;
   if(rawUrl){
     let candidate:URL;
-    try{candidate=new URL(rawUrl)}catch{redirect(destination+"?carnet=invalide")}
+    try{candidate=new URL(rawUrl)}catch{redirect(destination+"?carnet=invalide"+suffix)}
     if(!["http:","https:"].includes(candidate.protocol))
-      redirect(destination+"?carnet=invalide");
+      redirect(destination+"?carnet=invalide"+suffix);
     url=candidate.href;
   }
   const result=await backendRequest(
-    "/v1/training/catalog/ingenierie-produit-ia/lessons/"+lessonId+"/notebook",
+    "/v1/training/catalog/"+encodeURIComponent(track)+"/lessons/"+lessonId+"/notebook",
     {method:"PUT",body:JSON.stringify({
       notes,next_action:nextAction,reference_url:url,
       completed_steps:checked.map(Number)
     })}
   ).catch(()=>null);
   if(!result?.ok)
-    redirect(destination+"?carnet="+(result?.status===403?"acces":"indisponible"));
+    redirect(destination+"?carnet="+(result?.status===403?"acces":"indisponible")+suffix);
   revalidatePath(destination);
-  redirect(destination+"?carnet=ok");
+  redirect(destination+"?carnet=ok"+suffix);
 }
 
 /** A real and optional per-lesson AI coach. No grading, XP or persistence. */

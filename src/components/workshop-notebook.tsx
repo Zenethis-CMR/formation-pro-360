@@ -18,9 +18,9 @@ function SaveButton(){
   </button>;
 }
 /** All edits stay local until an explicit authenticated server action. */
-export function WorkshopNotebook({slug,lessonId,steps,initial,review,criteria=[]}:{
+export function WorkshopNotebook({slug,lessonId,steps,initial,review,criteria=[],trackSlug}:{
   slug:string;lessonId:string;steps:Step[];initial:Notebook;
-  review?:WorkshopReview|null;criteria?:string[]
+  review?:WorkshopReview|null;criteria?:string[];trackSlug?:string
 }){
   const [checked,setChecked]=useState<number[]>(initial.completed_steps);
   const [nextAction,setNextAction]=useState(initial.next_action);
@@ -36,6 +36,7 @@ export function WorkshopNotebook({slug,lessonId,steps,initial,review,criteria=[]
     document.getElementById("workbook-next")?.focus();
   };
   return <form className="workbook-form" action={saveWorkshopNotebook} id="carnet">
+    {trackSlug&&<input type="hidden" name="trackSlug" value={trackSlug}/>}
     <input type="hidden" name="lessonId" value={lessonId}/>
     <input type="hidden" name="workshopSlug" value={slug}/>
     {review&&<WorkshopTrainerFeedback review={review} criteria={criteria}

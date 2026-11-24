@@ -5,7 +5,7 @@ export const dynamic="force-dynamic";
 export const runtime="nodejs";
 
 type CoachBody={
-  lessonId?:string;question:string;
+  lessonId?:string;question:string;trackSlug?:string;
   scope?:"project";consent?:boolean;
   domain?:"projet"|"backlog"|"ux"|"technique"|"qualite"|"business";
   mode?:"commencer"|"debloquer"|"verifier"|"preparer";
@@ -46,6 +46,7 @@ export async function POST(request:NextRequest){
     typeof body.question!=="string"||
     body.question.trim().length<8||body.question.trim().length>(project?600:1200))
     return errorJson(400,"invalid_question");
+  if(body.trackSlug!==undefined&&(project||typeof body.trackSlug!=="string"||body.trackSlug.length>100||!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(body.trackSlug)))return errorJson(400,"invalid_track");
   if(project&&(body.consent!==true||body.previous_exchange!==undefined||body.lessonId!==undefined||!body.mode||Object.keys(body).some(key=>!["scope","consent","mode","domain","question","work_summary"].includes(key))))
     return errorJson(400,"invalid_project_consent");
   if(body.mode!==undefined&&
@@ -95,7 +96,7 @@ export async function POST(request:NextRequest){
         try{
           const upstream=await backendRequest(
             project?"/v1/training/catalog/ingenierie-produit-ia/project/coach":
-            "/v1/training/catalog/ingenierie-produit-ia/lessons/"+
+            "/v1/training/catalog/"+encodeURIComponent(body.trackSlug??"ingenierie-produit-ia")+"/lessons/"+
               body.lessonId+"/coach",
             {
               method:"POST",

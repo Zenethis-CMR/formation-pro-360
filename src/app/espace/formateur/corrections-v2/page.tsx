@@ -13,23 +13,26 @@ type Pending={
   url:string;note:string;created_at:string;
 };
 export default async function V2TrainerCorrections({searchParams}:{
-  searchParams:Promise<{correction?:string}>;
+  searchParams:Promise<{correction?:string;parcours?:string|string[]}>;
 }){
   await requireRole("trainer");
   const params=await searchParams;
-  const response=await backendRequest(
-    "/v1/training/catalog/ingenierie-produit-ia/pending-submissions"
-  ).catch(()=>null);
+  const catalogResponse=await backendRequest("/v1/training/catalog").catch(()=>null);
+  const catalog=catalogResponse?.ok?await catalogResponse.json().catch(()=>null):null;
+  const tracks=(Array.isArray(catalog?.tracks)?catalog.tracks:[]).filter((t: {slug?:unknown;title?:unknown;status?:unknown})=>t.status==="published"&&typeof t.slug==="string"&&t.slug.length<=100&&/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(t.slug)&&typeof t.title==="string") as {slug:string;title:string}[];
+  const selected=params.parcours===undefined?(tracks.find(t=>t.slug==="ingenierie-produit-ia")??tracks[0]):tracks.find(t=>t.slug===params.parcours);
+  const response=selected?await backendRequest("/v1/training/catalog/"+encodeURIComponent(selected.slug)+"/pending-submissions").catch(()=>null):null;
   const data=response?.ok ? await response.json() as {pending:Pending[]} : null;
   return <main className="page v2-trainer-reviews">
     <Link className="v2-track-back" href="/espace/formateur?onglet=evaluations">
       <ArrowLeft size={15}/> Toutes mes évaluations
     </Link>
     <header className="v2-trainer-reviews-head">
-      <span className="journey-overline"><BadgeCheck size={15}/> ÉVALUATIONS · INGÉNIERIE PRODUIT ET IA</span>
+      <span className="journey-overline"><BadgeCheck size={15}/> ÉVALUATIONS · {selected?.title??"FORMATIONS"}</span>
       <h1>Corriger les ateliers<span>.</span></h1>
       <p>Chaque livrable est évalué sur 100. Une note d'au moins 80/100 valide l'atelier et attribue une seule fois 100 XP.</p>
     </header>
+    <nav aria-label="Formation à corriger" className="v2-track-module-chips">{tracks.map(t=><Link key={t.slug} className="primary-btn" aria-current={selected?.slug===t.slug?"page":undefined} href={"/espace/formateur/corrections?parcours="+encodeURIComponent(t.slug)}>{t.title}</Link>)}</nav>
     {params.correction==="validee"&&<p className="alert success" role="status"><CheckCircle2 size={16}/> Correction enregistrée.</p>}
     {params.correction==="erreur"&&<p className="alert danger" role="alert">La correction n'a pas pu être enregistrée. Vérifie le score, les droits et l'état de la soumission.</p>}
     {!data&&<section className="v2-track-status"><ClipboardCheck size={21}/><div>
@@ -54,12 +57,13 @@ export default async function V2TrainerCorrections({searchParams}:{
             <strong>Preuve attendue</strong><p>{item.evidence_required||"Le livrable décrit dans le parcours V2."}</p>
           </div>
           <form action={reviewV2Lesson} className="v2-review-form">
+            <input type="hidden" name="trackSlug" value={selected?.slug}/>
             <input type="hidden" name="submissionId" value={item.id}/>
             <V2TrainerScoreInputs criteria={(()=>{
               const official=Array.isArray(item.rubric)?item.rubric.flatMap(x=>
                 typeof x==="string"?[x]:x&&typeof x==="object"&&"label" in x&&typeof x.label==="string"?[x.label]:[]
               ):[];
-              const editorial=v2WorkshopGuides[item.lesson_slug]?.checks;
+              const editorial=selected?.slug==="ingenierie-produit-ia"?v2WorkshopGuides[item.lesson_slug]?.checks:undefined;
               return official.length===4?official:editorial||[
                 "Adéquation au problème et à l'objectif",
                 "Qualité de la réalisation",

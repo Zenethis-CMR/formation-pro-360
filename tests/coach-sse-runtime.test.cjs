@@ -134,3 +134,12 @@ test("unknown modes and oversized learner context are rejected before contacting
   assert.equal(wrongType.status,400);
   assert.equal(contacted,false);
 });
+
+test("coach proxy accepts an explicit validated course slug and rejects cross-scope input",async()=>{
+ let target="";
+ const POST=makeRoute({upstream:async(path)=>{target=path;return new Response(JSON.stringify({answer:"Piste : vérifie."}),{status:200});}});
+ const r=await POST(fakeRequest({...valid,trackSlug:"design-produit-ux-ui-motion"}));
+ assert.match(await r.text(),/event: answer/);
+ assert.equal(target,"/v1/training/catalog/design-produit-ux-ui-motion/lessons/"+id+"/coach");
+ assert.equal((await POST(fakeRequest({...valid,trackSlug:"../admin"}))).status,400);
+});
