@@ -20,6 +20,7 @@ test("review UI protects role and requires preview, consent and explicit revocat
  assert.ok(!trainer.includes('>("/project")'));assert.ok(trainer.includes('const sources:ShareSources|null=null'));
  assert.ok(action.includes('action?.intent==="comment"?"trainer":"learner"'));
  for(const s of ["Prévisualiser le partage","Retirer l'accès","LECTURE SEULE","source_changed","revision_conflict","beforeunload","!preview||!shareReady","Retours sur cette rubrique"])assert.ok(ui.includes(s),s);
- assert.ok(read("src/app/espace/projet/page.tsx").includes('href="/espace/projet/revues"'));
+ assert.ok(read("src/app/espace/projet/page.tsx").includes('<ProductWorkspaceNav active="dossier"/>'));
+ assert.ok(read("src/components/product-workspace-nav.tsx").includes('href:"/espace/projet/revues"'));
  assert.ok(read("src/app/espace/revues/reviews.css").includes("prefers-reduced-motion"));
 });
