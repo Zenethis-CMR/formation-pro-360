@@ -47,8 +47,12 @@ test("true course completion requires all 16 validated workshops plus official 1
 });
 test("new learners see their principal course before supplementary history",()=>{
  const ui=read("src/components/secure-learner-overview.tsx");
- assert.ok(ui.includes("Mon apprentissage"));
- assert.ok(ui.includes('open={xp>0||submissions.length>0}'));
+ const header=read("src/components/dashboard-workspace.tsx");
+ const page=read("src/app/espace/apprenant/page.tsx");
+ assert.ok(header.includes("Mon apprentissage"));
+ assert.ok(page.indexOf("<DashboardHeader")<page.indexOf("<SecureLearnerOverview"));
+ assert.ok(ui.includes('<details className="learner-legacy-details">'));
+ assert.ok(!ui.includes('open={xp>0||submissions.length>0}'));
  assert.ok(ui.includes("learner-legacy-details-content"));
  assert.ok(ui.includes("v2-legacy-heading"));
  assert.ok(ui.includes("academy-donut"));
