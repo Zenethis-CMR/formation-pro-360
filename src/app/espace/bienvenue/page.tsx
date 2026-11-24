@@ -70,7 +70,7 @@ export default async function WelcomeLearner({searchParams}:Props) {
         </div>
         <div className="learner-welcome-guide"><h3><CalendarDays size={17}/> Cadence exigeante, résultats concrets</h3>
           <p>Planifie au moins trois jours fixes et cinq heures de travail par séance. Ton formateur vérifie surtout tes livrables : conception, UX, ingénierie, tests et déploiement.</p>
-          <Link href="/espace/parcours/ingenierie-produit-ia">Voir les huit semaines du parcours principal <ArrowRight size={15}/></Link>
+          <Link href="/espace/parcours/ingenierie-produit-ia">Voir les modules et la durée personnalisée <ArrowRight size={15}/></Link>
         </div>
       </aside>
     </div>
