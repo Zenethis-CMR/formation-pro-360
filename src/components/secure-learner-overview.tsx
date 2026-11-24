@@ -1,5 +1,5 @@
 "use client";
-import { useMemo, useState } from "react";
+import { useMemo, useState, type ReactNode } from "react";
 import Link from "next/link";
 import { ArrowRight, BadgeCheck, BookOpen, Code2, GraduationCap, Info, Search, Sparkles, Target, TrendingUp, Trophy } from "lucide-react";
 import { TechnologyBadge, technologiesForMission, displayDomain } from "@/components/technology-badge";
@@ -11,8 +11,8 @@ export type OverviewMission={
 export type OverviewSubmission={
   mission_id:string;status:string;score:number|null;created_at:string;
 };
-export function SecureLearnerOverview({missions,submissions,approvedIds,dependencies,xp,level,pilot}:{
-  missions:OverviewMission[];submissions:OverviewSubmission[];approvedIds:string[];dependencies:{mission_id:string;prerequisite_id:string}[];xp:number;level:number;pilot:V2DashboardPilot;
+export function SecureLearnerOverview({missions,submissions,approvedIds,dependencies,xp,level,pilot,primaryAction,workspace}:{
+  missions:OverviewMission[];submissions:OverviewSubmission[];approvedIds:string[];dependencies:{mission_id:string;prerequisite_id:string}[];xp:number;level:number;pilot:V2DashboardPilot;primaryAction?:ReactNode;workspace?:ReactNode;
 }){
   const [query,setQuery]=useState("");
   const approved=new Set(approvedIds);
@@ -43,14 +43,7 @@ export function SecureLearnerOverview({missions,submissions,approvedIds,dependen
     pilot.published?"Consulter le programme":"Découvrir le programme";
 
   return <div className="real-overview" id="tableau-de-bord">
-    <header className="academy-head">
-      <div><span className="academy-kicker">MON ESPACE DE FORMATION</span>
-        <h1>Mon apprentissage<span className="academy-dot">.</span></h1>
-        <p>Avance à ton rythme, transforme chaque leçon en réalisation.</p></div>
-      <div className="head-actions"><span className="academy-date">Cycle pratique · 8 semaines</span>
-        <Link href="/espace/apprenant?onglet=missions" className="head-square-action" title="Mes missions" aria-label="Voir les missions"><Search size={18}/></Link>
-      </div>
-    </header>
+    {primaryAction}
     <section className="academy-feature academy-feature-v2" aria-label="Formation principale">
       <div className="feature-copy">
         <span className="feature-label"><Sparkles size={14}/> PARCOURS PRINCIPAL · FORMATION DISPONIBLE</span>
@@ -79,7 +72,7 @@ export function SecureLearnerOverview({missions,submissions,approvedIds,dependen
     </section>
     <section className="v2-pilot-metrics" aria-label="Progression du programme">
       <div><span>ATELIERS VALIDÉS</span><strong>{enrolled?pilot.approved:"—"}<small> / 16</small></strong><p>{enrolled?"Validés par le formateur":"Après inscription"}</p></div>
-      <div><span>XP CUMULÉS</span><strong>{xp+pilot.xp}</strong><p>{xp} XP de tes autres réalisations · {pilot.xp} XP du parcours</p></div>
+      <div><span>XP DU PARCOURS</span><strong>{enrolled?pilot.xp:"—"}</strong><p>{xp} XP des autres réalisations, comptés séparément</p></div>
       <div><span>EN CORRECTION</span><strong>{enrolled?pilot.pending:"—"}</strong><p>{enrolled?"Livrables en attente":"Suivi après inscription"}</p></div>
     </section>
     {finished&&<section className="learner-finish-celebration" aria-label="Fin de parcours validée">
@@ -88,20 +81,13 @@ export function SecureLearnerOverview({missions,submissions,approvedIds,dependen
         <p>Rassemble tes projets vérifiés et présente tes preuves dans ton portfolio.</p>
       </div><Link href="/espace/portfolio">Présenter mes réalisations <ArrowRight size={16}/></Link>
     </section>}
-    {enrolled&&<section className="portfolio-dashboard-shortcut"><div><span className="journey-overline">MON PROJET FIL ROUGE</span><h2>Construis ton produit de bout en bout</h2><p>Centralise ta conception, tes liens, tes preuves et tes trois jalons dans un seul espace privé.</p></div><Link href="/espace/projet">Ouvrir mon projet <ArrowRight size={16}/></Link></section>}
-    {enrolled&&<section className="portfolio-dashboard-shortcut">
-      <div><span><BadgeCheck size={16}/> RÉALISATIONS VÉRIFIÉES</span>
-        <h2>Constitue ton portfolio professionnel</h2>
-        <p>Retrouve uniquement les projets approuvés et leurs preuves. Aucun certificat n'est créé automatiquement.</p>
-      </div>
-      <Link href="/espace/portfolio">Ouvrir mon portfolio <ArrowRight size={16}/></Link>
-    </section>}
+    {workspace}
     <section className="academy-milestone"><div className="milestone-marker"><Target size={20}/></div>
       <div><span>OBJECTIF · JOUR 14</span><strong>Mettre ton premier scénario utilisateur en ligne.</strong>
         <p>Une mission à la fois. Chaque étape donne lieu à un livrable évalué.</p></div>
       <Link href={pilotHref} aria-label="Ouvrir le parcours"><ArrowRight size={20}/></Link>
     </section>
-    {missions.length>0&&<details className="learner-legacy-details" open={xp>0||submissions.length>0}>
+    {missions.length>0&&<details className="learner-legacy-details">
       <summary><BookOpen size={17}/>
         <span><strong>Mes réalisations complémentaires</strong>
           <small>Tes anciens projets et graphiques sont conservés, mais restent secondaires au parcours principal.</small>
