@@ -125,6 +125,7 @@ export default async function TrainerSpace({searchParams}:{searchParams:Promise<
     {tab!=="dashboard"&&<WorkspaceTabHeading role="trainer" tab={tab}/>}
     {tab==="dashboard"&&<>
       <V2TrainerEvaluationOverview/>
+      <section className="panel"><span className="eyebrow">SÉANCES PRATIQUES</span><h2>Préparer mes prochaines séances</h2><p className="muted">Planifie les démonstrations, objectifs et travaux à réaliser avec tes apprenants.</p><Link className="primary-btn" href="/espace/formateur/seances">Ouvrir mes séances</Link></section>
       <section className="panel"><span className="eyebrow">PILOTAGE PÉDAGOGIQUE V2</span><h2>Préparer mes interventions</h2><p className="muted">Consulte les ateliers vérifiés, les dépôts à corriger et les travaux à reprendre pour chaque apprenant du parcours pilote.</p><Link className="primary-btn" href="/espace/formateur/suivi">Ouvrir le cockpit de suivi</Link></section>
       <LocalCoachDiagnostics/>
       <SecureTrainerOverview pending={pendingCount} learners={learnerCount}
