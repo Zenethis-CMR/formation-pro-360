@@ -1,0 +1,23 @@
+.onboarding-auth .auth-new-intro h2{font-size:clamp(27px,3vw,36px);letter-spacing:-.035em;line-height:1.2}
+.onboarding-auth .auth-new-intro p{font-size:14px;line-height:1.65;color:#536b83}
+.onboarding-auth .auth-new-form label{font-size:13px;color:#304d6b}
+.onboarding-auth .auth-new-form input{font-size:15px;min-height:46px;color:#203954;border-color:#c5d7eb}
+.onboarding-auth .auth-mode-tabs a{min-height:44px;font-size:13px}
+.onboarding-auth .auth-new-form button[type=submit]{min-height:48px;font-size:14px}
+.onboarding-auth .auth-password-wrap button{min-width:44px;min-height:44px}
+.onboarding-auth .auth-new-legal,.onboarding-auth .auth-password-rule{font-size:12px;line-height:1.6;color:#536b83}
+.onboarding-auth .auth-new-feedback{font-size:13px;line-height:1.6}
+.auth-confirmation-mode .auth-verification-journey{padding:20px;border:1px solid #dbe5f1;border-radius:14px;background:#fff;gap:14px}
+.auth-mail-visual{display:grid;place-items:center;width:68px;height:68px;background:#eaf3ff;color:#245fa6;border-radius:18px;margin:0 auto}
+.onboarding-auth .auth-verification-journey>p{background:#f3f7fc;color:#245fa6;font-size:13px}
+.onboarding-auth .auth-signup-steps li{font-size:13px;line-height:1.55}
+.onboarding-auth .auth-verification-next{min-height:48px;align-items:center;font-size:13px;background:#245fa6}
+.onboarding-auth .auth-verification-retry>summary{font-size:13px;min-height:44px;display:flex;align-items:center;cursor:pointer;color:#245fa6}
+.onboarding-auth .auth-new-bottom{font-size:11px;color:#536b83}
+.auth-password-checks{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:5px;padding:0;margin:8px 0 0;list-style:none}
+.auth-password-checks li{display:flex;align-items:center;gap:6px;color:#536b83;font-size:11px;line-height:1.4}
+.auth-password-checks li.met{color:#216645}
+.onboarding-auth :focus-visible{outline:3px solid #2865b5;outline-offset:3px}
+.onboarding-auth .auth-new-story :focus-visible{outline-color:white}
+@media(max-width:740px){.onboarding-auth .auth-new-story h1{font-size:26px;line-height:1.2;margin:10px 0}.onboarding-auth .auth-story-lead{font-size:13px;line-height:1.55}.onboarding-auth .auth-story-milestones,.onboarding-auth .auth-story-footer{display:none}.onboarding-auth .auth-story-eyebrow{margin:8px 0}.onboarding-auth .auth-new-form-side{padding:24px 18px}.auth-confirmation-mode .auth-verification-journey{padding:14px}}
+@media(prefers-reduced-motion:reduce){.onboarding-auth *{transition:none!important;animation:none!important;scroll-behavior:auto!important}}

@@ -6,7 +6,7 @@ import { AuthPasswordField } from "@/components/auth-password-field";
 import { isBackendConfigured } from "@/lib/database/server";
 
 type Mode="connexion"|"inscription"|"recuperation";
-type Params={mode?:string;sent?:string;error?:string};
+type Params={mode?:string;sent?:string;error?:string;verification?:string};
 const messages:Record<string,string>={
   setup:"La connexion est momentanément indisponible. Contacte le responsable de la plateforme.",
   email:"Entre une adresse e-mail valide pour continuer.",
@@ -37,24 +37,24 @@ export default async function Login({searchParams}:{searchParams:Promise<Params>
     ? params.mode as Mode : "connexion");
   const configured=isBackendConfigured();
   const creating=mode==="inscription";
-  const needsConfirmation=params.sent==="signup"||params.sent==="resend"
-    ||params.error==="confirm"||params.error==="verification"||params.error==="verification_unavailable";
+  const needsConfirmation=mode!=="recuperation"&&(params.verification==="1"||params.sent==="signup"||params.sent==="resend"
+    ||params.error==="confirm"||params.error==="verification"||params.error==="verification_unavailable");
   const title=needsConfirmation?"Vérifie ton adresse e-mail"
     :params.sent==="verified"?"Ton compte est prêt !"
     :mode==="connexion"?"Bienvenue à nouveau"
     :creating?"Commence ton parcours"
     :"Retrouve ton accès";
-  return <main className="auth-new-page">
+  return <main className={"auth-new-page onboarding-auth"+(needsConfirmation?" auth-confirmation-mode":"")}>
     <div className="auth-new-container">
       <aside className="auth-new-story">
         <div className="auth-story-top"><div className="auth-story-logo"><GraduationCap size={23}/></div><span>Formation <strong>Pro 360</strong></span></div>
         <span className="auth-story-eyebrow"><Sparkles size={15}/> APPRENDRE. CONSTRUIRE. PROGRESSER.</span>
         <h1>Développe des compétences qui <em>prennent vie.</em></h1>
-        <p className="auth-story-lead">Un environnement d'apprentissage où chaque mission mène à un projet concret, évalué par un véritable formateur.</p>
+        <p className="auth-story-lead">Un projet fil rouge, des séances pratiques avec ton formateur et des réalisations concrètes à chaque étape.</p>
         <div className="auth-story-milestones">
           <div><span><Code2 size={19}/></span><div><strong>16 ateliers, 8 semaines</strong><small>Un parcours structuré autour de vrais livrables.</small></div></div>
           <div><span><BookOpenCheck size={19}/></span><div><strong>La pratique d'abord</strong><small>Construis, teste, améliore et publie tes projets.</small></div></div>
-          <div><span><BadgeCheck size={19}/></span><div><strong>Des acquis vérifiés</strong><small>XP et badges après validation du formateur.</small></div></div>
+          <div><span><BadgeCheck size={19}/></span><div><strong>Des acquis vérifiés</strong><small>Des preuves et des XP après validation du formateur.</small></div></div>
         </div>
         <Link href="/catalogue" className="auth-story-catalog-link"><BookOpenCheck size={17}/> Découvrir les 7 formations <ArrowLeft size={14}/></Link>
         <div className="auth-story-footer"><ShieldCheck size={17}/> Tes progrès sont enregistrés et protégés dans ton espace personnel.</div>
@@ -68,7 +68,7 @@ export default async function Login({searchParams}:{searchParams:Promise<Params>
             :mode==="connexion"?"Retrouve tes missions et reprends exactement là où tu t'étais arrêté."
             :"Nous t'enverrons un lien pour définir un nouveau mot de passe."}</p>
         </div>
-        {(mode==="connexion"||mode==="inscription")&&<nav className="auth-mode-tabs" aria-label="Connexion ou inscription">
+        {!needsConfirmation&&(mode==="connexion"||mode==="inscription")&&<nav className="auth-mode-tabs" aria-label="Connexion ou inscription">
           <Link href="/login?mode=connexion" className={mode==="connexion"?"active":""} aria-current={mode==="connexion"?"page":undefined}><LockKeyhole size={16}/> Connexion</Link>
           <Link href="/login?mode=inscription" className={mode==="inscription"?"active":""} aria-current={creating?"page":undefined}><UserPlus size={16}/> Inscription</Link>
         </nav>}
@@ -80,7 +80,7 @@ export default async function Login({searchParams}:{searchParams:Promise<Params>
         </p>}
         {params.error&&<p className="auth-new-feedback danger" role="alert">{messages[params.error]||"Une erreur est survenue. Réessaie plus tard."}</p>}
         {configured&&<>
-          {mode==="connexion"&&<form action={signInWithPassword} className="auth-new-form">
+          {mode==="connexion"&&!needsConfirmation&&<form action={signInWithPassword} className="auth-new-form">
             <label htmlFor="login-email">Adresse e-mail</label>
             <input id="login-email" name="email" type="email" autoComplete="email" placeholder="prenom@exemple.com" maxLength={254} required/>
             <AuthPasswordField name="password" label="Mot de passe" autoComplete="current-password"/>
@@ -103,7 +103,7 @@ export default async function Login({searchParams}:{searchParams:Promise<Params>
             <p className="auth-new-legal">Si un compte correspond à cette adresse, tu recevras les instructions pour choisir un nouveau mot de passe.</p>
           </form>}
           {needsConfirmation&&<section className="auth-verification-journey" aria-label="Étapes de création du compte">
-            <p><MailCheck size={20}/> Confirme ton adresse, puis connecte-toi pour commencer.</p>
+            <div className="auth-mail-visual"><MailCheck size={34} strokeWidth={1.6}/></div><p><MailCheck size={20}/> Ouvre le message de vérification, confirme ton adresse, puis connecte-toi pour commencer.</p>
             <ol className="auth-signup-steps">
               <li>{params.sent==="signup"||params.error==="confirm"?<><CheckCircle2 size={16}/> Compte créé</>:<>1 · Demande de confirmation</>}</li>
               <li className="is-current"><MailCheck size={16}/> Confirmer l'e-mail reçu</li>
@@ -112,7 +112,7 @@ export default async function Login({searchParams}:{searchParams:Promise<Params>
             <Link href="/login?mode=connexion" className="auth-verification-next">
               J'ai confirmé mon adresse : me connecter <ArrowRight size={16}/>
             </Link>
-            <details className="auth-verification-retry">
+            <details className="auth-verification-retry" open={params.verification==="1"&&!!params.error}>
               <summary>Je n'ai pas reçu le message de confirmation</summary>
               <form action={resendVerificationEmail} className="auth-new-form">
                 <label htmlFor="resend-verification-email">Adresse e-mail utilisée à l'inscription</label>
