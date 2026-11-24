@@ -90,12 +90,13 @@ export default async function LearnerSpace({searchParams}:{searchParams:Promise<
         primaryAction={<DashboardDisclosure title="Les étapes de mon parcours" description="Objectifs, inscription, diagnostic facultatif et progression" initiallyOpen={pilot.published&&pilot.enrollment===null}><LearnerJourneyGuide pilot={pilot} profileSaved={!!rawPreferences}/></DashboardDisclosure>}
         workspace={<DashboardQuickLinks trainer={false} enrolled={pilot.enrollment==="active"||pilot.enrollment==="completed"}/>}/>
         :<><section className="panel" role="status"><h2>Le parcours est momentanément indisponible</h2><p>Tu peux consulter tes réalisations et revenir au programme.</p><Link className="primary-btn" href="/espace/parcours/ingenierie-produit-ia">Voir le parcours</Link></section><LearnerCompactProfile/><DashboardQuickLinks trainer={false} enrolled={false}/></>}
+      {nonPilot&&active&&activeDetail&&<DashboardQuickLinks trainer={false} enrolled={true} trackSlug={active.slug}/>}
       {!nonPilot&&adaptive}
       <DashboardDisclosure title="Mes objectifs et mon rythme" description="Personnaliser mon parcours et mon planning">
         <LearnerWelcomeBanner preferences={rawPreferences as LearnerPreferences|null} mission={insight.nextMission} pilot={nonPilot?null:pilot} adaptivePlanning={!!adaptive}/>
       </DashboardDisclosure>
       <section className="panel"><h2>Mes formations</h2><p>Retrouve tes inscriptions et consulte les résultats de chaque parcours séparément.</p><Link className="primary-btn" href="/espace/apprenant/formations">Gérer mes parcours <ArrowUpRight size={16}/></Link></section>
-      <section className="v2-catalog-banner"><div><span>LE CATALOGUE 360</span><h2>Découvrir les sept formations</h2><p>Compare les charges et les durées estimées selon ton rythme personnel. Le catalogue indique les parcours disponibles.</p></div><Link href="/catalogue" className="v2-catalog-banner-link">Explorer le catalogue <ArrowUpRight size={16}/></Link></section>
+      <section className="v2-catalog-banner"><div><span>LE CATALOGUE 360</span><h2>Découvrir les sept formations</h2><p>Compare les charges et les durées estimées selon ton rythme personnel. Ton espace personnel confirme les inscriptions disponibles.</p></div><Link href="/catalogue" className="v2-catalog-banner-link">Explorer le catalogue <ArrowUpRight size={16}/></Link></section>
     </>}
     <div className="secure-learner-alerts">
       {params.welcome && <p className="alert success" role="status">Tes préférences sont enregistrées. Tu peux maintenant continuer ton parcours.</p>}

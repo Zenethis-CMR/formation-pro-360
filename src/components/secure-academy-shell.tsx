@@ -1,9 +1,10 @@
 "use client";
 import Link from "next/link";
 import {WorkspaceLinkPending} from "@/components/workspace-feedback";
-import { createContext, useContext, useEffect, useRef } from "react";
+import { createContext, useContext, useEffect, useRef, useState } from "react";
 import { usePathname, useSearchParams } from "next/navigation";
 import { ArrowRight, BadgeCheck, BarChart3, BookOpen, BriefcaseBusiness, CalendarDays, ChevronDown, ClipboardCheck, FolderKanban, GraduationCap, LayoutDashboard, LogOut, MessageCircle, Settings2, Sparkles, Users } from "lucide-react";
+import {workspaceDestination,prefersWorkspaceFocus} from "@/lib/workspace-navigation";
 import { signOut } from "@/app/auth/actions";
 
 export type SecureWorkspaceStats={
@@ -106,13 +107,18 @@ export function SecureAcademyShell({children,stats}:{children:React.ReactNode;st
     {label:"APPRENDRE",items:links.slice(0,3)},
     {label:"AVEC MON FORMATEUR",items:links.slice(3,6)}
   ];
+  const mobileDestination=workspaceDestination(pathname,currentTab,trainer,projectBase);
+  const routeKey=pathname+"?"+currentTab;
+  const [focusOverride,setFocusOverride]=useState<{route:string;value:boolean}|null>(null);
+  const focused=!trainer&&(focusOverride?.route===routeKey?focusOverride.value:prefersWorkspaceFocus(pathname,currentTab,trainer));
   const profileName=stats.displayName|| (trainer?"Espace formateur":"Mon parcours");
   const isActive=(href:string)=>{
     const [path,query]=href.split("?");
-    if(!trainer&&path==="/espace/projet"&&(pathname===path||pathname.startsWith(path+"/")))return true;
-    if(!trainer&&path==="/espace/apprenant/formations"&&(pathname.startsWith(path)||pathname.startsWith("/espace/parcours/")))return !pathname.endsWith("/projet")&&!pathname.endsWith("/portfolio");
+    if(!trainer&&(path==="/espace/projet"||path===projectBase+"/projet")&&mobileDestination==="project")return true;
+    if(!trainer&&path==="/espace/apprenant/formations"&&(pathname.startsWith(path)||pathname.startsWith("/espace/parcours/")))return mobileDestination==="courses";
     if(trainer&&path===base+"/suivi"&&pathname===base+"/bilan")return true;
     if(trainer&&path===base&&new URLSearchParams(query||"").get("onglet")==="programme"&&(pathname===base+"/formations"||pathname.startsWith(base+"/formations/")))return true;
+    if(!trainer&&path===(projectBase?projectBase+"/portfolio":"/espace/portfolio")&&pathname.endsWith("/portfolio"))return true;
     if(path!==pathname)return false;
     const tab=new URLSearchParams(query||"").get("onglet")||"dashboard";
     return tab===currentTab;
@@ -120,7 +126,7 @@ export function SecureAcademyShell({children,stats}:{children:React.ReactNode;st
   const secondary=[...links.slice(6),{href:"/espace/bienvenue",label:"Mes objectifs",icon:Sparkles},{href:"/espace/compte",label:"Mon compte",icon:Settings2}];
   const secondaryActive=!trainer&&secondary.some(l=>isActive(l.href));
   useEffect(()=>{if(desktopMore.current)desktopMore.current.open=secondaryActive;},[pathname,currentTab,secondaryActive]);
-  return <WorkspaceStatsContext.Provider value={stats}><div className="academy-viewport secure-academy-viewport"><div className={"academy-frame secure-academy-frame"+(detail?" secure-academy-detail":"")+(learnerDashboard?" workspace-learner-dashboard":"")+(!trainer?" workspace-learner-shell":"")}>
+  return <WorkspaceStatsContext.Provider value={stats}><div className="academy-viewport secure-academy-viewport"><div className={"academy-frame secure-academy-frame"+(detail?" secure-academy-detail":"")+(learnerDashboard?" workspace-learner-dashboard":"")+(!trainer?" workspace-learner-shell":"")+(focused?" workspace-focus":"")}>
     <a className="ux-skip-link" href="#workspace-content">Aller au contenu principal</a>
     <aside className="academy-sidebar">
       <Link href={base} className="academy-brand"><span className="brand-flower"><GraduationCap size={23} strokeWidth={2.1}/></span><span>Formation <span>Pro 360</span></span></Link>
@@ -146,6 +152,7 @@ export function SecureAcademyShell({children,stats}:{children:React.ReactNode;st
         <span className="brand-flower"><GraduationCap size={23}/></span><span>Formation <span>Pro 360</span></span></Link>
         <Link className="secure-mobile-account" href="/espace/compte" aria-label="Mon compte"><Settings2 size={19}/></Link>
       </div>
+      {!trainer&&<div className="workspace-context-bar"><div className="workspace-context-course"><span>FORMATION ACTIVE</span><Link href="/espace/apprenant/formations">{stats.activeTrack?.title??"Choisir une formation"}<ChevronDown size={16}/></Link></div><div className="workspace-context-actions"><Link href={activeCourseHref(stats)} className="workspace-context-link">Mon studio <ArrowRight size={15}/></Link><button type="button" className="workspace-focus-toggle" aria-pressed={focused} onClick={()=>setFocusOverride({route:routeKey,value:!focused})}>{focused?"Afficher le panneau profil":"Agrandir mon espace"}</button></div></div>}
       {children}
       {!trainer&&!learnerDashboard&&<div className="workspace-profile-bottom"><LearnerCompactProfile/></div>}
     </section>
@@ -178,19 +185,19 @@ export function SecureAcademyShell({children,stats}:{children:React.ReactNode;st
     </aside>}
   </div>
   <nav className="academy-mobile-bottom secure-academy-mobile-nav" aria-label="Navigation mobile de l'espace personnel">
-    <Link href={base} className={pathname===base&&currentTab==="dashboard"?"on":""}><LayoutDashboard size={19}/>Accueil</Link>
+    <Link href={base} aria-current={mobileDestination==="home"?"page":undefined} className={mobileDestination==="home"?"on":""}><LayoutDashboard size={19}/>Accueil</Link>
     {trainer?<>
-      <Link href={base+"/corrections"} className={pathname.startsWith(base+"/corrections")?"on":""}><ClipboardCheck size={19}/>Corrections</Link>
-      <Link href={base+"/suivi"} className={pathname===base+"/suivi"||pathname===base+"/bilan"?"on":""}><Users size={19}/>Apprenants</Link>
+      <Link href={base+"/corrections"} aria-current={mobileDestination==="corrections"?"page":undefined} className={mobileDestination==="corrections"?"on":""}><ClipboardCheck size={19}/>Corrections</Link>
+      <Link href={base+"/suivi"} aria-current={mobileDestination==="learners"?"page":undefined} className={mobileDestination==="learners"?"on":""}><Users size={19}/>Apprenants</Link>
     </>:<>
-      <Link href={projectBase?projectBase+"/projet":"/espace/projet"} className={pathname.startsWith(projectBase?projectBase+"/projet":"/espace/projet")?"on":""}><FolderKanban size={19}/>Projet</Link>
-      <Link href={base+"/bilan"} className={pathname===base+"/bilan"?"on":""}><BarChart3 size={19}/>{otherCourse?"Bilan pilote":"Bilan"}</Link>
+      <Link href={projectBase?projectBase+"/projet":"/espace/projet"} aria-current={mobileDestination==="project"?"page":undefined} className={mobileDestination==="project"?"on":""}><FolderKanban size={19}/>Projet</Link>
+      <Link href={base+"/bilan"} aria-current={mobileDestination==="report"?"page":undefined} className={mobileDestination==="report"?"on":""}><BarChart3 size={19}/>{otherCourse?"Bilan pilote":"Bilan"}</Link>
     </>}
-    <Link href={trainer?base+"/seances":"/espace/apprenant/formations"} className={(trainer?pathname===base+"/seances":pathname.startsWith("/espace/parcours/")||pathname.startsWith("/espace/apprenant/formations"))?"on":""}><CalendarDays size={19}/>{trainer?"Séances":"Formations"}</Link>
-    {trainer?<details ref={mobileMore} className="academy-mobile-more"><summary aria-label="Autres rubriques formateur" className={pathname==="/espace/compte"||pathname===base+"/defis"||pathname===base+"/aide"||pathname===base+"/revues"||pathname===base+"/formations"||(pathname===base&&currentTab!=="dashboard")?"on":""}><Settings2 size={19}/>Plus</summary><nav className="academy-mobile-more-menu" aria-label="Autres rubriques formateur"><Link href="/catalogue"><BookOpen size={16}/> Catalogue des formations</Link><Link href={base+"?onglet=evaluations"}><ClipboardCheck size={16}/> Autres évaluations</Link><Link href={base+"?onglet=apprenants"}><Users size={16}/> Autres apprenants</Link><Link href={base+"/revues"}><FolderKanban size={16}/> Revues de projets</Link><Link href={base+"/aide"}><MessageCircle size={16}/> Suivi des blocages</Link><Link href={base+"/defis"}><ClipboardCheck size={16}/> Consignes et défis</Link><Link href={base+"?onglet=programme"}><CalendarDays size={16}/> Programme</Link><Link href="/espace/compte"><Settings2 size={16}/> Mon compte</Link></nav></details>:
-      <details ref={mobileMore} className="academy-mobile-more">
+    <Link href={trainer?base+"/seances":"/espace/apprenant/formations"} aria-current={mobileDestination===(trainer?"sessions":"courses")?"page":undefined} className={mobileDestination===(trainer?"sessions":"courses")?"on":""}><CalendarDays size={19}/>{trainer?"Séances":"Formations"}</Link>
+    {trainer?<details ref={mobileMore} className="academy-mobile-more" onKeyDown={e=>{if(e.key==="Escape"&&mobileMore.current?.open){e.preventDefault();mobileMore.current.open=false;mobileMore.current.querySelector("summary")?.focus();}}}><summary aria-label="Autres rubriques formateur" className={mobileDestination==="more"?"on":""}><Settings2 size={19}/>Plus</summary><nav className="academy-mobile-more-menu" aria-label="Autres rubriques formateur"><Link href="/catalogue"><BookOpen size={16}/> Catalogue des formations</Link><Link href={base+"?onglet=evaluations"}><ClipboardCheck size={16}/> Autres évaluations</Link><Link href={base+"?onglet=apprenants"}><Users size={16}/> Autres apprenants</Link><Link href={base+"/revues"}><FolderKanban size={16}/> Revues de projets</Link><Link href={base+"/aide"}><MessageCircle size={16}/> Suivi des blocages</Link><Link href={base+"/defis"}><ClipboardCheck size={16}/> Consignes et défis</Link><Link href={base+"?onglet=programme"}><CalendarDays size={16}/> Programme</Link><Link href="/espace/compte"><Settings2 size={16}/> Mon compte</Link></nav></details>:
+      <details ref={mobileMore} className="academy-mobile-more" onKeyDown={e=>{if(e.key==="Escape"&&mobileMore.current?.open){e.preventDefault();mobileMore.current.open=false;mobileMore.current.querySelector("summary")?.focus();}}}>
         <summary aria-label="Afficher les autres rubriques de mon espace" className={
-          (pathname===base+"/seances"||pathname===base+"/defis"||pathname===base+"/aide"||pathname==="/espace/portfolio"||pathname==="/espace/bienvenue"||pathname==="/espace/compte"||(pathname===base&&currentTab!=="dashboard"))?"on":""
+          mobileDestination==="more"?"on":""
         }><Settings2 size={19}/>Plus</summary>
         <nav className="academy-mobile-more-menu" aria-label="Autres rubriques apprenant">
           <Link href={base+"/seances"}><CalendarDays size={16}/> {"Mes séances"}</Link>

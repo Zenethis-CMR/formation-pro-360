@@ -1,6 +1,7 @@
 import "./workspace-v3.css";
 import "./dashboard-v5.css";
 import "./workspace-sidebars.css";
+import "./workspace-excellence.css";
 import { loadLearningContext } from "@/lib/active-learning-context";
 import { requireRole } from "@/lib/auth/require-role";
 import { SecureAcademyShell, type SecureWorkspaceStats } from "@/components/secure-academy-shell";
