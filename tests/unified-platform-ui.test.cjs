@@ -21,7 +21,8 @@ test("one learner-facing product without V1/V2 version labels",()=>{
   assert.doesNotMatch(s,/(?:PARCOURS|PILOTE|FORMATION|PROGRAMME|CATALOGUE|CORRECTIONS|XP|MISSIONS|ACQUIS) (?:V1|V2)\b/);
  }
  const shell=read("src/components/secure-academy-shell.tsx");
- assert.match(shell,/label:"Mon parcours"/);
+ assert.match(shell,/label:"Mes formations"/);
+ assert.match(shell,/activeCourseHref\(stats\)/);
  assert.match(shell,/label:"Corriger les ateliers"/);
  assert.match(shell,/label:"Mes réalisations"/);
  assert.match(shell,/label:"Catalogue"/);
