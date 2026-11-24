@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
-import { ArrowRight, BadgeCheck, BarChart3, BookOpen, BriefcaseBusiness, CalendarDays, ClipboardCheck, FolderKanban, GraduationCap, LayoutDashboard, LogOut, Settings2, Sparkles, Users } from "lucide-react";
+import { ArrowRight, BadgeCheck, BarChart3, BookOpen, BriefcaseBusiness, CalendarDays, ClipboardCheck, FolderKanban, GraduationCap, LayoutDashboard, LogOut, MessageCircle, Settings2, Sparkles, Users } from "lucide-react";
 import { signOut } from "@/app/auth/actions";
 
 export type SecureWorkspaceStats={
@@ -30,7 +30,7 @@ export function SecureAcademyShell({children,stats}:{children:React.ReactNode;st
   const trainer=stats.role==="trainer";
   const base=trainer?"/espace/formateur":"/espace/apprenant";
   const detail=pathname.startsWith("/espace/atelier/")||pathname.includes("/atelier/")||
-    pathname.startsWith("/espace/compte")||pathname.startsWith("/espace/bienvenue")||pathname.startsWith("/espace/projet")||pathname.endsWith("/seances")||pathname.endsWith("/defis");
+    pathname.startsWith("/espace/compte")||pathname.startsWith("/espace/bienvenue")||pathname.startsWith("/espace/projet")||pathname.endsWith("/seances")||pathname.endsWith("/defis")||pathname.endsWith("/aide");
   const links=trainer?[
     {href:base,label:"Tableau de bord",icon:LayoutDashboard},
     {href:base+"?onglet=evaluations",label:"Évaluations",icon:ClipboardCheck},
@@ -38,6 +38,7 @@ export function SecureAcademyShell({children,stats}:{children:React.ReactNode;st
     {href:base+"?onglet=apprenants",label:"Mes apprenants",icon:Users},
     {href:base+"/seances",label:"Mes séances",icon:CalendarDays},
     {href:base+"/defis",label:"Consignes et défis",icon:ClipboardCheck},
+    {href:base+"/aide",label:"Suivi des blocages",icon:MessageCircle},
     {href:base+"?onglet=programme",label:"Programme",icon:CalendarDays},
     {href:"/catalogue",label:"Catalogue",icon:Sparkles}
   ]:[
@@ -46,6 +47,7 @@ export function SecureAcademyShell({children,stats}:{children:React.ReactNode;st
     {href:"/espace/projet",label:"Mon projet",icon:FolderKanban},
     {href:base+"/seances",label:"Mes séances",icon:CalendarDays},
     {href:base+"/defis",label:"Mes défis",icon:ClipboardCheck},
+    {href:base+"/aide",label:"Besoin d’aide",icon:MessageCircle},
     {href:"/espace/portfolio",label:"Mon portfolio",icon:BriefcaseBusiness},
     {href:base+"?onglet=missions",label:"Mes réalisations",icon:BookOpen},
     {href:base+"?onglet=progression",label:"Ma progression",icon:BarChart3},
@@ -132,15 +134,16 @@ export function SecureAcademyShell({children,stats}:{children:React.ReactNode;st
       <Link href={base+"?onglet=progression"} className={pathname===base&&currentTab==="progression"?"on":""}><BarChart3 size={19}/>Progression</Link>
     </>}
     <Link href={trainer?base+"/seances":"/espace/parcours/ingenierie-produit-ia"} className={(trainer?pathname===base+"/seances":pathname.startsWith("/espace/parcours/ingenierie-produit-ia"))?"on":""}><CalendarDays size={19}/>{trainer?"Séances":"Parcours"}</Link>
-    {trainer?<details className="academy-mobile-more"><summary aria-label="Autres rubriques formateur" className={pathname==="/espace/compte"||pathname===base+"/defis"||(pathname===base&&currentTab==="programme")?"on":""}><Settings2 size={19}/>Plus</summary><nav className="academy-mobile-more-menu" aria-label="Autres rubriques formateur"><Link href={base+"/defis"}><ClipboardCheck size={16}/> Consignes et défis</Link><Link href={base+"?onglet=programme"}><CalendarDays size={16}/> Programme</Link><Link href="/espace/compte"><Settings2 size={16}/> Mon compte</Link></nav></details>:
+    {trainer?<details className="academy-mobile-more"><summary aria-label="Autres rubriques formateur" className={pathname==="/espace/compte"||(pathname===base+"/defis"||pathname===base+"/aide")||(pathname===base&&currentTab==="programme")?"on":""}><Settings2 size={19}/>Plus</summary><nav className="academy-mobile-more-menu" aria-label="Autres rubriques formateur"><Link href={base+"/aide"}><MessageCircle size={16}/> Suivi des blocages</Link><Link href={base+"/defis"}><ClipboardCheck size={16}/> Consignes et défis</Link><Link href={base+"?onglet=programme"}><CalendarDays size={16}/> Programme</Link><Link href="/espace/compte"><Settings2 size={16}/> Mon compte</Link></nav></details>:
       <details className="academy-mobile-more">
         <summary aria-label="Afficher les autres rubriques de mon espace" className={
-          (pathname===base+"/seances"||pathname===base+"/defis"||pathname.startsWith("/espace/projet")||pathname==="/espace/portfolio"||pathname==="/espace/bienvenue"||
+          (pathname===base+"/seances"||(pathname===base+"/defis"||pathname===base+"/aide")||pathname.startsWith("/espace/projet")||pathname==="/espace/portfolio"||pathname==="/espace/bienvenue"||
           pathname==="/espace/compte"||(pathname===base&&currentTab==="programme"))?"on":""
         }><Settings2 size={19}/>Plus</summary>
         <nav className="academy-mobile-more-menu" aria-label="Autres rubriques apprenant">
           <Link href={base+"/seances"}><CalendarDays size={16}/> Mes séances</Link>
           <Link href={base+"/defis"}><ClipboardCheck size={16}/> Mes défis</Link>
+          <Link href={base+"/aide"}><MessageCircle size={16}/> Besoin d’aide</Link>
           <Link href="/espace/projet"><FolderKanban size={16}/> Mon projet</Link>
           <Link href="/espace/portfolio"><BriefcaseBusiness size={16}/> Mon portfolio</Link>
           <Link href={base+"?onglet=programme"}><CalendarDays size={16}/> Mes ressources</Link>
