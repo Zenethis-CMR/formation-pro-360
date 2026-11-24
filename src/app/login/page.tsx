@@ -1,5 +1,4 @@
 import Link from "next/link";
-import "./onboarding-auth.css";
 import { ArrowLeft, ArrowRight, BadgeCheck, BookOpenCheck, CheckCircle2, Code2, GraduationCap, LockKeyhole, MailCheck, ShieldCheck, Sparkles, UserPlus } from "lucide-react";
 import { registerLearner, requestPasswordReset, resendVerificationEmail, signInWithPassword } from "@/app/auth/actions";
 import { AuthSubmitButton } from "@/components/auth-submit-button";
