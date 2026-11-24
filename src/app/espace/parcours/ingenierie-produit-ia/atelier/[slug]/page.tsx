@@ -157,12 +157,24 @@ export default async function V2WorkshopStudio({params,searchParams}:{
         <Link href={base}>Vérifier mon inscription et mes droits <ArrowRight size={16}/></Link>
       </div>
     </section>:
-    <div className="studio-layout">
+    <div className="studio-layout studio-layout-v3">
+      <aside className="studio-aside studio-command-bar" aria-label="Sommaire de l'atelier">
+        <div className="studio-command-top">
+          <div><span className="studio-eyebrow">TON ESPACE DE PRODUCTION</span><strong>{editorial.title}</strong></div>
+          <span className={"studio-command-status "+(approved?"verified":latest?.status==="pending"?"pending":latest?.status==="changes_requested"?"rework":"neutral")}>{approved?"Validé":latest?.status==="pending"?"En correction":latest?.status==="changes_requested"?"À améliorer":"À réaliser"}</span>
+        </div>
+        <nav className="studio-command-links" aria-label="Accès aux étapes et outils">
+          <a href="#brief">Mission</a><a href="#studio-checklist-title">Étapes pratiques</a>
+          {review&&<a href="#retour-formateur">Correction</a>}<a href="#carnet">Carnet</a><a href="#qualite">Qualité</a><a href="#boite-outils">Outils</a><a href="#coach">Coach</a><a href="#livrable">Livrable</a>
+          <Link href="/espace/apprenant/aide">Aide du formateur <ArrowUpRight size={14}/></Link>
+        </nav>
+      </aside>
       <div className="studio-main">
         <section id="brief" className="studio-section studio-brief">
           <span className="studio-eyebrow"><Target size={15}/> 01 · COMPRENDRE LA MISSION</span>
           <h2>Ce que tu vas vraiment construire</h2>
           <p className="studio-leading">{guide?.brief}</p>
+          <div className="studio-human-note"><MessageSquare size={19}/><div><strong>Un atelier pratique, avec ton formateur.</strong><p>Les consignes et démonstrations se travaillent ensemble. Les outils servent à préparer, pratiquer et documenter ton travail ; seul le formateur valide les réalisations.</p><Link href="/espace/apprenant/aide">Demander un accompagnement <ArrowRight size={14}/></Link></div></div>
           <div className="studio-objective-card"><span>CONSIGNE OFFICIELLE · EXERCICE GUIDÉ</span><p>{lesson?.guided_work}</p></div>
           <div className="studio-objective-card is-independent"><span>CONSIGNE OFFICIELLE · TRAVAIL AUTONOME</span><p>{lesson?.independent_work}</p></div>
         </section>
@@ -257,18 +269,7 @@ export default async function V2WorkshopStudio({params,searchParams}:{
           {next?<Link href={base+"/atelier/"+next.slug}><span><small>ATELIER SUIVANT</small><strong>{next.title}</strong></span><ArrowRight size={16}/></Link>:<Link href={base}><span><small>FIN DU PARCOURS</small><strong>Revoir les huit semaines</strong></span><ArrowRight size={16}/></Link>}
         </nav>
       </div>
-      <aside className="studio-aside" aria-label="Sommaire de l'atelier">
-        <div className="studio-aside-card"><span>TON STUDIO D'ATELIER</span><strong>{editorial.title}</strong><div className="studio-aside-divider"/>
-          <a href="#brief">01 · La mission</a><a href="#studio-checklist-title">02 · Les étapes</a>
-          {review&&<a href="#retour-formateur">Retour du formateur</a>}<a href="#carnet">03 · Carnet</a><a href="#qualite">04 · Qualité</a><a href="#boite-outils">05 · Modèles et outils</a>
-          <a href="#coach">06 · Coach pédagogique</a>
-          <a href="#livrable">07 · Remise du livrable</a>
-          <div className="studio-aside-divider"/>
-          <p>Statut : <b>{approved?"Validé":latest?.status==="pending"?"En correction":
-            latest?.status==="changes_requested"?"À améliorer":"À réaliser"}</b></p>
-          <Link href="/espace/apprenant?onglet=progression">Ma progression <ArrowUpRight size={15}/></Link>
-        </div>
-      </aside>
+
     </div>}
   </main>;
 }
