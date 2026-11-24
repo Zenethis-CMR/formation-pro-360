@@ -16,14 +16,8 @@ export type SecureWorkspaceStats={
   nextTitle:string|null;
   nextHref:string|null;
 };
-function CircleStat({label,value,percent,color}:{label:string;value:string;percent:number;color:string}) {
-  return <div className="profile-mini-stat"><div className="mini-circle">
-    <svg viewBox="0 0 42 42" width="54" height="54" aria-hidden="true">
-      <circle cx="21" cy="21" r="16" fill="none" stroke="#eef1f6" strokeWidth="3.5"/>
-      <circle cx="21" cy="21" r="16" fill="none" stroke={color} strokeWidth="3.5" pathLength={100}
-        strokeDasharray={Math.max(0,Math.min(100,percent))+" 100"}
-        strokeLinecap="round" transform="rotate(-90 21 21)"/>
-    </svg><b>{value}</b></div><span>{label}</span></div>;
+function ProfileStat({label,value}:{label:string;value:string}){
+ return <div className="profile-mini-stat workspace-profile-stat"><b>{value}</b><span>{label}</span></div>;
 }
 export function SecureAcademyShell({children,stats}:{children:React.ReactNode;stats:SecureWorkspaceStats}) {
   const pathname=usePathname();
@@ -72,7 +66,6 @@ export function SecureAcademyShell({children,stats}:{children:React.ReactNode;st
     {label:"MES ACQUIS",items:links.slice(6,10)},
     {label:"RESSOURCES",items:links.slice(10)}
   ];
-  const learningPercent=stats.missionCount?Math.round(stats.approvedCount/stats.missionCount*100):0;
   const profileName=stats.displayName|| (trainer?"Espace formateur":"Mon parcours");
   const isActive=(href:string)=>{
     const [path,query]=href.split("?");
@@ -118,16 +111,16 @@ export function SecureAcademyShell({children,stats}:{children:React.ReactNode;st
         <div className="profile-avatar profile-avatar-pro" aria-hidden="true"><GraduationCap size={37} strokeWidth={1.8}/></div>
         <h3>{profileName}</h3><p>{trainer?"Formateur":"Apprenant"} · Compte sécurisé</p>
         <div className="profile-mini-grid">
-          {trainer?<><CircleStat label="Apprenants" value={String(stats.learners)} percent={Math.min(100,stats.learners*10)} color="#48c995"/>
-            <CircleStat label="À corriger" value={String(stats.pending)} percent={Math.min(100,stats.pending*25)} color="#4387f5"/>
-            <CircleStat label="Missions" value={String(stats.missionCount)} percent={Math.min(100,stats.missionCount/16*100)} color="#ffa56e"/></>
-          :<><CircleStat label="Autres missions" value={String(stats.approvedCount)} percent={learningPercent} color="#48c995"/>
-            <CircleStat label="XP autres" value={String(stats.xp)} percent={(stats.xp%300)/300*100} color="#4387f5"/>
-            <CircleStat label="Autres en attente" value={String(stats.pending)} percent={Math.min(100,stats.pending*25)} color="#ffa56e"/></>}
+          {trainer?<><ProfileStat label="Apprenants" value={String(stats.learners)}/>
+            <ProfileStat label="Autres à corriger" value={String(stats.pending)}/>
+            <ProfileStat label="Autres missions" value={String(stats.missionCount)}/></>
+          :<><ProfileStat label="Autres missions" value={String(stats.approvedCount)}/>
+            <ProfileStat label="XP autres" value={String(stats.xp)}/>
+            <ProfileStat label="Autres en attente" value={String(stats.pending)}/></>}
         </div>
       </div>
       <div className="rail-widget">
-        <div className="rail-widget-heading"><h3>{trainer?"À traiter":"Mon parcours"}</h3><span>{trainer?(stats.pending>0?String(stats.pending).padStart(2,"0"):"01"):"16"}</span></div>
+        <div className="rail-widget-heading"><h3>{trainer?"Autres corrections":"Mon parcours"}</h3><span>{trainer?(String(stats.pending).padStart(2,"0")):"16"}</span></div>
         <div className="rail-next-icon">{trainer?<ClipboardCheck size={20}/>:<Sparkles size={20}/>}</div>
         <strong>{trainer?(stats.nextTitle||"Corrections à venir"):"Ingénierie produit et IA"}</strong>
         <p>{trainer?(stats.pending?"Des livrables attendent une correction.":"Les nouvelles soumissions apparaîtront ici."):"Ouvre les 16 ateliers, vérifie ton inscription et avance jusqu'au MVP avec ton formateur."}</p>
