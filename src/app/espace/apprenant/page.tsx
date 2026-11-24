@@ -79,9 +79,9 @@ export default async function LearnerSpace({searchParams}:{searchParams:Promise<
     {tab==="dashboard"&&<>
       <DashboardHeader trainer={false} name={(rawPreferences as LearnerPreferences|null)?.preferred_name}/>
       {pilot?<SecureLearnerOverview missions={missions} submissions={submissions} approvedIds={[...approved]} dependencies={deps} xp={xp} level={level} pilot={pilot}
-        primaryAction={<LearnerJourneyGuide pilot={pilot} profileSaved={!!rawPreferences}/>}
+        primaryAction={<DashboardDisclosure title="Les étapes de mon parcours" description="Objectifs, inscription, diagnostic facultatif et progression" initiallyOpen={pilot.published&&pilot.enrollment===null}><LearnerJourneyGuide pilot={pilot} profileSaved={!!rawPreferences}/></DashboardDisclosure>}
         workspace={<DashboardQuickLinks trainer={false} enrolled={pilot.enrollment==="active"||pilot.enrollment==="completed"}/>}/>
-        :<><section className="panel" role="status"><h2>Le parcours est momentanément indisponible</h2><p>Tu peux consulter tes réalisations et revenir au programme.</p><Link className="primary-btn" href="/espace/parcours/ingenierie-produit-ia">Voir le parcours</Link></section><DashboardQuickLinks trainer={false}/></>}
+        :<><section className="panel" role="status"><h2>Le parcours est momentanément indisponible</h2><p>Tu peux consulter tes réalisations et revenir au programme.</p><Link className="primary-btn" href="/espace/parcours/ingenierie-produit-ia">Voir le parcours</Link></section><DashboardQuickLinks trainer={false} enrolled={false}/></>}
       <DashboardDisclosure title="Mes objectifs et mon rythme" description="Personnaliser mon parcours et mon planning">
         <LearnerWelcomeBanner preferences={rawPreferences as LearnerPreferences|null} mission={insight.nextMission} pilot={pilot}/>
       </DashboardDisclosure>

@@ -43,10 +43,9 @@ export function SecureLearnerOverview({missions,submissions,approvedIds,dependen
     pilot.published?"Consulter le programme":"Découvrir le programme";
 
   return <div className="real-overview" id="tableau-de-bord">
-    {primaryAction}
     <section className="academy-feature academy-feature-v2" aria-label="Formation principale">
       <div className="feature-copy">
-        <span className="feature-label"><Sparkles size={14}/> PARCOURS PRINCIPAL · FORMATION DISPONIBLE</span>
+        <span className="feature-label"><Sparkles size={14}/> PARCOURS PRINCIPAL · {pilot.published?"FORMATION DISPONIBLE":"APERÇU DU PROGRAMME"}</span>
         <h2>Ingénierie produit<br/><span>et intelligence artificielle.</span></h2>
         <p>Du problème utilisateur au MVP en ligne, puis aux premiers essais commerciaux. Un projet fil rouge et des réalisations évaluées.</p>
         <div className="feature-meta">
@@ -82,6 +81,7 @@ export function SecureLearnerOverview({missions,submissions,approvedIds,dependen
       </div><Link href="/espace/portfolio">Présenter mes réalisations <ArrowRight size={16}/></Link>
     </section>}
     {workspace}
+    {primaryAction}
     <section className="academy-milestone"><div className="milestone-marker"><Target size={20}/></div>
       <div><span>OBJECTIF · JOUR 14</span><strong>Mettre ton premier scénario utilisateur en ligne.</strong>
         <p>Une mission à la fois. Chaque étape donne lieu à un livrable évalué.</p></div>

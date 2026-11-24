@@ -4,7 +4,13 @@ test("dashboard puts the page heading first and groups the operational modules",
  const learner=read("src/app/espace/apprenant/page.tsx"),trainer=read("src/app/espace/formateur/page.tsx"),overview=read("src/components/secure-learner-overview.tsx"),workspace=read("src/components/dashboard-workspace.tsx");
  assert.ok(learner.indexOf("<DashboardHeader")<learner.indexOf("<SecureLearnerOverview"));
  assert.ok(trainer.indexOf("<DashboardHeader")<trainer.indexOf("<V2TrainerEvaluationOverview"));
- assert.ok(overview.indexOf("{primaryAction}")<overview.indexOf("academy-feature-v2"));
+ assert.ok(overview.indexOf("academy-feature-v2")<overview.indexOf("v2-pilot-metrics"));
+ assert.ok(overview.indexOf("v2-pilot-metrics")<overview.indexOf("{workspace}"));
+ assert.ok(overview.indexOf("{workspace}")<overview.indexOf("{primaryAction}"));
+ assert.ok(learner.includes('title="Les étapes de mon parcours"'));
+ assert.ok(learner.includes("initiallyOpen={pilot.published&&pilot.enrollment===null}"));
+ assert.ok(workspace.includes('className="dash-shortcut"'));
+ assert.ok(!learner.includes("Ouvrir mon bilan</Link>"));
  assert.ok(overview.indexOf("{workspace}")<overview.indexOf("learner-legacy-details"));
  assert.ok(!overview.includes("open={xp>0"));
  assert.ok(trainer.includes('<DashboardDisclosure title="État technique du coach local"'));
