@@ -1,0 +1,11 @@
+# Curriculum Factory 360 — phase 1
+Le plan directeur prévoit sept formations. Cette livraison ajoute six programmes éditoriaux en validation : 48 modules, 96 propositions d'ateliers, 384 intitulés de critères à 25 points. Avec le pilote existant : 56 modules, 112 ateliers conçus ou proposés. Les nouvelles fiches publiques comprennent objectifs, livrables, outils suggérés, jalons et jury final. Elles ne sont ni des cours publiés dans PostgreSQL, ni une admission. Le formateur doit valider les contenus, détailler les démonstrations, les exercices guidés/autonomes et les descripteurs de notation, puis vérifier les ressources.
+## Étapes techniques avant ouverture
+1. Inventorier migrations et routes, introduire les programmes en brouillon versionné (source unique backend, identifiants stables et critères complets); ne jamais modifier les identifiants du pilote ni ses preuves.
+2. Generaliser les API d'inscription, accès aux ateliers, soumissions, validation et XP avec parcours explicite, droits et prérequis isolés. La restriction actuelle au pilote reste en place jusqu'à la réussite des tests. Ne pas ouvrir un parcours sur la seule présence de données éditoriales.
+3. Rendre l'espace apprenant et formateur sensibles au parcours sélectionné; dossier, backlog, carnet, séances, défis, revues, rapports et portfolio filtrés par parcours. Préserver les historiques existants.
+4. Construire les fiches d'atelier et leurs ressources, revoir chaque grille avec le formateur (30 % compréhension/70 % pratique, soutenance, seuil proposé 80/100). Aucun XP sans validation humaine.
+5. Tester chaque parcours en environnement isolé : compte non inscrit, actif, terminé, suspendu; séparation inter-parcours, validation et XP sans doublon; restauration; recette mobile et clavier; état indisponible.
+6. Publier individuellement les programmes approuvés, et n'afficher une inscription ouverte que si les droits et l'état backend la permettent.
+## Recette phase 1
+Les sept pages de catalogue doivent être accessibles, les six nouvelles fiches comporter huit semaines et seize ateliers proposés, les inscriptions fermées clairement visibles, et le lien au pilote conservé. Les tests structurels vérifient le contenu mais ne remplacent pas une compilation et une recette navigateur. Toutes les modifications sont sur main.
