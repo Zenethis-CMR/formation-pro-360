@@ -61,3 +61,19 @@ test("new learner UX has responsive layout, keyboard focus and reduced motion co
    "@media(max-width:550px)","focus-visible","prefers-reduced-motion:reduce"])
    assert.ok(css.includes(marker),marker);
 });
+
+test("studio primary actions remain reachable when access or review information is incomplete",()=>{
+ const studio=read("src/app/espace/parcours/ingenierie-produit-ia/atelier/[slug]/page.tsx");
+ const feedback=read("src/components/workshop-trainer-feedback.tsx");
+ const notebook=read("src/components/workshop-notebook.tsx");
+ assert.ok(studio.includes('const primaryHref=!accessible?base:'));
+ assert.ok(studio.includes('const primaryLabel=!accessible?"Vérifier mon accès"'));
+ assert.ok(studio.includes('const reviewHref=review?"#retour-formateur":"#livrable"'));
+ assert.ok(studio.includes('history.find(s=>s.status!=="pending"&&\n    s.reviewed_at!==null)'));
+ assert.ok(studio.includes('!data?"Atelier momentanément indisponible"'));
+ assert.ok(studio.includes('id="livrable"'));
+ assert.ok(feedback.includes('id="retour-formateur"'));
+ assert.ok(feedback.includes("Aucun commentaire écrit"));
+ assert.ok(notebook.includes('{review&&<WorkshopTrainerFeedback'));
+ assert.ok(studio.includes('{review&&<WorkshopTrainerFeedback'));
+});
