@@ -21,9 +21,9 @@ test("public catalog pages are discoverable and never grant enrollment or XP",()
   const shell=read("src/components/secure-academy-shell.tsx");
   const login=read("src/app/login/page.tsx");
   assert.match(list,/specializations\.map/);
-  assert.match(list,/EN PRÉPARATION/);
+  assert.match(list,/PROGRAMME PROPOSÉ/);
   assert.match(detail,/pilotCourse\.modules\.map/);
-  assert.match(list,/Parcours ouvert/);
+  assert.match(list,/Vérifier les inscriptions/);
   assert.match(detail,/La formation est accessible depuis ton espace personnel./);
   assert.match(list,/href="\/espace\/parcours\/ingenierie-produit-ia"/);
   assert.match(shell,/label:"Catalogue"/);

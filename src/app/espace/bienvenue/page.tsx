@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { ArrowLeft, ArrowRight, CalendarDays, GraduationCap, Rocket, ShieldCheck, Target } from "lucide-react";
 import { requireRole } from "@/lib/auth/require-role";
+import {loadLearningContext,loadLearningDetail} from "@/lib/active-learning-context";
+import {publishedWorkItems} from "@/lib/adaptive-learning-plan";
 import { getV2DashboardPilot } from "@/lib/v2-dashboard-pilot";
 import { pilotCourse } from "@/lib/v2-public-catalog";
 import { type LearnerPreferences } from "@/lib/learner-preferences";
@@ -28,6 +30,14 @@ export default async function WelcomeLearner({searchParams}:Props) {
   const prerequisites=dependencies||[];
   const next=(missions as Mission[]||[]).find(m=>!completed.has(m.id)&&
     !prerequisites.some(p=>p.mission_id===m.id&&!completed.has(p.prerequisite_id)));
+  const learning=await loadLearningContext();
+  const active=learning.active;
+  const detail=active?await loadLearningDetail(active.slug):null;
+  const work=detail&&active?publishedWorkItems(active.slug,detail.studio):null;
+  const remaining=work?.items.filter(x=>x.state==="not_started"||x.state==="changes_requested")??[];
+  const workload=work?.completeCoverage&&work.items.every(x=>x.state!=="unknown")&&remaining.every(x=>x.minutes!==null)?remaining.reduce((n,x)=>n+(x.minutes??0),0):null;
+  const nextWorkshop=detail?.studio.lessons.find(x=>x.state==="changes_requested")??detail?.studio.lessons.find(x=>x.state==="not_started");
+  const course=active?{slug:active.slug,title:active.title,remainingMinutes:workload,official:!!detail?.studio.lessons.length&&detail.studio.lessons.every(x=>x.pedagogy?.source==="sealed_release")}:null;
   const pilot=await getV2DashboardPilot();
   const enrolled=pilot.enrollment==="active"||pilot.enrollment==="completed";
   const primaryLesson=enrolled&&pilot.resumeSlug?pilotCourse.modules.flatMap(
@@ -38,16 +48,17 @@ export default async function WelcomeLearner({searchParams}:Props) {
     <header className="learner-welcome-hero">
       <span className="journey-overline"><GraduationCap size={15}/> TON POINT DE DÉPART</span>
       <h1>{current?"Fais évoluer ton parcours.":"Bienvenue dans ton atelier."}</h1>
-      <p>Choisis ton objectif produit, tes jours disponibles et ton rythme intensif. La formation privilégie la conception et la pratique : 30 % pour comprendre et structurer, 70 % pour construire, tester et livrer.</p>
+      <p>Choisis tes objectifs professionnels, tes jours disponibles et ton rythme de pratique. Le formateur t’accompagne dans la réalisation, les tests et la validation de tes preuves.</p>
       <div className="learner-welcome-reassurance"><ShieldCheck size={16}/> Cette étape est facultative. Tu peux rejoindre ton premier atelier sans la compléter.</div>
     </header>
+    <div className="learner-welcome-reassurance">{active?<>Formation active : <strong>{active.title}</strong> · </>:null}<Link href="/espace/apprenant/formations#inscriptions">{active?"Changer ou ajouter une formation":"Choisir une formation"}</Link></div>
     <div className="learner-welcome-layout">
-      <LearnerOnboardingWizard current={current} initialError={!!query.error}/>
+      <LearnerOnboardingWizard current={current} initialError={!!query.error} course={course}/>
       <aside className="learner-welcome-aside onboarding-context">
         <div className="learner-welcome-next">
           <span className="journey-overline"><Rocket size={15}/> PREMIÈRE ACTION CONCRÈTE</span>
           <h2>Ton prochain atelier</h2>
-          {primaryLesson?<><span className="learner-welcome-week">SEMAINE {primaryLesson.week}</span>
+          {active&&active.slug!==pilotCourse.slug?<><h3>{active.title}</h3><p>{nextWorkshop?.title??"Consulte les ateliers et les corrections de ta formation."}</p><Link href={"/espace/apprenant/formations/"+encodeURIComponent(active.slug)+"/studio"+(nextWorkshop?"?atelier="+encodeURIComponent(nextWorkshop.id):"")}>Ouvrir mon Learning Studio <ArrowRight size={16}/></Link></>:primaryLesson?<><span className="learner-welcome-week">SEMAINE {primaryLesson.week}</span>
             <h3>{primaryLesson.title}</h3><p>{primaryLesson.objective}</p>
             <Link href={"/espace/parcours/ingenierie-produit-ia/atelier/"+primaryLesson.slug}>
               Reprendre mon atelier principal <ArrowRight size={16}/></Link></>
@@ -69,8 +80,8 @@ export default async function WelcomeLearner({searchParams}:Props) {
           <div><span>3</span><p>Reçois une correction. Tes XP arrivent uniquement après validation.</p></div>
         </div>
         <div className="learner-welcome-guide"><h3><CalendarDays size={17}/> Cadence exigeante, résultats concrets</h3>
-          <p>Planifie au moins trois jours fixes et cinq heures de travail par séance. Ton formateur vérifie surtout tes livrables : conception, UX, ingénierie, tests et déploiement.</p>
-          <Link href="/espace/parcours/ingenierie-produit-ia">Voir les modules et la durée personnalisée <ArrowRight size={15}/></Link>
+          <p>Planifie au moins trois jours fixes et cinq heures de travail par séance. Ton formateur vérifie tes réalisations selon les critères de ta formation.</p>
+          <Link href="/espace/apprenant/formations">Voir les modules et la durée personnalisée <ArrowRight size={15}/></Link>
         </div>
       </aside>
     </div>

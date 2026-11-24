@@ -1,12 +1,12 @@
 export const learnerGoals = [
-  {value:"first_site",title:"Lancer mon premier produit numérique",detail:"Partir d'un problème utilisateur, créer un premier produit et le mettre en ligne."},
-  {value:"web_app",title:"Concevoir une application complète",detail:"Penser le produit, son UX, ses données, ses intégrations et son déploiement."},
-  {value:"professional",title:"Créer et commercialiser des produits",detail:"Construire des produits solides, trouver des clients et tester une offre."}
+  {value:"first_site",title:"Réaliser mon premier projet concret",detail:"Partir d’un besoin, acquérir les méthodes et produire une preuve professionnelle."},
+  {value:"web_app",title:"Maîtriser un domaine professionnel",detail:"Approfondir les outils, les procédés IA, la qualité et les réalisations de ma spécialité."},
+  {value:"professional",title:"Valoriser et commercialiser mes compétences",detail:"Construire des réalisations solides, développer mon portfolio et tester une offre."}
 ] as const;
 export const learnerLevels = [
-  {value:"beginner",title:"Je débute",detail:"Je découvre le développement et la conception produit."},
-  {value:"some",title:"J'ai quelques bases",detail:"J'ai déjà créé des pages ou automatisé des tâches."},
-  {value:"practiced",title:"Je pratique déjà",detail:"Je veux apprendre à livrer des produits complets et fiables."}
+  {value:"beginner",title:"Je débute",detail:"Je découvre les méthodes et les outils de ma spécialité."},
+  {value:"some",title:"J'ai quelques bases",detail:"J’ai déjà réalisé des exercices ou projets dans ce domaine."},
+  {value:"practiced",title:"Je pratique déjà",detail:"Je veux améliorer la qualité de mes réalisations professionnelles."}
 ] as const;
 export const learnerDurations=[300,360,480,600] as const;
 export const weekdays=[

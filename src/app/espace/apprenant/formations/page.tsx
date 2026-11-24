@@ -3,17 +3,17 @@ import {ArrowLeft,ArrowRight,BookOpen,CheckCircle2,Clock3,LockKeyhole,Award} fro
 import {requireRole} from "@/lib/auth/require-role";
 import {canReadTrack,selectEnrolledTrack} from "@/lib/universal-learning";
 import {loadLearningContext,loadLearningDetail} from "@/lib/active-learning-context";
-import {setActiveLearningTrack} from "./actions";
+import {enrollInFormation,setActiveLearningTrack} from "./actions";
 import {AdaptiveLearningPanel} from "@/components/adaptive-learning-panel";
 import "./formations.css";
 
 export const dynamic="force-dynamic";
 const base="/espace/apprenant/formations";
 const labels={active:"En cours",completed:"Terminée",paused:"Suspendue",revoked:"Révoquée"};
-export default async function LearnerFormations({searchParams}:{searchParams:Promise<{parcours?:string|string[];selection?:string}>}){
+export default async function LearnerFormations({searchParams}:{searchParams:Promise<{parcours?:string|string[];selection?:string;inscription?:string}>}){
  const {db,user}=await requireRole("learner");
- const {parcours,selection}=await searchParams;
- const {available,tracks,active}=await loadLearningContext();
+ const {parcours,selection,inscription}=await searchParams;
+ const {available,tracks,active,offers}=await loadLearningContext();
  const selected=selectEnrolledTrack(tracks,parcours??active?.slug);
  const detail=selected?await loadLearningDetail(selected.slug):null;
  const data=detail?.progress??null;
@@ -24,6 +24,8 @@ export default async function LearnerFormations({searchParams}:{searchParams:Pro
  <Link href="/espace/apprenant" className="ul-back"><ArrowLeft size={16}/> Tableau de bord</Link>
  <header className="ul-hero"><span>MON ESPACE 360</span><h1>Mes formations.</h1><p>Choisis ton parcours pour retrouver tes validations, tes XP et tes corrections, sans mélanger les résultats des autres formations.</p><Link href="/catalogue" className="ul-link">Explorer le catalogue <ArrowRight size={16}/></Link></header>
  {selection==="ok"&&active?.slug===selected?.slug&&<p className="alert success" role="status">Formation active enregistrée.</p>}{selection==="refusee"&&<p className="alert danger" role="alert">La formation demandée n’est pas accessible.</p>}
+ {inscription==="refusee"&&<p className="alert danger" role="alert">L’inscription n’a pas été confirmée. Vérifie que la formation accepte encore les inscriptions et que tu as donné ton accord.</p>}
+ {available&&<section className="ul-card" id="inscriptions"><span className="ul-overline">CHOISIR UN PARCOURS</span><h2>Formations ouvertes aux inscriptions</h2>{!offers.length?<p>Aucune nouvelle inscription disponible pour ton compte actuellement. Consulte les programmes dans le catalogue.</p>:<div className="enrollment-offers">{offers.map(t=><article className="ul-card" key={t.slug}><h3>{t.title}</h3><p>{t.summary}</p><p>{t.module_count} modules · {t.lesson_count} ateliers publiés</p>{t.slug==="ingenierie-produit-ia"?<Link className="ul-link" href="/espace/parcours/ingenierie-produit-ia">Rejoindre le pilote <ArrowRight size={16}/></Link>:<form action={enrollInFormation}><input type="hidden" name="trackSlug" value={t.slug}/><label className="enrollment-confirm"><input type="checkbox" name="confirm" required/> Je souhaite m’inscrire gratuitement à cette formation.</label><button className="primary-btn" type="submit">M’inscrire et personnaliser mon parcours <ArrowRight size={16}/></button></form>}</article>)}</div>}</section>}
  {!available?<section className="ul-card" role="status"><h2>Inscriptions momentanément indisponibles</h2><p>Nous ne pouvons pas confirmer tes accès. Actualise cette page pour réessayer.</p></section>:!tracks.length?<section className="ul-card"><BookOpen size={24}/><h2>Aucune inscription confirmée</h2><p>Choisis une formation ouverte dans le catalogue pour commencer.</p><Link href="/catalogue" className="ul-link">Voir les formations <ArrowRight size={16}/></Link></section>:<div className="ul-grid">
  <nav className="ul-card ul-nav" aria-label="Choisir une formation"><h2>Mes inscriptions</h2>{tracks.map(t=>canReadTrack(t)?<Link key={t.slug} className={"ul-track"+(selected?.slug===t.slug?" selected":"")} aria-current={selected?.slug===t.slug?"page":undefined} href={base+"?parcours="+encodeURIComponent(t.slug)}><BookOpen size={19}/><span><strong>{t.title}</strong><small>{labels[t.enrollment]}{active?.slug===t.slug?" · Active":""}</small></span><ArrowRight size={16}/></Link>:<div className="ul-track ul-locked" key={t.slug}><LockKeyhole size={19}/><span><strong>{t.title}</strong><small>{labels[t.enrollment]} · accès fermé</small><Link href={base+"/"+encodeURIComponent(t.slug)+"/portfolio"} className="ul-link">Gérer le partage</Link><Link href={"/espace/projet/revues?parcours="+encodeURIComponent(t.slug)} className="ul-link">Gérer les revues</Link></span></div>)}</nav>
  <section className="ul-card ul-detail" aria-label="Progression du parcours choisi">{!selected?<><h2>Choisis une formation accessible</h2><p>Une inscription active ou terminée est nécessaire pour consulter les résultats. Les inscriptions suspendues ou révoquées ne donnent pas accès aux ateliers.</p></>:<>
