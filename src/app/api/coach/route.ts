@@ -46,8 +46,8 @@ export async function POST(request:NextRequest){
     typeof body.question!=="string"||
     body.question.trim().length<8||body.question.trim().length>(project?600:1200))
     return errorJson(400,"invalid_question");
-  if(body.trackSlug!==undefined&&(project||typeof body.trackSlug!=="string"||body.trackSlug.length>100||!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(body.trackSlug)))return errorJson(400,"invalid_track");
-  if(project&&(body.consent!==true||body.previous_exchange!==undefined||body.lessonId!==undefined||!body.mode||Object.keys(body).some(key=>!["scope","consent","mode","domain","question","work_summary"].includes(key))))
+  if(body.trackSlug!==undefined&&(typeof body.trackSlug!=="string"||body.trackSlug.length>100||!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(body.trackSlug)))return errorJson(400,"invalid_track");
+  if(project&&(body.consent!==true||body.previous_exchange!==undefined||body.lessonId!==undefined||!body.mode||Object.keys(body).some(key=>!["scope","consent","mode","domain","question","work_summary","trackSlug"].includes(key))))
     return errorJson(400,"invalid_project_consent");
   if(body.mode!==undefined&&
     !(project?["debloquer","verifier","preparer"]:["commencer","debloquer","verifier"]).includes(body.mode))
@@ -95,7 +95,7 @@ export async function POST(request:NextRequest){
       void (async()=>{
         try{
           const upstream=await backendRequest(
-            project?"/v1/training/catalog/ingenierie-produit-ia/project/coach":
+            project?"/v1/training/catalog/"+encodeURIComponent(body.trackSlug??"ingenierie-produit-ia")+"/project/coach":
             "/v1/training/catalog/"+encodeURIComponent(body.trackSlug??"ingenierie-produit-ia")+"/lessons/"+
               body.lessonId+"/coach",
             {

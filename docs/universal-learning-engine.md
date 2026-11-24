@@ -27,3 +27,7 @@ Trainer-only aggregate endpoint covers published tracks and returns null metrics
 ## Phase 7a — pedagogical operations
 
 Practical sessions, personalized briefs and support threads reuse existing track-scoped data; explicit validated slug on mutations and permission-checked selections on both trainer and learner pages. Published lesson options are loaded from the backend and ambiguous duplicate workshop slugs omitted. Pagination retains track. No automated publication or XP awards. Collaborative reviews, backlog and project coaching remain pilot-specific. Trainer/learner visual QA outstanding.
+
+## Phase 8 — collaborative project intelligence
+
+Existing project/backlog/review storage remains per learner and track. The generic project navigation links to explicit track-scoped backlog, voluntary review and preparation coach. Backlog references for non-pilot tracks must be unique published workshop slugs; legacy pilot associations remain supported. Revoked/suspended owners can revoke review access through Mes formations. Trainer can only see explicitly shared snapshots, never later private edits. Coach uses authorized official course title and voluntary summary/question only; no automatic task creation, grading or publication. Provider integration tested with mock only; authenticated live QA remains outstanding.

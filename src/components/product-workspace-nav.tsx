@@ -8,10 +8,12 @@ const items=[
  {id:"portfolio",href:"/espace/portfolio",label:"Portfolio",icon:BriefcaseBusiness}
 ] as const;
 export type ProductDestination=(typeof items)[number]["id"];
-export function ProductWorkspaceNav({active}:{active:ProductDestination}){
+export function ProductWorkspaceNav({active,trackSlug="ingenierie-produit-ia"}:{active:ProductDestination;trackSlug?:string}){
+ const pilot=trackSlug==="ingenierie-produit-ia",base="/espace/apprenant/formations/"+encodeURIComponent(trackSlug);
+ const destination=(id:ProductDestination,href:string)=>pilot?href:id==="dossier"?base+"/projet":id==="portfolio"?base+"/portfolio":href+"?parcours="+encodeURIComponent(trackSlug);
  // Full document navigation deliberately preserves the editors' existing beforeunload protection.
  return <nav className="pw-nav" aria-label="Navigation du Product Workspace">
-  <span className="pw-nav-label">MON PRODUIT</span>
-  <div className="pw-nav-links">{items.map(({id,href,label,icon:Icon})=><a key={id} href={href} aria-current={active===id?"page":undefined} className={active===id?"active":""}><Icon size={17} strokeWidth={1.8}/><span>{label}</span></a>)}</div>
+  <span className="pw-nav-label">{pilot?"MON PRODUIT":"MON PROJET"}</span>
+  <div className="pw-nav-links">{items.map(({id,href,label,icon:Icon})=><a key={id} href={destination(id,href)} aria-current={active===id?"page":undefined} className={active===id?"active":""}><Icon size={17} strokeWidth={1.8}/><span>{!pilot&&id==="dossier"?"Dossier projet":label}</span></a>)}</div>
  </nav>;
 }

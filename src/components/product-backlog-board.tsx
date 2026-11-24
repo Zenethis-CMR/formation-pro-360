@@ -4,14 +4,13 @@ import {useEffect,useRef,useState} from "react";
 import Link from "next/link";
 import {Plus,Save,Download,Pencil,Trash2,ArrowRight} from "lucide-react";
 import {taskStatuses,taskPriorities,maxTasks,summarizeBacklog,sortTasks,canCompleteTask,localCalendarDate,type ProductTask,type ProductBacklog,type TaskStatus,type TaskPriority} from "@/lib/product-backlog";
-import {pilotCourse} from "@/lib/v2-public-catalog";
+import type {PedagogicalWorkshop} from "@/lib/pedagogical-types";
 import {saveProductBacklog} from "@/app/espace/projet/backlog/actions";
-const course="/espace/parcours/ingenierie-produit-ia";
-const lessons=pilotCourse.modules.flatMap(m=>m.lessons.map(l=>({slug:l.slug,title:l.title,week:m.week})));
+
 const empty=():ProductTask=>({id:"",title:"",description:"",acceptance:"",status:"todo",priority:"normal",workshop:null,due_date:null,estimate_minutes:0});
 const errors={invalid:"Vérifie les champs, les dates, les limites et les critères des tâches terminées.",conflict:"Une version plus récente existe. Ton brouillon est conservé ici : exporte-le avant de recharger pour comparer.",access:"Ton accès ne permet plus l'enregistrement.",unavailable:"Sauvegarde indisponible. Ton brouillon reste dans cet écran : réessaie ou exporte-le."};
 const duration=(min:number)=>Math.floor(min/60)+" h"+(min%60?" "+String(min%60).padStart(2,"0")+" min":"");
-export function ProductBacklogBoard({initial,editable}:{initial:ProductBacklog|null;editable:boolean}){
+export function ProductBacklogBoard({initial,editable,trackSlug="ingenierie-produit-ia",lessons=[]}:{initial:ProductBacklog|null;editable:boolean;trackSlug?:string;lessons?:PedagogicalWorkshop[]}){
  const [tasks,setTasks]=useState<ProductTask[]>(()=>initial?.tasks??[]);
  const [baseline,setBaseline]=useState(()=>JSON.stringify(initial?.tasks??[]));
  const [revision,setRevision]=useState(initial?.revision??0);
@@ -52,7 +51,7 @@ export function ProductBacklogBoard({initial,editable}:{initial:ProductBacklog|n
   if(!editable||!dirty||saving.current||editing)return;
   saving.current=true;setPending(true);setNotice(null);
   try{
-   const result=await saveProductBacklog(revision,tasks);
+   const result=await saveProductBacklog(revision,tasks,trackSlug);
    if(result.ok===true){setTasks(result.backlog.tasks);setBaseline(JSON.stringify(result.backlog.tasks));setRevision(result.backlog.revision);setSavedAt(result.backlog.updated_at);setNotice({error:false,text:"Backlog enregistré."});}
    else setNotice({error:true,text:errors[result.error]});
   }catch{setNotice({error:true,text:errors.unavailable});}
@@ -60,7 +59,7 @@ export function ProductBacklogBoard({initial,editable}:{initial:ProductBacklog|n
  };
  const exportTasks=()=>{
   const url=URL.createObjectURL(new Blob([JSON.stringify({type:"formation-pro-private-backlog",tasks},null,2)],{type:"application/json;charset=utf-8"}));
-  const a=document.createElement("a");a.href=url;a.download="mon-backlog.json";a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
+  const a=document.createElement("a");a.href=url;a.download="mon-backlog-"+trackSlug+".json";a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
  };
  return <section className="backlog-workspace" aria-label="Tableau Kanban privé">
   <div className="backlog-stats">{[{label:"Tâches",value:summary.total},{label:"Terminées (déclarées)",value:summary.done},{label:"En cours",value:summary.active},{label:"À tester",value:summary.testing},{label:"Échéances dépassées",value:summary.overdue},{label:"Charge restante estimée",value:duration(summary.remainingMinutes)}].map(s=><div key={s.label}><small>{s.label}</small><strong>{s.value}</strong></div>)}</div>
@@ -79,7 +78,7 @@ export function ProductBacklogBoard({initial,editable}:{initial:ProductBacklog|n
     <label>Description<textarea rows={3} maxLength={1000} value={editing.description} onChange={e=>change({description:e.target.value})}/></label>
     <label>Critère d'acceptation<textarea rows={3} maxLength={800} value={editing.acceptance} onChange={e=>change({acceptance:e.target.value})} placeholder="Comment prouver que cette tâche fonctionne ?"/></label>
     <label>Statut<select value={editing.status} onChange={e=>change({status:e.target.value as TaskStatus})}>{taskStatuses.map(s=><option key={s.id} value={s.id}>{s.label}</option>)}</select></label>
-    <label>Atelier associé<select value={editing.workshop??""} onChange={e=>change({workshop:e.target.value||null})}><option value="">Aucun (facultatif)</option>{lessons.map(l=><option key={l.slug} value={l.slug}>S{l.week} · {l.title}</option>)}</select></label>
+    <label>Atelier associé<select value={editing.workshop??""} onChange={e=>change({workshop:e.target.value||null})}><option value="">Aucun (facultatif)</option>{editing.workshop&&!lessons.some(l=>l.slug===editing.workshop)&&<option value={editing.workshop}>Atelier historique : {editing.workshop}</option>}{lessons.map(l=><option key={l.slug} value={l.slug}>S{l.week} · {l.title}</option>)}</select></label>
     <label>Échéance personnelle<input type="date" min="2000-01-01" max="2100-12-31" value={editing.due_date??""} onChange={e=>change({due_date:e.target.value||null})}/></label>
     <label>Estimation en minutes<input type="number" min={0} max={6000} step={1} value={editing.estimate_minutes} onChange={e=>change({estimate_minutes:Number(e.target.value)})}/></label>
    </div>
@@ -97,7 +96,7 @@ export function ProductBacklogBoard({initial,editable}:{initial:ProductBacklog|n
      <h3>{task.title}</h3>{task.description&&<p>{task.description}</p>}
      {task.acceptance&&<p><strong>Vérification :</strong> {task.acceptance}</p>}
      {task.estimate_minutes>0&&<small>Estimée : {duration(task.estimate_minutes)}</small>}
-     {task.workshop&&<Link href={course+"/atelier/"+task.workshop}>Atelier associé <ArrowRight size={13}/></Link>}
+     {task.workshop&&<>{lessons.find(l=>l.slug===task.workshop)?<Link href={lessons.find(l=>l.slug===task.workshop)!.href}>Atelier associé <ArrowRight size={13}/></Link>:<small>Atelier historique : {task.workshop}</small>}</>}
      {editable&&<><label className="backlog-status">Déplacer vers<select aria-label={"Statut de "+task.title} value={task.status} disabled={pending||!!editing} onChange={e=>move(task,e.target.value as TaskStatus)}>{taskStatuses.map(s=><option key={s.id} value={s.id}>{s.label}</option>)}</select></label>
      <div className="backlog-buttons"><button type="button" disabled={pending||!!editing} onClick={()=>begin(task)}><Pencil size={14}/> Modifier</button><button type="button" disabled={pending||!!editing} onClick={()=>setDeleting(task.id)} aria-label={"Supprimer "+task.title}><Trash2 size={14}/></button></div>
      {deleting===task.id&&<div className="backlog-delete"><p>Retirer cette tâche du brouillon ?</p><button type="button" disabled={pending||!!editing} onClick={()=>{setTasks(old=>old.filter(t=>t.id!==task.id));setDeleting(null);setNotice(null);}}>Confirmer</button><button type="button" onClick={()=>setDeleting(null)}>Annuler</button></div>}</>}

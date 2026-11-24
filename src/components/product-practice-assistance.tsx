@@ -18,7 +18,7 @@ const modes:{id:Mode;label:string}[]=[
  {id:"verifier",label:"Préparer un test"},
  {id:"preparer",label:"Reformuler une question pour mon formateur"}
 ];
-export function ProductPracticeAssistance({aiAvailable}:{aiAvailable:boolean}){
+export function ProductPracticeAssistance({aiAvailable,trackSlug="ingenierie-produit-ia"}:{aiAvailable:boolean;trackSlug?:string}){
  const [work,setWork]=useState("");
  const [attempt,setAttempt]=useState("");
  const [question,setQuestion]=useState("");
@@ -44,7 +44,7 @@ export function ProductPracticeAssistance({aiAvailable}:{aiAvailable:boolean}){
   let finished=false;
   try{
    const response=await fetch("/api/coach",{method:"POST",credentials:"same-origin",headers:{"content-type":"application/json"},
-    body:JSON.stringify({scope:"project",consent:true,mode,domain,question:question.trim(),...(summary?{work_summary:summary}:{})}),signal:controller.signal});
+    body:JSON.stringify({scope:"project",consent:true,mode,domain,trackSlug,question:question.trim(),...(summary?{work_summary:summary}:{})}),signal:controller.signal});
    if(!response.ok||!response.body)throw new Error("unavailable");
    const reader=response.body.getReader();const decoder=new TextDecoder();
    let buffer="";
@@ -87,7 +87,7 @@ export function ProductPracticeAssistance({aiAvailable}:{aiAvailable:boolean}){
     <label>Domaine du projet<select value={domain} disabled={pending} onChange={e=>{setDomain(e.target.value as Domain);setConsent(false);setAnswer("");}}>{domains.map(d=><option key={d.id} value={d.id}>{d.label}</option>)}</select></label>
     <p>{domains.find(d=>d.id===domain)?.hint} Les propositions restent à discuter avec le formateur.</p>
     <label>Type d'aide<select value={mode} disabled={pending} onChange={e=>{setMode(e.target.value as Mode);setConsent(false);}}>{modes.map(m=><option key={m.id} value={m.id}>{m.label}</option>)}</select></label>
-    <p>Seuls ta question et le résumé volontaire ci-dessous sont transmis à Qwen3 local. Aucun dossier, backlog, carnet ou retour du formateur n'est chargé automatiquement.</p>
+    <p>Seuls ta question, le résumé volontaire ci-dessous et le contexte officiel de la formation sont transmis à Qwen3 local. Aucun dossier, backlog, carnet ou retour du formateur n'est chargé automatiquement.</p>
     <div className="practice-preview"><strong>Texte à transmettre</strong><p>{summary||"Aucun résumé"} </p><p>{question.trim()||"Aucune question"}</p></div>
     <label className="practice-consent"><input type="checkbox" checked={consent} disabled={pending} onChange={e=>setConsent(e.target.checked)}/> J'accepte de transmettre ces textes au modèle local, sans mot de passe, clé API ni donnée personnelle sensible.</label>
     <button type="button" disabled={pending||!consent||question.trim().length<8} onClick={()=>void ask()}><Send size={15}/>{pending?"Réponse locale en cours…":"Demander une piste"}</button>
@@ -96,6 +96,6 @@ export function ProductPracticeAssistance({aiAvailable}:{aiAvailable:boolean}){
    {answer&&<div className="practice-answer" role="status"><strong>Piste IA non validée</strong><p>{answer}</p><small>À vérifier avec ton formateur. Aucune action n'a été exécutée.</small></div>}
   </details>
   {notice&&<p role="status">{notice}</p>}
-  <footer><ShieldCheck size={16}/> Le formateur décide des consignes, corrections et validations. Aucun XP n'est attribué ici. <Link href="/espace/projet">Revenir à mon projet</Link></footer>
+  <footer><ShieldCheck size={16}/> Le formateur décide des consignes, corrections et validations. Aucun XP n'est attribué ici. <Link href={trackSlug==="ingenierie-produit-ia"?"/espace/projet":"/espace/apprenant/formations/"+encodeURIComponent(trackSlug)+"/projet"}>Revenir à mon projet</Link></footer>
  </section>;
 }
