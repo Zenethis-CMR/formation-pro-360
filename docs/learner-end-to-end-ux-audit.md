@@ -30,3 +30,10 @@ Avec un vrai compte apprenant et l'accord des responsables :
 
 ## Lisibilité du tableau de bord
 Les nouveaux comptes voient désormais le parcours principal et l'action du jour en priorité. Les missions complémentaires sont repliées, sans suppression, et se déplient automatiquement lorsqu'un apprenant possède déjà des soumissions ou XP historiques.
+
+## Suite de la recette : accès et reprise après correction (24 novembre 2026)
+- Atelier inaccessible : l'action principale revient au parcours pour vérifier les droits, sans ancre vers des consignes masquées.
+- Service indisponible : message distinct d'une inscription manquante.
+- Correction sans commentaire : afficher le verdict réel et préciser l'absence de commentaire, sans en inventer ; l'action principale retombe sur l'historique si le panneau de correction ne peut pas être rendu.
+- Sur mobile et au clavier : vérifier que les liens atteignent bien le retour formateur, le dépôt en attente et les consignes, y compris après rechargement.
+- Vérifier en recette authentifiée avec compte de test autorisé les états inscrit, suspendu, en correction, à améliorer et approuvé. Ces vérifications ne sont pas réputées réussies avant exécution.
