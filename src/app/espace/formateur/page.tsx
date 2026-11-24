@@ -125,6 +125,7 @@ export default async function TrainerSpace({searchParams}:{searchParams:Promise<
     {tab!=="dashboard"&&<WorkspaceTabHeading role="trainer" tab={tab}/>}
     {tab==="dashboard"&&<>
       <V2TrainerEvaluationOverview/>
+      <section className="panel"><span className="eyebrow">PILOTAGE PÉDAGOGIQUE V2</span><h2>Préparer mes interventions</h2><p className="muted">Consulte les ateliers vérifiés, les dépôts à corriger et les travaux à reprendre pour chaque apprenant du parcours pilote.</p><Link className="primary-btn" href="/espace/formateur/suivi">Ouvrir le cockpit de suivi</Link></section>
       <LocalCoachDiagnostics/>
       <SecureTrainerOverview pending={pendingCount} learners={learnerCount}
         missions={published.length} validatedXp={(awards||[]).reduce((sum,x)=>sum+Number(x.xp),0)}/>
@@ -184,6 +185,7 @@ export default async function TrainerSpace({searchParams}:{searchParams:Promise<
     </section>
     </>}
     {tab==="apprenants"&&<>
+    <section className="panel"><h2>Suivi individuel du parcours pilote</h2><p className="muted">Les résultats V2 sont distincts des missions complémentaires historiques.</p><Link className="primary-btn" href="/espace/formateur/suivi">Consulter les apprenants V2</Link></section>
     <TrainerCoachingPanel learners={namedLearners} insights={insights} messages={(coachMessages||[]) as CoachMessage[]} startDate={settings?.start_date??null}/>
     <div id="cohorte" className="secure-section-marker"/>
     <CohortProgress learners={namedLearners} awards={awards||[]} submissions={allSubmissions||[]} practice={practice||[]} missions={catalog.filter(m=>m.published)} missionCount={catalog.filter(m=>m.published).length}/>

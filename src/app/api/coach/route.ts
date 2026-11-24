@@ -7,6 +7,7 @@ export const runtime="nodejs";
 type CoachBody={
   lessonId?:string;question:string;
   scope?:"project";consent?:boolean;
+  domain?:"projet"|"backlog"|"ux"|"technique"|"qualite"|"business";
   mode?:"commencer"|"debloquer"|"verifier"|"preparer";
   work_summary?:string;
   previous_exchange?:{question:string;answer:string}
@@ -45,7 +46,7 @@ export async function POST(request:NextRequest){
     typeof body.question!=="string"||
     body.question.trim().length<8||body.question.trim().length>(project?600:1200))
     return errorJson(400,"invalid_question");
-  if(project&&(body.consent!==true||body.previous_exchange!==undefined||body.lessonId!==undefined||!body.mode||Object.keys(body).some(key=>!["scope","consent","mode","question","work_summary"].includes(key))))
+  if(project&&(body.consent!==true||body.previous_exchange!==undefined||body.lessonId!==undefined||!body.mode||Object.keys(body).some(key=>!["scope","consent","mode","domain","question","work_summary"].includes(key))))
     return errorJson(400,"invalid_project_consent");
   if(body.mode!==undefined&&
     !(project?["debloquer","verifier","preparer"]:["commencer","debloquer","verifier"]).includes(body.mode))
@@ -61,8 +62,9 @@ export async function POST(request:NextRequest){
     previous.answer.trim().length<1||previous.answer.trim().length>800))
     return errorJson(400,"invalid_context");
 
+  if(body.domain!==undefined&&(!project||!["projet","backlog","ux","technique","qualite","business"].includes(body.domain)))return errorJson(400,"invalid_domain");
   const payload={
-    ...(project?{consent:true}:{}),
+    ...(project?{consent:true,domain:body.domain??"projet"}:{}),
     question:body.question.trim(),
     ...(body.mode?{mode:body.mode}:{}),
     ...(body.work_summary?.trim()?{work_summary:body.work_summary.trim()}:{}),

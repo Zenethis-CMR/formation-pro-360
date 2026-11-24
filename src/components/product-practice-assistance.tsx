@@ -4,6 +4,15 @@ import Link from "next/link";
 import {MessageSquare,Clipboard,Send,ShieldCheck} from "lucide-react";
 
 type Mode="debloquer"|"verifier"|"preparer";
+const domains=[
+ {id:"projet",label:"Analyse du projet",hint:"Besoin, cible, valeur et hypothèses."},
+ {id:"backlog",label:"Assistance au backlog",hint:"Une tâche, une priorité, un critère de vérification."},
+ {id:"ux",label:"Conseil UX/UI",hint:"Une friction potentielle et un test utilisateur."},
+ {id:"technique",label:"Mentorat technique",hint:"Un compromis ou une expérimentation."},
+ {id:"qualite",label:"Qualité et sécurité",hint:"Un contrôle et une preuve à présenter."},
+ {id:"business",label:"Conseil business",hint:"Une hypothèse et une expérience mesurable."}
+] as const;
+type Domain=(typeof domains)[number]["id"];
 const modes:{id:Mode;label:string}[]=[
  {id:"debloquer",label:"Identifier un blocage"},
  {id:"verifier",label:"Préparer un test"},
@@ -14,6 +23,7 @@ export function ProductPracticeAssistance({aiAvailable}:{aiAvailable:boolean}){
  const [attempt,setAttempt]=useState("");
  const [question,setQuestion]=useState("");
  const [mode,setMode]=useState<Mode>("preparer");
+ const [domain,setDomain]=useState<Domain>("projet");
  const [consent,setConsent]=useState(false);
  const [answer,setAnswer]=useState("");
  const [notice,setNotice]=useState("");
@@ -34,7 +44,7 @@ export function ProductPracticeAssistance({aiAvailable}:{aiAvailable:boolean}){
   let finished=false;
   try{
    const response=await fetch("/api/coach",{method:"POST",credentials:"same-origin",headers:{"content-type":"application/json"},
-    body:JSON.stringify({scope:"project",consent:true,mode,question:question.trim(),...(summary?{work_summary:summary}:{})}),signal:controller.signal});
+    body:JSON.stringify({scope:"project",consent:true,mode,domain,question:question.trim(),...(summary?{work_summary:summary}:{})}),signal:controller.signal});
    if(!response.ok||!response.body)throw new Error("unavailable");
    const reader=response.body.getReader();const decoder=new TextDecoder();
    let buffer="";
@@ -74,6 +84,8 @@ export function ProductPracticeAssistance({aiAvailable}:{aiAvailable:boolean}){
   <details className="practice-ai"><summary>Besoin d'une aide ponctuelle de Qwen3 ? (facultatif)</summary>
    <p>Une piste ou un test à réaliser toi-même, pas un cours ni une correction. Les consignes humaines priment toujours.</p>
    {!aiAvailable?<p role="status">L'assistance IA est désactivée ou indisponible. Tu peux continuer ton travail et préparer ta séance ci-dessus.</p>:<>
+    <label>Domaine du projet<select value={domain} disabled={pending} onChange={e=>{setDomain(e.target.value as Domain);setConsent(false);setAnswer("");}}>{domains.map(d=><option key={d.id} value={d.id}>{d.label}</option>)}</select></label>
+    <p>{domains.find(d=>d.id===domain)?.hint} Les propositions restent à discuter avec le formateur.</p>
     <label>Type d'aide<select value={mode} disabled={pending} onChange={e=>{setMode(e.target.value as Mode);setConsent(false);}}>{modes.map(m=><option key={m.id} value={m.id}>{m.label}</option>)}</select></label>
     <p>Seuls ta question et le résumé volontaire ci-dessous sont transmis à Qwen3 local. Aucun dossier, backlog, carnet ou retour du formateur n'est chargé automatiquement.</p>
     <div className="practice-preview"><strong>Texte à transmettre</strong><p>{summary||"Aucun résumé"} </p><p>{question.trim()||"Aucune question"}</p></div>
