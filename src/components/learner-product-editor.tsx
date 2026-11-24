@@ -1,4 +1,5 @@
 "use client";
+import {WorkspaceSaveStatus} from "@/components/workspace-feedback";
 import {useEffect,useState,useRef} from "react";
 import {Download,Save,ArrowRight} from "lucide-react";
 import {emptyDossier,projectSections,type ProductDossier,type ProductProject,type ProjectKey,safeProjectLink} from "@/lib/learner-product-project";
@@ -71,7 +72,7 @@ export function LearnerProductEditor({initial,editable}:{initial:ProductProject|
    </fieldset>
    <div className="pw-section-controls"><button type="button" disabled={activeIndex===0} onClick={()=>setActiveSection(projectSections[activeIndex-1].id)}>← Précédent</button><span>Rubrique {activeIndex+1} sur {projectSections.length}</span><button type="button" disabled={activeIndex===projectSections.length-1} onClick={()=>setActiveSection(projectSections[activeIndex+1].id)}>Suivant →</button></div>
    <div className="product-save-bar">
-    <div><strong>{dirty?"Modifications non enregistrées":savedAt?"Dossier enregistré":"Premier enregistrement à effectuer"}</strong>
+    <div><WorkspaceSaveStatus pending={pending} dirty={dirty} saved={!!savedAt} error={status?.kind==="error"} readOnly={!editable}/>
      {savedAt&&<small>Version {revision} · {new Intl.DateTimeFormat("fr-FR",{dateStyle:"short",timeStyle:"short",timeZone:"Africa/Douala"}).format(new Date(savedAt))}</small>}
      {status&&<p role={status.kind==="error"?"alert":"status"} className={status.kind==="error"?"product-error":"product-success"}>{status.message}</p>}
     </div>

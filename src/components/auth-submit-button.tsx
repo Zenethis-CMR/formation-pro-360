@@ -4,8 +4,8 @@ import { ArrowRight, LoaderCircle } from "lucide-react";
 
 export function AuthSubmitButton({label,pendingLabel}:{label:string;pendingLabel:string}){
   const {pending}=useFormStatus();
-  return <button className="auth-new-submit" type="submit" disabled={pending} aria-disabled={pending}>
+  return <button className="auth-new-submit" type="submit" disabled={pending} aria-disabled={pending} aria-busy={pending}>
     {pending?<LoaderCircle size={17} className="auth-loader" aria-hidden="true"/>:<ArrowRight size={17} aria-hidden="true"/>}
-    <span>{pending?pendingLabel:label}</span>
+    <span aria-live="polite">{pending?pendingLabel:label}</span>
   </button>;
 }
