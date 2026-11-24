@@ -12,7 +12,9 @@ test("V2 pilot is the primary learner hero and V1 metrics stay separate",()=>{
   assert.match(view,/Rejoindre le pilote gratuit/);
   assert.match(view,/Continuer mes ateliers/);
   assert.match(view,/XP des missions/);
+  assert.match(view,/XP DU PARCOURS/);
   assert.match(view,/XP CUMULÉS/);
+  assert.ok(view.indexOf("XP CUMULÉS")>view.indexOf("learner-legacy-details"));
   assert.ok(view.indexOf("academy-feature-v2")<view.indexOf("v2-legacy-heading"));
   assert.doesNotMatch(view,/Développement web<br\/>/);
 });
