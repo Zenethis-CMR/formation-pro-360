@@ -1,5 +1,6 @@
 "use client";
 import Link from "next/link";
+import {WorkspaceLinkPending} from "@/components/workspace-feedback";
 import { createContext, useContext, useEffect, useRef } from "react";
 import { usePathname, useSearchParams } from "next/navigation";
 import { ArrowRight, BadgeCheck, BarChart3, BookOpen, BriefcaseBusiness, CalendarDays, ChevronDown, ClipboardCheck, FolderKanban, GraduationCap, LayoutDashboard, LogOut, MessageCircle, Settings2, Sparkles, Users } from "lucide-react";
@@ -114,11 +115,12 @@ export function SecureAcademyShell({children,stats}:{children:React.ReactNode;st
   useEffect(()=>{if(desktopMore.current)desktopMore.current.open=secondaryActive;},[pathname,currentTab,secondaryActive]);
   return <WorkspaceStatsContext.Provider value={stats}><div className="academy-viewport secure-academy-viewport"><div className={"academy-frame secure-academy-frame"+(detail?" secure-academy-detail":"")+(learnerDashboard?" workspace-learner-dashboard":"")+(!trainer?" workspace-learner-shell":"")}>
     <aside className="academy-sidebar">
+      <a className="ux-skip-link" href="#workspace-content">Aller au contenu principal</a>
       <Link href={base} className="academy-brand"><span className="brand-flower"><GraduationCap size={23} strokeWidth={2.1}/></span><span>Formation <span>Pro 360</span></span></Link>
       <nav aria-label="Navigation de l'espace personnel" className="sidebar-navigation dash-nav">
-        {groups.map(g=><div className="dash-nav-group" key={g.label}><div className="sidebar-category">{g.label}</div>{g.items.map(({href,label,icon:Icon})=><Link key={href} href={href} className={"sidebar-link"+(isActive(href)?" is-active":"")} aria-current={isActive(href)?"page":undefined}><Icon size={18} strokeWidth={1.8}/><span>{label}</span>{label==="Évaluations"&&stats.pending>0&&<b>{stats.pending}</b>}</Link>)}</div>)}
+        {groups.map(g=><div className="dash-nav-group" key={g.label}><div className="sidebar-category">{g.label}</div>{g.items.map(({href,label,icon:Icon})=><Link key={href} href={href} className={"sidebar-link"+(isActive(href)?" is-active":"")} aria-current={isActive(href)?"page":undefined}><Icon size={18} strokeWidth={1.8}/><span>{label}</span>{label==="Évaluations"&&stats.pending>0&&<b>{stats.pending}</b>}<WorkspaceLinkPending/></Link>)}</div>)}
       </nav>
-      {!trainer?<details ref={desktopMore} className="workspace-desktop-more" open={secondaryActive} onKeyDown={e=>{if(e.key==="Escape"&&desktopMore.current?.open){e.preventDefault();desktopMore.current.open=false;desktopMore.current.querySelector("summary")?.focus();}}}><summary className={"sidebar-link"+(secondaryActive?" is-active":"")}><Settings2 size={18}/><span>Plus</span><ChevronDown size={15} className="workspace-more-chevron"/></summary><nav aria-label="Autres rubriques de mon espace" className="workspace-more-links">{secondary.map(({href,label,icon:Icon})=><Link key={href} href={href} className={"sidebar-link"+(isActive(href)?" is-active":"")} aria-current={isActive(href)?"page":undefined}><Icon size={16}/><span>{label}</span></Link>)}</nav></details>:<><div className="sidebar-divider"/>
+      {!trainer?<details ref={desktopMore} className="workspace-desktop-more" open={secondaryActive} onKeyDown={e=>{if(e.key==="Escape"&&desktopMore.current?.open){e.preventDefault();desktopMore.current.open=false;desktopMore.current.querySelector("summary")?.focus();}}}><summary className={"sidebar-link"+(secondaryActive?" is-active":"")}><Settings2 size={18}/><span>Plus</span><ChevronDown size={15} className="workspace-more-chevron"/></summary><nav aria-label="Autres rubriques de mon espace" className="workspace-more-links">{secondary.map(({href,label,icon:Icon})=><Link key={href} href={href} className={"sidebar-link"+(isActive(href)?" is-active":"")} aria-current={isActive(href)?"page":undefined}><Icon size={16}/><span>{label}</span><WorkspaceLinkPending/></Link>)}</nav></details>:<><div className="sidebar-divider"/>
       <div className="sidebar-category">MON ESPACE</div>
       <nav className="sidebar-navigation" aria-label="Réglages et raccourcis">
         <Link href="/espace/compte" className={"sidebar-link"+(pathname==="/espace/compte"?" is-active":"")}><Settings2 size={18}/><span>Mon compte</span></Link>
@@ -132,7 +134,7 @@ export function SecureAcademyShell({children,stats}:{children:React.ReactNode;st
       <form action={signOut} className="secure-sidebar-signout"><button type="submit"><LogOut size={16}/> Se déconnecter</button></form>
       <div className="sidebar-footer">© Formation Pro 360<br/><small>Espace personnel sécurisé</small></div>
     </aside>
-    <section className="academy-content secure-academy-content" aria-label="Contenu personnel">
+    <section id="workspace-content" tabIndex={-1} className="academy-content secure-academy-content" aria-label="Contenu personnel">
       <div className="academy-mobile-brand"><Link href={base} className="academy-brand">
         <span className="brand-flower"><GraduationCap size={23}/></span><span>Formation <span>Pro 360</span></span></Link>
         <Link className="secure-mobile-account" href="/espace/compte" aria-label="Mon compte"><Settings2 size={19}/></Link>
