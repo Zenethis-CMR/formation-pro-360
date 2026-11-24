@@ -18,7 +18,7 @@ test("product workspace has shared navigation and no panels ahead of the editor"
 test("editor changes visible sections without discarding the full draft",()=>{
  const editor=read("src/components/learner-product-editor.tsx");
  assert.ok(editor.includes('activeSection===section.id&&'));
- assert.ok(editor.includes("saveProductProject(revision,draft)"));
+ assert.ok(editor.includes("saveProductProject(revision,draft,trackSlug)"));
  assert.ok(editor.includes("const invalidSection=projectSections.find"));
  assert.ok(editor.includes("setActiveSection(invalidSection.id)"));
  assert.ok(editor.includes("beforeunload"));
