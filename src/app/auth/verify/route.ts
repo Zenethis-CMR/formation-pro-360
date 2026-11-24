@@ -13,6 +13,8 @@ export async function GET(request: NextRequest) {
   }).catch(() => null);
   const destination = result?.ok
     ? "/login?mode=connexion&sent=verified"
-    : "/login?mode=inscription&error=verification";
+    : !result || result.status >= 500
+      ? "/login?mode=inscription&error=verification_unavailable"
+      : "/login?mode=inscription&error=verification";
   return redirectToLogin(destination);
 }
