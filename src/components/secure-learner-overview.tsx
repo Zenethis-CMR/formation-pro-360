@@ -2,6 +2,7 @@
 import { useMemo, useState, type ReactNode } from "react";
 import Link from "next/link";
 import { ArrowRight, BadgeCheck, BookOpen, Code2, GraduationCap, Info, Search, Sparkles, Target, TrendingUp, Trophy } from "lucide-react";
+import { LearnerCompactProfile } from "@/components/secure-academy-shell";
 import { TechnologyBadge, technologiesForMission, displayDomain } from "@/components/technology-badge";
 import type { V2DashboardPilot } from "@/lib/v2-dashboard-pilot";
 
@@ -80,6 +81,7 @@ export function SecureLearnerOverview({missions,submissions,approvedIds,dependen
         <p>Rassemble tes projets vérifiés et présente tes preuves dans ton portfolio.</p>
       </div><Link href="/espace/portfolio">Présenter mes réalisations <ArrowRight size={16}/></Link>
     </section>}
+    <LearnerCompactProfile/>
     {workspace}
     {primaryAction}
     <section className="academy-milestone"><div className="milestone-marker"><Target size={20}/></div>

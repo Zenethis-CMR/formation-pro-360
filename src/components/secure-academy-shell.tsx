@@ -1,8 +1,8 @@
 "use client";
 import Link from "next/link";
-import { useEffect, useRef } from "react";
+import { createContext, useContext, useEffect, useRef } from "react";
 import { usePathname, useSearchParams } from "next/navigation";
-import { ArrowRight, BadgeCheck, BarChart3, BookOpen, BriefcaseBusiness, CalendarDays, ClipboardCheck, FolderKanban, GraduationCap, LayoutDashboard, LogOut, MessageCircle, Settings2, Sparkles, Users } from "lucide-react";
+import { ArrowRight, BadgeCheck, BarChart3, BookOpen, BriefcaseBusiness, CalendarDays, ChevronDown, ClipboardCheck, FolderKanban, GraduationCap, LayoutDashboard, LogOut, MessageCircle, Settings2, Sparkles, Users } from "lucide-react";
 import { signOut } from "@/app/auth/actions";
 
 export type SecureWorkspaceStats={
@@ -19,15 +19,49 @@ export type SecureWorkspaceStats={
 function ProfileStat({label,value}:{label:string;value:string}){
  return <div className="profile-mini-stat workspace-profile-stat"><b>{value}</b><span>{label}</span></div>;
 }
+const WorkspaceStatsContext=createContext<SecureWorkspaceStats|null>(null);
+function LearnerProfileWidgets({stats}:{stats:SecureWorkspaceStats}){
+ return <>
+  <div className="rail-heading"><span>Mon profil</span><Link href="/espace/compte" className="rail-heading-icon" aria-label="Gérer mon profil"><Settings2 size={18}/></Link></div>
+  <div className="profile-card">
+   <div className="profile-avatar profile-avatar-pro" aria-hidden="true"><GraduationCap size={37} strokeWidth={1.8}/></div>
+   <h3>{stats.displayName||"Mon parcours"}</h3><p>Apprenant · Compte sécurisé</p>
+   <div className="workspace-rail-label">Autres réalisations</div>
+   <div className="profile-mini-grid">
+    <ProfileStat label="Validées" value={String(stats.approvedCount)}/>
+    <ProfileStat label="XP autres" value={String(stats.xp)}/>
+    <ProfileStat label="En attente" value={String(stats.pending)}/>
+   </div>
+  </div>
+  <div className="rail-widget">
+   <div className="rail-widget-heading"><h3>Mon parcours</h3><span>16 ateliers</span></div>
+   <div className="rail-next-icon"><Sparkles size={20}/></div>
+   <strong>Ingénierie produit et IA</strong>
+   <p>Retrouve le programme, tes ateliers et ton inscription.</p>
+   <Link className="rail-cta" href="/espace/parcours/ingenierie-produit-ia">Ouvrir mon parcours <ArrowRight size={16}/></Link>
+  </div>
+  <div className="rail-widget rail-coach"><span className="rail-coach-label"><Sparkles size={15}/> CONSEIL PÉDAGOGIQUE</span>
+   <p>Une compétence s'acquiert quand tu sais expliquer et refaire ton travail.</p><span>Pratique · Autonomie · Qualité</span>
+  </div>
+  <Link className="secure-rail-account" href="/espace/compte"><Settings2 size={15}/> Gérer mon compte <ArrowRight size={14}/></Link>
+ </>;
+}
+export function LearnerCompactProfile(){
+ const stats=useContext(WorkspaceStatsContext);
+ if(!stats||stats.role!=="learner")return null;
+ return <details className="workspace-compact-profile"><summary><span className="workspace-profile-mini-avatar"><GraduationCap size={22}/></span><span><strong>{stats.displayName||"Mon profil"}</strong><small>Mon parcours et mes autres réalisations</small></span><ChevronDown size={18}/></summary><div className="workspace-profile-body"><LearnerProfileWidgets stats={stats}/></div></details>;
+}
 export function SecureAcademyShell({children,stats}:{children:React.ReactNode;stats:SecureWorkspaceStats}) {
   const pathname=usePathname();
   const currentTab=useSearchParams().get("onglet")||"dashboard";
   const mobileMore=useRef<HTMLDetailsElement>(null);
+  const desktopMore=useRef<HTMLDetailsElement>(null);
   useEffect(()=>{if(mobileMore.current)mobileMore.current.open=false;},[pathname,currentTab]);
   const trainer=stats.role==="trainer";
   const base=trainer?"/espace/formateur":"/espace/apprenant";
   const dashboard=pathname===base&&currentTab==="dashboard";
-  const detail=dashboard||pathname.startsWith("/espace/atelier/")||pathname.includes("/atelier/")||
+  const learnerDashboard=!trainer&&dashboard;
+  const detail=(dashboard&&!learnerDashboard)||pathname.startsWith("/espace/atelier/")||pathname.includes("/atelier/")||
     pathname.startsWith("/espace/compte")||pathname.startsWith("/espace/bienvenue")||pathname.startsWith("/espace/projet")||pathname.endsWith("/seances")||pathname.endsWith("/defis")||pathname.endsWith("/aide")||pathname.endsWith("/revues")||pathname.endsWith("/bilan");
   const links=trainer?[
     {href:base,label:"Tableau de bord",icon:LayoutDashboard},
@@ -62,9 +96,7 @@ export function SecureAcademyShell({children,stats}:{children:React.ReactNode;st
     {label:"AUTRES RÉALISATIONS",items:[links[1],links[4]]}
   ]:[
     {label:"APPRENDRE",items:links.slice(0,3)},
-    {label:"AVEC MON FORMATEUR",items:links.slice(3,6)},
-    {label:"MES ACQUIS",items:links.slice(6,10)},
-    {label:"RESSOURCES",items:links.slice(10)}
+    {label:"AVEC MON FORMATEUR",items:links.slice(3,6)}
   ];
   const profileName=stats.displayName|| (trainer?"Espace formateur":"Mon parcours");
   const isActive=(href:string)=>{
@@ -77,18 +109,20 @@ export function SecureAcademyShell({children,stats}:{children:React.ReactNode;st
     const tab=new URLSearchParams(query||"").get("onglet")||"dashboard";
     return tab===currentTab;
   };
-  return <div className="academy-viewport secure-academy-viewport"><div className={"academy-frame secure-academy-frame"+(detail?" secure-academy-detail":"")}>
+  const secondary=[...links.slice(6),{href:"/espace/bienvenue",label:"Mes objectifs",icon:Sparkles},{href:"/espace/compte",label:"Mon compte",icon:Settings2}];
+  const secondaryActive=!trainer&&secondary.some(l=>isActive(l.href));
+  useEffect(()=>{if(desktopMore.current)desktopMore.current.open=secondaryActive;},[pathname,currentTab,secondaryActive]);
+  return <WorkspaceStatsContext.Provider value={stats}><div className="academy-viewport secure-academy-viewport"><div className={"academy-frame secure-academy-frame"+(detail?" secure-academy-detail":"")+(learnerDashboard?" workspace-learner-dashboard":"")+(!trainer?" workspace-learner-shell":"")}>
     <aside className="academy-sidebar">
       <Link href={base} className="academy-brand"><span className="brand-flower"><GraduationCap size={23} strokeWidth={2.1}/></span><span>Formation <span>Pro 360</span></span></Link>
       <nav aria-label="Navigation de l'espace personnel" className="sidebar-navigation dash-nav">
         {groups.map(g=><div className="dash-nav-group" key={g.label}><div className="sidebar-category">{g.label}</div>{g.items.map(({href,label,icon:Icon})=><Link key={href} href={href} className={"sidebar-link"+(isActive(href)?" is-active":"")} aria-current={isActive(href)?"page":undefined}><Icon size={18} strokeWidth={1.8}/><span>{label}</span>{label==="Évaluations"&&stats.pending>0&&<b>{stats.pending}</b>}</Link>)}</div>)}
       </nav>
-      <div className="sidebar-divider"/>
+      {!trainer?<details ref={desktopMore} className="workspace-desktop-more" open={secondaryActive} onKeyDown={e=>{if(e.key==="Escape"&&desktopMore.current?.open){e.preventDefault();desktopMore.current.open=false;desktopMore.current.querySelector("summary")?.focus();}}}><summary className={"sidebar-link"+(secondaryActive?" is-active":"")}><Settings2 size={18}/><span>Plus</span><ChevronDown size={15} className="workspace-more-chevron"/></summary><nav aria-label="Autres rubriques de mon espace" className="workspace-more-links">{secondary.map(({href,label,icon:Icon})=><Link key={href} href={href} className={"sidebar-link"+(isActive(href)?" is-active":"")} aria-current={isActive(href)?"page":undefined}><Icon size={16}/><span>{label}</span></Link>)}</nav></details>:<><div className="sidebar-divider"/>
       <div className="sidebar-category">MON ESPACE</div>
       <nav className="sidebar-navigation" aria-label="Réglages et raccourcis">
-        {!trainer&&<Link href="/espace/bienvenue" className={"sidebar-link"+(pathname==="/espace/bienvenue"?" is-active":"")}><Sparkles size={18}/><span>Mes objectifs</span></Link>}
         <Link href="/espace/compte" className={"sidebar-link"+(pathname==="/espace/compte"?" is-active":"")}><Settings2 size={18}/><span>Mon compte</span></Link>
-      </nav>
+      </nav></>}
       <div className="sidebar-spacer"/>
       <div className="sidebar-ad dash-secondary-promo"><div className="sidebar-ad-icon"><Sparkles size={21}/></div>
         <b>{trainer?"Chaque correction compte.":"Chaque projet compte."}</b>
@@ -105,7 +139,7 @@ export function SecureAcademyShell({children,stats}:{children:React.ReactNode;st
       </div>
       {children}
     </section>
-    {!detail&&<aside className="academy-rail secure-academy-rail" aria-label="Profil et progression réelle">
+    {learnerDashboard?<aside className="academy-rail secure-academy-rail workspace-learner-rail" aria-label="Profil et contexte personnel"><LearnerProfileWidgets stats={stats}/></aside>:!detail&&<aside className="academy-rail secure-academy-rail" aria-label="Profil et progression réelle">
       <div className="rail-heading"><span>Mon profil</span><Link href="/espace/compte" className="rail-heading-icon" aria-label="Gérer mon profil"><Settings2 size={18}/></Link></div>
       <div className="profile-card">
         <div className="profile-avatar profile-avatar-pro" aria-hidden="true"><GraduationCap size={37} strokeWidth={1.8}/></div>
@@ -162,5 +196,5 @@ export function SecureAcademyShell({children,stats}:{children:React.ReactNode;st
         </nav>
       </details>}
   </nav>
-  </div>;
+  </div></WorkspaceStatsContext.Provider>;
 }
