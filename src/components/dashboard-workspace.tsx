@@ -2,7 +2,7 @@ import Link from "next/link";
 import {ArrowRight,CalendarDays,ClipboardCheck,FolderKanban,MessageCircle,BarChart3,BriefcaseBusiness,Users,BookOpen,ChevronDown,Settings2,GraduationCap} from "lucide-react";
 import type {ReactNode} from "react";
 export function DashboardHeader({trainer,name}:{trainer:boolean;name?:string|null}){
- return <header className="dash-header"><div><span className="dash-kicker"><GraduationCap size={16}/> {trainer?"STUDIO PÉDAGOGIQUE":"MON ESPACE DE FORMATION"}</span><h1>{trainer?"Pilotage de la formation":"Mon apprentissage"}<span>.</span></h1><p>{trainer?"Organise tes séances, accompagne les projets et suis les réalisations.":name?"Bienvenue, "+name+". Reprends ton travail et avance avec ton formateur.":"Reprends ton travail et avance avec ton formateur, une réalisation à la fois."}</p></div><Link className="dash-account" href="/espace/compte"><Settings2 size={17}/> <span>Mon compte</span></Link></header>;
+ return <header className="dash-header"><div><span className="dash-kicker"><GraduationCap size={16}/> {trainer?"STUDIO PÉDAGOGIQUE":"MON ESPACE DE FORMATION"}</span><h1>{trainer?"Pilotage de la formation":"Mon apprentissage"}<span>.</span></h1><p>{trainer?"Organise tes séances, accompagne les projets et suis les réalisations.":name?"Bienvenue, "+name+". Reprends ton travail et avance avec ton formateur.":"Reprends ton travail et avance avec ton formateur, une réalisation à la fois."}</p></div><Link className="dash-account" href="/espace/compte" aria-label="Mon compte"><Settings2 size={17}/> <span>Mon compte</span></Link></header>;
 }
 const learnerLinks=[
  {title:"Mon projet",desc:"Dossier produit, backlog et revues",href:"/espace/projet",icon:FolderKanban},
