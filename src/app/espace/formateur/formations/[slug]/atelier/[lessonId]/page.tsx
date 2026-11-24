@@ -20,5 +20,5 @@ export default async function AuthoringPage({params,searchParams}:{params:Promis
  const mi=slug===pilotCourse.slug?pilotCourse.modules.findIndex(m=>m.slug===lesson.module_slug):Number(/^semaine-(\d+)$/.exec(lesson.module_slug)?.[1])-1;
  const li=slug===pilotCourse.slug?pilotCourse.modules[mi]?.lessons.findIndex(l=>l.slug===lesson.slug):Number(/^s\d+-a(\d+)$/.exec(lesson.slug)?.[1])-1;
  const activity=li!==undefined?getAiTrainingPlan(slug)?.modules[mi]?.activities[li]:undefined;
- return <main className="page ca-page"><Link className="ca-back" href={base}><ArrowLeft size={16}/> Retour au programme</Link><CurriculumEditor key={lesson.id+":"+String(query.revision??"latest")} slug={slug} detail={detail} initial={detail.current?.content??initialAuthoring(lesson,activity)} historical={!!query.revision}/></main>;
+ return <main className="page ca-page"><CurriculumEditor key={lesson.id+":"+String(query.revision??"latest")} slug={slug} detail={detail} initial={detail.current?.content??initialAuthoring(lesson,activity)} historical={!!query.revision}/></main>;
 }
