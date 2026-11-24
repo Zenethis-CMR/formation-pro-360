@@ -51,3 +51,6 @@
 @media(max-width:720px){.ux-loading{padding:18px 16px!important}.ux-sk-hero{min-height:190px;grid-template-columns:minmax(0,1fr);padding:20px}.ux-sk-art{display:none}.ux-sk-metrics{gap:7px}.ux-sk-metrics>div{padding:12px}.ux-error-card{padding:20px}.ux-error-actions{flex-direction:column}}
 @media(prefers-reduced-motion:reduce){.ux-spin,.ux-spinner,.ux-link-indicator[data-pending=true]{animation:none!important}.secure-academy-viewport :is(.sidebar-link,.dash-shortcut,.pw-nav-links>a,.pw-section-nav button,.studio-command-links>a,.cr-tabs button,.lr-filters button,.product-save,.backlog-primary,.cr-btn.primary,.workbook-submit,.learner-welcome-submit),.onboarding-auth .auth-new-submit{transition:none!important;transform:none!important}.auth-loader,.studio-coach-spinner{animation:none!important}}
 @media print{.ux-loading,.ux-link-indicator,.ux-skip-link{display:none!important}}
+
+.secure-academy-frame>.ux-skip-link{position:fixed;z-index:100;max-width:calc(100% - 16px)}
+.secure-academy-frame>.ux-skip-link:focus-visible{outline:3px solid #2865b5;outline-offset:3px}
