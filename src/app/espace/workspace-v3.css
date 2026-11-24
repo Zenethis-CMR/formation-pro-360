@@ -137,9 +137,9 @@
 .workspace-compact-profile>summary small{color:var(--workspace-muted);font-size:12px}
 .workspace-compact-profile>summary>svg{flex-shrink:0;color:var(--workspace-blue);transition:transform .16s ease}
 .workspace-profile-body{padding:0 16px 12px}
-@media(min-width:1280px){.secure-academy-frame.workspace-learner-dashboard{grid-template-columns:190px minmax(0,1fr) 246px}.workspace-learner-dashboard .workspace-learner-rail{display:block}.workspace-learner-dashboard .dash-account{display:none}.workspace-learner-dashboard .dash-shortcuts-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
-@media(min-width:1500px){.secure-academy-frame.workspace-learner-dashboard{grid-template-columns:195px minmax(0,1fr) 258px}.workspace-learner-dashboard .dash-shortcuts-grid{grid-template-columns:repeat(6,minmax(0,1fr))}}
-@media(max-width:1279px){.secure-academy-frame.workspace-learner-dashboard{grid-template-columns:190px minmax(0,1fr)}.workspace-learner-dashboard .workspace-learner-rail{display:none}.workspace-learner-dashboard .workspace-compact-profile{display:block}}
+@media(min-width:1280px){.secure-academy-frame.workspace-learner-dashboard{grid-template-columns:var(--workspace-nav-width,190px) minmax(0,1fr) var(--workspace-rail-width,246px)}.workspace-learner-dashboard .workspace-learner-rail{display:block}.workspace-learner-dashboard .dash-account{display:none}.workspace-learner-dashboard .dash-shortcuts-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(min-width:1500px){.secure-academy-frame.workspace-learner-dashboard{grid-template-columns:var(--workspace-nav-width,195px) minmax(0,1fr) var(--workspace-rail-width,258px)}.workspace-learner-dashboard .dash-shortcuts-grid{grid-template-columns:repeat(6,minmax(0,1fr))}}
+@media(max-width:1279px){.secure-academy-frame.workspace-learner-dashboard{grid-template-columns:var(--workspace-nav-width,190px) minmax(0,1fr)}.workspace-learner-dashboard .workspace-learner-rail{display:none}.workspace-learner-dashboard .workspace-compact-profile{display:block}}
 @media(max-width:820px){.secure-academy-frame.workspace-learner-dashboard{grid-template-columns:minmax(0,1fr)}.workspace-learner-dashboard .secure-academy-content .page{padding:18px 16px 104px}.workspace-learner-shell .academy-sidebar{display:none}}
 @media(max-width:720px){.workspace-learner-dashboard .academy-feature-v2{grid-template-columns:minmax(0,1fr);min-height:0}.workspace-learner-dashboard .feature-copy{padding:20px}.workspace-learner-dashboard .feature-copy h2{font-size:25px}}
 @media(prefers-reduced-motion:reduce){.workspace-more-chevron,.workspace-compact-profile>summary>svg{transition:none}}
@@ -151,15 +151,15 @@
 .secure-academy-frame .workspace-learner-rail{position:sticky;top:0;align-self:start;min-height:100dvh;max-height:100dvh;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin}
 .workspace-profile-bottom{display:none;padding:0 24px 28px}
 @media(min-width:1280px){
- .secure-academy-viewport .secure-academy-frame.workspace-learner-shell{grid-template-columns:190px minmax(0,1fr) 246px}
+ .secure-academy-viewport .secure-academy-frame.workspace-learner-shell{grid-template-columns:var(--workspace-nav-width,190px) minmax(0,1fr) var(--workspace-rail-width,246px)}
  .secure-academy-frame.workspace-learner-shell .workspace-learner-rail{display:block}
  .workspace-learner-shell .workspace-compact-profile{display:none}
 }
 @media(min-width:1500px){
- .secure-academy-viewport .secure-academy-frame.workspace-learner-shell{grid-template-columns:205px minmax(0,1fr) 268px}
+ .secure-academy-viewport .secure-academy-frame.workspace-learner-shell{grid-template-columns:var(--workspace-nav-width,205px) minmax(0,1fr) var(--workspace-rail-width,268px)}
 }
 @media(max-width:1279px){
- .secure-academy-viewport .secure-academy-frame.workspace-learner-shell{grid-template-columns:190px minmax(0,1fr)}
+ .secure-academy-viewport .secure-academy-frame.workspace-learner-shell{grid-template-columns:var(--workspace-nav-width,190px) minmax(0,1fr)}
  .secure-academy-frame.workspace-learner-shell .workspace-learner-rail{display:none}
  .workspace-learner-shell .workspace-profile-bottom,.workspace-learner-shell .workspace-compact-profile{display:block}
 }
