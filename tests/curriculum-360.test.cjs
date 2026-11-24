@@ -1,0 +1,15 @@
+const test=require("node:test"),assert=require("node:assert/strict"),fs=require("node:fs"),path=require("node:path"),ts=require("typescript"),vm=require("node:vm");
+const read=p=>fs.readFileSync(path.join(__dirname,"..",p),"utf8");
+function load(p){const exports={};vm.runInNewContext(ts.transpileModule(read(p),{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2022}}).outputText,{exports});return exports;}
+test("seven editorial programs, 56 modules and 112 workshop outlines; new programs have distinct criteria",()=>{
+ const {pilotCourse,specializations}=load("src/lib/v2-public-catalog.ts");
+ const {specializationPrograms,getSpecializationProgram}=load("src/lib/specialization-programs.ts");
+ assert.equal(specializationPrograms.length,6);
+ assert.equal(new Set(specializationPrograms.map(p=>p.slug)).size,6);
+ let weeks=pilotCourse.modules.length,lessons=pilotCourse.modules.reduce((n,m)=>n+m.lessons.length,0),criteria=0;
+ for(const track of specializations){const p=getSpecializationProgram(track.slug);assert.ok(p);assert.ok(p.tools&&p.milestones);assert.equal(p.modules.length,8);
+ for(const [i,m] of p.modules.entries()){assert.equal(m.week,i+1);assert.ok(m.title&&m.outcome);assert.equal(m.lessons.length,2);weeks++;for(const l of m.lessons){assert.ok(l.title&&l.objective&&l.evidence);assert.equal(l.criteria.length,4);assert.equal(new Set(l.criteria).size,4);lessons++;criteria+=l.criteria.length;}}
+ assert.equal(new Set(p.modules.flatMap(m=>m.lessons.map(l=>l.slug))).size,16);}
+ assert.equal(weeks,56);assert.equal(lessons,112);assert.equal(criteria,384);assert.equal(getSpecializationProgram("unknown"),undefined);
+});
+test("public previews do not grant enrollment or XP",()=>{const page=read("src/app/catalogue/[slug]/page.tsx"),catalog=read("src/app/catalogue/page.tsx");assert.ok(page.includes("INSCRIPTIONS FERMÉES"));assert.ok(page.includes("notFound()"));assert.ok(!page.includes("/enroll"));assert.ok(!page.includes("submitV2Lesson"));assert.ok(catalog.includes('href={"/catalogue/"+track.slug}'));assert.ok(catalog.includes("Rejoindre le pilote"));});
