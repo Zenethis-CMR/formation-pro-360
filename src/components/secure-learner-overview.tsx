@@ -88,6 +88,7 @@ export function SecureLearnerOverview({missions,submissions,approvedIds,dependen
         <p>Rassemble tes projets vérifiés et présente tes preuves dans ton portfolio.</p>
       </div><Link href="/espace/portfolio">Présenter mes réalisations <ArrowRight size={16}/></Link>
     </section>}
+    {enrolled&&<section className="portfolio-dashboard-shortcut"><div><span className="journey-overline">MON PROJET FIL ROUGE</span><h2>Construis ton produit de bout en bout</h2><p>Centralise ta conception, tes liens, tes preuves et tes trois jalons dans un seul espace privé.</p></div><Link href="/espace/projet">Ouvrir mon projet <ArrowRight size={16}/></Link></section>}
     {enrolled&&<section className="portfolio-dashboard-shortcut">
       <div><span><BadgeCheck size={16}/> RÉALISATIONS VÉRIFIÉES</span>
         <h2>Constitue ton portfolio professionnel</h2>

@@ -132,7 +132,7 @@ export default async function V2WorkshopStudio({params,searchParams}:{
           <span><Award size={15}/> 100 XP après validation</span>
           {lesson&&<span><ShieldCheck size={15}/> Leçon officielle publiée</span>}
         </div>
-        <div className="studio-hero-links"><Link href={primaryHref} className="studio-hero-main-link">{primaryLabel} <ArrowRight size={16}/></Link>{accessible&&<Link href={base} className="studio-hero-secondary-link">Voir les 16 ateliers</Link>}</div>
+        <div className="studio-hero-links"><Link href={primaryHref} className="studio-hero-main-link">{primaryLabel} <ArrowRight size={16}/></Link>{accessible&&<><Link href={base} className="studio-hero-secondary-link">Voir les 16 ateliers</Link><Link href="/espace/projet" className="studio-hero-secondary-link">Mon dossier projet</Link></>}</div>
       </div>
       <div className="studio-hero-side"><span>TON OBJECTIF DE LA SEMAINE</span>
         <strong>{editorial.moduleTitle}</strong>

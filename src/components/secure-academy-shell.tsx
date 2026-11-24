@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
-import { ArrowRight, BadgeCheck, BarChart3, BookOpen, BriefcaseBusiness, CalendarDays, ClipboardCheck, GraduationCap, LayoutDashboard, LogOut, Settings2, Sparkles, Users } from "lucide-react";
+import { ArrowRight, BadgeCheck, BarChart3, BookOpen, BriefcaseBusiness, CalendarDays, ClipboardCheck, FolderKanban, GraduationCap, LayoutDashboard, LogOut, Settings2, Sparkles, Users } from "lucide-react";
 import { signOut } from "@/app/auth/actions";
 
 export type SecureWorkspaceStats={
@@ -30,7 +30,7 @@ export function SecureAcademyShell({children,stats}:{children:React.ReactNode;st
   const trainer=stats.role==="trainer";
   const base=trainer?"/espace/formateur":"/espace/apprenant";
   const detail=pathname.startsWith("/espace/atelier/")||pathname.includes("/atelier/")||
-    pathname.startsWith("/espace/compte")||pathname.startsWith("/espace/bienvenue");
+    pathname.startsWith("/espace/compte")||pathname.startsWith("/espace/bienvenue")||pathname==="/espace/projet";
   const links=trainer?[
     {href:base,label:"Tableau de bord",icon:LayoutDashboard},
     {href:base+"?onglet=evaluations",label:"Évaluations",icon:ClipboardCheck},
@@ -41,6 +41,7 @@ export function SecureAcademyShell({children,stats}:{children:React.ReactNode;st
   ]:[
     {href:base,label:"Tableau de bord",icon:LayoutDashboard},
     {href:"/espace/parcours/ingenierie-produit-ia",label:"Mon parcours",icon:Sparkles},
+    {href:"/espace/projet",label:"Mon projet",icon:FolderKanban},
     {href:"/espace/portfolio",label:"Mon portfolio",icon:BriefcaseBusiness},
     {href:base+"?onglet=missions",label:"Mes réalisations",icon:BookOpen},
     {href:base+"?onglet=progression",label:"Ma progression",icon:BarChart3},
@@ -129,10 +130,11 @@ export function SecureAcademyShell({children,stats}:{children:React.ReactNode;st
     {trainer?<Link href="/espace/compte" className={pathname==="/espace/compte"?"on":""}><Settings2 size={19}/>Compte</Link>:
       <details className="academy-mobile-more">
         <summary aria-label="Afficher les autres rubriques de mon espace" className={
-          (pathname==="/espace/portfolio"||pathname==="/espace/bienvenue"||
+          (pathname==="/espace/projet"||pathname==="/espace/portfolio"||pathname==="/espace/bienvenue"||
           pathname==="/espace/compte"||(pathname===base&&currentTab==="programme"))?"on":""
         }><Settings2 size={19}/>Plus</summary>
         <nav className="academy-mobile-more-menu" aria-label="Autres rubriques apprenant">
+          <Link href="/espace/projet"><FolderKanban size={16}/> Mon projet</Link>
           <Link href="/espace/portfolio"><BriefcaseBusiness size={16}/> Mon portfolio</Link>
           <Link href={base+"?onglet=programme"}><CalendarDays size={16}/> Mes ressources</Link>
           <Link href="/espace/bienvenue"><Sparkles size={16}/> Mes objectifs</Link>
