@@ -3,10 +3,12 @@ import {WorkspaceSaveStatus} from "@/components/workspace-feedback";
 import {useEffect,useState,useRef} from "react";
 import {Download,Save,ArrowRight} from "lucide-react";
 import {emptyDossier,projectSections,type ProductDossier,type ProductProject,type ProjectKey,safeProjectLink} from "@/lib/learner-product-project";
+import {getProjectPresentation} from "@/lib/universal-project";
 import {saveProductProject} from "@/app/espace/projet/actions";
 
 const errors={invalid:"Un champ dépasse la limite ou contient un lien incorrect. Utilise des liens HTTPS sans identifiants.",conflict:"Une autre session a enregistré une version plus récente. Ton texte est conservé ici : exporte-le avant de recharger la page pour comparer les versions.",access:"Ton accès ne permet plus l'enregistrement. Tu peux exporter ton brouillon.",unavailable:"La sauvegarde est momentanément indisponible. Ton brouillon reste dans cet écran : réessaie ou exporte-le."};
-export function LearnerProductEditor({initial,editable}:{initial:ProductProject|null;editable:boolean}){
+export function LearnerProductEditor({initial,editable,trackSlug="ingenierie-produit-ia"}:{initial:ProductProject|null;editable:boolean;trackSlug?:string}){
+ const presentation=getProjectPresentation(trackSlug);
  const [draft,setDraft]=useState<ProductDossier>(()=>initial?.dossier??emptyDossier());
  const [baseline,setBaseline]=useState<ProductDossier>(()=>initial?.dossier??emptyDossier());
  const [revision,setRevision]=useState(initial?.revision??0);
@@ -29,39 +31,39 @@ export function LearnerProductEditor({initial,editable}:{initial:ProductProject|
   if(invalidSection){setActiveSection(invalidSection.id);setStatus({kind:"error",message:errors.invalid});return;}
   saving.current=true;setPending(true);setStatus(null);
   try{
-   const result=await saveProductProject(revision,draft);
+   const result=await saveProductProject(revision,draft,trackSlug);
    if(result.ok===true){setDraft(result.project.dossier);setBaseline(result.project.dossier);setRevision(result.project.revision);setSavedAt(result.project.updated_at);setStatus({kind:"ok",message:"Ton dossier a été enregistré."});}
    else setStatus({kind:"error",message:errors[result.error]});
   }catch{setStatus({kind:"error",message:errors.unavailable});}
   finally{saving.current=false;setPending(false);}
  };
  const exportDraft=()=>{
-  const lines=["# Dossier produit — "+(draft.name||"Sans titre"),"", "Document privé : informations déclarées par l'apprenant, non certifiées.",...projectSections.flatMap(section=>["","## "+section.title,...section.fields.flatMap(field=>["","### "+field.label,draft[field.key]||"À compléter"])])];
+  const lines=["# Dossier projet — "+(draft.name||"Sans titre"),"", "Document privé : informations déclarées par l'apprenant, non certifiées.",...projectSections.flatMap(section=>["","## "+(presentation.sections[section.id]??section.title),...section.fields.flatMap(field=>["","### "+(presentation.labels[field.key]??field.label),draft[field.key]||"À compléter"])])];
   const url=URL.createObjectURL(new Blob([lines.join("\n")],{type:"text/markdown;charset=utf-8"}));
-  const a=document.createElement("a");a.href=url;a.download="mon-projet-formation-pro.md";a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
+  const a=document.createElement("a");a.href=url;a.download="mon-projet-"+trackSlug+".md";a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
  };
  const activeIndex=projectSections.findIndex(s=>s.id===activeSection);
  const fieldsCount=projectSections.reduce((n,s)=>n+s.fields.length,0);
  const filled=projectSections.reduce((n,s)=>n+s.fields.filter(f=>draft[f.key]?.trim()).length,0);
  return <section className="product-editor" aria-labelledby="product-editor-title">
   <div className="product-workspace-heading">
-   <div><span className="journey-overline">DOSSIER DE CONCEPTION · PRIVÉ</span><h2 id="product-editor-title">{draft.name||"Mon dossier produit"}</h2>
+   <div><span className="journey-overline">DOSSIER DE CONCEPTION · PRIVÉ</span><h2 id="product-editor-title">{draft.name||"Mon dossier projet"}</h2>
     <p>{draft.pitch||"Construis progressivement ton dossier au fil des ateliers."}</p></div>
    <div className="product-editor-metric"><strong>{filled}/{fieldsCount}</strong><span>champs renseignés</span></div>
   </div>
   <progress value={filled} max={fieldsCount} aria-label="Champs du dossier renseignés"/>
   <p className="product-note">Le remplissage du dossier ne valide aucun atelier. Ne saisis ni clé API, ni mot de passe, ni donnée personnelle de client.</p>
-  <nav className="product-section-nav pw-section-nav" aria-label="Sections du dossier produit">{projectSections.map((s,i)=>{const n=s.fields.filter(f=>draft[f.key]?.trim()).length;return <button type="button" key={s.id} aria-pressed={activeSection===s.id} onClick={()=>setActiveSection(s.id)} className={activeSection===s.id?"active":""}><span className="pw-section-number">{String(i+1).padStart(2,"0")}</span><strong>{s.title}</strong><span className="pw-section-count">{n}/{s.fields.length}</span></button>})}</nav>
+  <nav className="product-section-nav pw-section-nav" aria-label="Sections du dossier produit">{projectSections.map((s,i)=>{const n=s.fields.filter(f=>draft[f.key]?.trim()).length;return <button type="button" key={s.id} aria-pressed={activeSection===s.id} onClick={()=>setActiveSection(s.id)} className={activeSection===s.id?"active":""}><span className="pw-section-number">{String(i+1).padStart(2,"0")}</span><strong>{presentation.sections[s.id]??s.title}</strong><span className="pw-section-count">{n}/{s.fields.length}</span></button>})}</nav>
   {!editable&&<p className="product-note" role="status">Ton parcours est terminé : le dossier reste consultable et exportable en lecture seule.</p>}
   <form onSubmit={e=>{e.preventDefault();void save();}} noValidate>
    <fieldset disabled={!editable||pending} className="product-fields">
     {projectSections.map((section,index)=>activeSection===section.id&&<section className="product-form-section" id={"project-"+section.id} key={section.id}>
-     <div className="product-form-heading"><span>{String(index+1).padStart(2,"0")}</span><div><h3>{section.title}</h3><p>{section.description}</p></div></div>
+     <div className="product-form-heading"><span>{String(index+1).padStart(2,"0")}</span><div><h3>{presentation.sections[section.id]??section.title}</h3><p>{presentation.descriptions[section.id]??section.description}</p></div></div>
      <div className="product-form-grid">{section.fields.map(field=>{
       const isLink="link" in field;
       const link=isLink?safeProjectLink(draft[field.key]||""):null;
       return <div key={field.key} className={"product-field"+(isLink?" product-link-field":"")}>
-       <label htmlFor={"product-"+field.key}>{field.label}</label>
+       <label htmlFor={"product-"+field.key}>{presentation.labels[field.key]??field.label}</label>
        {isLink||field.max<=400?<input id={"product-"+field.key} name={field.key} type={isLink?"url":"text"} value={draft[field.key]||""} maxLength={field.max} placeholder={isLink?"https://…":"À compléter"} onChange={e=>change(field.key,e.target.value)}/>:
         <textarea id={"product-"+field.key} name={field.key} rows={4} value={draft[field.key]||""} maxLength={field.max} placeholder="À compléter au fil de ton projet…" onChange={e=>change(field.key,e.target.value)}/>}
        <small className="pw-field-count">{(draft[field.key]||"").length}/{field.max}</small>

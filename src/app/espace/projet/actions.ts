@@ -4,15 +4,16 @@ import {backendRequest} from "@/lib/auth/backend";
 import {projectSections,type ProductDossier,type ProductProject,safeProjectLink} from "@/lib/learner-product-project";
 
 export type ProjectSaveResult={ok:true;project:ProductProject}|{ok:false;error:"invalid"|"conflict"|"access"|"unavailable"};
-export async function saveProductProject(revision:number,dossier:ProductDossier):Promise<ProjectSaveResult>{
+export async function saveProductProject(revision:number,dossier:ProductDossier,trackSlug="ingenierie-produit-ia"):Promise<ProjectSaveResult>{
  await requireRole("learner");
+ if(typeof trackSlug!=="string"||trackSlug.length>100||!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(trackSlug))return {ok:false,error:"invalid"};
  if(!Number.isInteger(revision)||revision<0||!dossier||typeof dossier!=="object")return {ok:false,error:"invalid"};
  const fields=projectSections.flatMap<(typeof projectSections)[number]["fields"][number]>(section=>[...section.fields]);
  if(Object.keys(dossier).length!==fields.length||fields.some(field=>{
   const value=dossier[field.key];
   return typeof value!=="string"||value.length>field.max||("link" in field&&value.trim()!==""&&!safeProjectLink(value.trim()));
  }))return {ok:false,error:"invalid"};
- const res=await backendRequest("/v1/training/catalog/ingenierie-produit-ia/project",{
+ const res=await backendRequest("/v1/training/catalog/"+encodeURIComponent(trackSlug)+"/project",{
   method:"PUT",body:JSON.stringify({revision,dossier})
  }).catch(()=>null);
  if(!res?.ok)return {ok:false,error:res?.status===409?"conflict":res?.status===400?"invalid":res?.status===401||res?.status===403?"access":"unavailable"};

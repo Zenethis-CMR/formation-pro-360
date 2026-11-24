@@ -2,7 +2,11 @@ import {NextRequest} from "next/server";
 import {backendRequest,currentUser} from "@/lib/auth/backend";
 export const dynamic="force-dynamic";
 export const runtime="nodejs";
-const api="/v1/training/catalog/ingenierie-produit-ia/portfolio-publication";
+function publicationApi(request:NextRequest){
+ const values=new URL(request.url).searchParams.getAll("parcours");
+ const slug=values.length?values[0]:"ingenierie-produit-ia";
+ return values.length<=1&&slug.length<=100&&/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug)?"/v1/training/catalog/"+encodeURIComponent(slug)+"/portfolio-publication":null;
+}
 const headers={"cache-control":"private, no-store","x-robots-tag":"noindex, nofollow, noarchive"};
 const error=(status:number,code:string)=>Response.json({error:code},{status,headers});
 const owner=async()=>{
@@ -13,8 +17,10 @@ const sameOrigin=(request:NextRequest)=>
   request.headers.get("origin")===
   (process.env.NODE_ENV==="production"?"https://formation.zenithis.tech":
     new URL(request.url).origin);
-export async function GET(){
+export async function GET(request:NextRequest){
   if(!await owner())return error(401,"session_required");
+  const api=publicationApi(request);
+  if(!api)return error(400,"invalid_track");
   const response=await backendRequest(api).catch(()=>null);
   if(!response)return error(503,"backend_unavailable");
   const body=await response.json().catch(()=>null);
@@ -24,6 +30,8 @@ export async function GET(){
 export async function POST(request:NextRequest){
   if(!sameOrigin(request))return error(403,"invalid_origin");
   if(!await owner())return error(401,"session_required");
+  const api=publicationApi(request);
+  if(!api)return error(400,"invalid_track");
   if(request.headers.get("content-type")?.split(";")[0]?.trim()!=="application/json")
     return error(415,"json_required");
   const length=Number(request.headers.get("content-length")||"0");
@@ -38,6 +46,8 @@ export async function POST(request:NextRequest){
 export async function DELETE(request:NextRequest){
   if(!sameOrigin(request))return error(403,"invalid_origin");
   if(!await owner())return error(401,"session_required");
+  const api=publicationApi(request);
+  if(!api)return error(400,"invalid_track");
   const response=await backendRequest(api,{method:"DELETE"}).catch(()=>null);
   if(!response)return error(503,"backend_unavailable");
   const result=await response.json().catch(()=>null);

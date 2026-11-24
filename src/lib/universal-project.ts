@@ -1,0 +1,21 @@
+import type {ProjectKey} from "./learner-product-project";
+type Presentation={brief:string;sections:Record<string,string>;descriptions:Record<string,string>;labels:Partial<Record<ProjectKey,string>>};
+const generic:Presentation={
+ brief:"Construis une réalisation professionnelle vérifiable.",
+ sections:{vision:"Cadrage et identité",discovery:"Recherche et contexte",design:"Conception et méthode",engineering:"Outils, procédés et sécurité",delivery:"Qualité et livraison",business:"Impact et résultats",pilotage:"Pilotage et prochaine action"},
+ descriptions:{vision:"Définis le besoin, le public et la valeur du projet.",design:"Explique les choix et étapes de réalisation.",engineering:"Documente les outils, les usages de l’IA et les contrôles.",business:"Documente les résultats observés, sans inventer de chiffres."},
+ labels:{name:"Nom du projet",pitch:"Présentation en une phrase",problem:"Problème ou besoin",audience:"Public concerné",value_proposition:"Résultat attendu et valeur",research:"Observations, sources et recherche",scope:"Périmètre et priorités",user_flow:"Méthode et étapes de réalisation",prd_url:"Lien du brief",design_url:"Lien du prototype ou des supports",architecture:"Outils, procédures et usage de l’IA",data_security:"Confidentialité, risques et contrôles",repo_url:"Lien du dossier de travail",test_plan:"Vérifications et résultats observés",release_notes:"Versions, retours et améliorations",deploy_url:"Lien de la réalisation",demo_url:"Lien de démonstration",business_model:"Valeur créée et conditions d’utilisation",acquisition:"Diffusion et retours du public",metrics:"Indicateurs et apprentissages",analytics_url:"Lien des mesures (facultatif)"}
+};
+const variants:Record<string,{brief:string;labels:Partial<Record<ProjectKey,string>>}>={
+ "design-produit-ux-ui-motion":{brief:"Prototype haute fidélité, design system, accessibilité, motion et recette UI.",labels:{scope:"Écrans, composants et états prioritaires",user_flow:"Parcours et interactions",architecture:"Design tokens, composants, outils IA",test_plan:"Tests utilisateurs, contraste et accessibilité",design_url:"Lien Figma / prototype",release_notes:"Handoff et recette UI"}},
+ "copywriting-communication-contenu-ia":{brief:"Système éditorial, contenus et parcours de conversion vérifiés.",labels:{research:"Corpus, sources et objections",scope:"Piliers éditoriaux et formats",user_flow:"Parcours de lecture et conversion",architecture:"Workflow IA, voix et vérification des sources",test_plan:"Tests de compréhension, exactitude et SEO"}},
+ "marketing-acquisition-ia":{brief:"Campagne multicanal documentée avec indicateurs réels.",labels:{scope:"Canaux, campagnes et budgets",user_flow:"Entonnoir et parcours CRM",architecture:"Instrumentation, attribution et IA",test_plan:"Tests d’événements et de campagne",metrics:"Indicateurs mesurés, coût et limites"}},
+ "automatisation-integrations-agents-ia":{brief:"Automatisation métier supervisée, testable et observable.",labels:{scope:"Processus, déclencheurs et limites",user_flow:"Flux, exceptions et reprise",architecture:"APIs, webhooks, agents et orchestration",test_plan:"Tests d’erreur, évaluation et supervision"}},
+ "infrastructure-devops-cybersecurite":{brief:"Déploiement reproductible, sécurisé et résilient.",labels:{scope:"Services et contraintes d’exploitation",user_flow:"Procédure de déploiement et restauration",architecture:"Infrastructure, CI/CD et réseau",data_security:"Menaces, permissions et sauvegardes",test_plan:"Recette, monitoring et tests de restauration"}},
+ "entrepreneuriat-numerique-monetisation":{brief:"Offre commercialisée, entonnoir et apprentissages vérifiés.",labels:{scope:"Offre, hypothèses et expérience commerciale",user_flow:"Parcours client et service",architecture:"Outils de vente, CRM et assistance IA",test_plan:"Tests de marché, objections et preuves",metrics:"Trésorerie, conversion et résultats réels"}}
+};
+export function getProjectPresentation(slug:string):Presentation{
+ if(slug==="ingenierie-produit-ia")return {brief:"Concevoir, livrer et défendre un produit numérique.",sections:{},descriptions:{},labels:{}};
+ const variant=variants[slug];return {...generic,brief:variant?.brief??generic.brief,labels:{...generic.labels,...variant?.labels}};
+}
+export const projectWorkspaceBase=(slug:string)=>"/espace/apprenant/formations/"+encodeURIComponent(slug);

@@ -47,6 +47,6 @@ test("unsafe links are refused and private project actions are role-protected",(
  assert.ok(editor.includes('Ton texte est conservé'));
  assert.ok(editor.includes('Exporter le dossier'));
  assert.ok(!editor.includes("localStorage"));
- assert.ok(read("src/components/secure-academy-shell.tsx").includes('href:"/espace/projet"'));
+ assert.ok(read("src/components/secure-academy-shell.tsx").includes('projectBase?projectBase+"/projet":"/espace/projet"'));
  assert.ok(read("src/app/espace/parcours/ingenierie-produit-ia/atelier/[slug]/page.tsx").includes('href="/espace/projet"'));
 });

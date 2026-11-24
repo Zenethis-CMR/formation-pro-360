@@ -6,13 +6,13 @@ import {ArrowRight,Award,BadgeCheck,BookOpen,BriefcaseBusiness,CalendarCheck2,
   CheckCircle2,ExternalLink,FileDown,Filter,LockKeyhole,Search,ShieldCheck} from "lucide-react";
 
 export type VerifiedProject={
-  id:string;lesson_slug:string;lesson_title:string;lesson_objective:string;
+  id:string;lesson_id?:string;module_id?:string;lesson_slug:string;lesson_title:string;lesson_objective:string;
   evidence_required:string;week:number;module_title:string;skills:string[];
   url:string;note:string;score:number;reviewed_at:string;xp:number;awarded_at:string;
 };
 export type VerifiedPortfolio={
   source:"trainer_approved_with_xp_ledger";
-  course:{title:string;summary:string};
+  course:{slug?:string;title:string;summary:string};
   projects:VerifiedProject[];verified_count:number;verified_xp:number;
 };
 
@@ -33,7 +33,9 @@ function dateLabel(raw:string){
  * Print only after an explicit learner gesture. Notes and URLs are excluded
  * from the printable copy unless the learner checks the corresponding option.
  */
-export function LearnerVerifiedPortfolio({portfolio}:{portfolio:VerifiedPortfolio}){
+export function LearnerVerifiedPortfolio({portfolio,trackSlug="ingenierie-produit-ia",lessonCount,moduleLinks={}}:{portfolio:VerifiedPortfolio;trackSlug?:string;lessonCount?:number|null;moduleLinks?:Record<string,string>}){
+  const pilot=trackSlug==="ingenierie-produit-ia";
+  const studio=pilot?"/espace/parcours/ingenierie-produit-ia":"/espace/apprenant/formations/"+encodeURIComponent(trackSlug)+"/studio";
   const [search,setSearch]=useState("");
   const [week,setWeek]=useState("all");
   const [includeNotes,setIncludeNotes]=useState(false);
@@ -57,20 +59,20 @@ export function LearnerVerifiedPortfolio({portfolio}:{portfolio:VerifiedPortfoli
         <h1>Mon portfolio<span>.</span></h1>
         <p>Des produits construits, des preuves consultables et des ateliers
           réellement validés par le formateur.</p>
-        <small>{portfolio.course.title} · 8 semaines de pratique</small>
+        <small>{portfolio.course.title}</small>
       </div>
       <div className="portfolio-hero-emblem"><BadgeCheck size={56}/><span>VALIDATION HUMAINE</span></div>
     </header>
 
     <section className="portfolio-kpis" aria-label="Acquis vérifiés">
       <div><span><CheckCircle2 size={16}/> Projets validés</span>
-        <strong>{portfolio.verified_count}<small> / 16</small></strong>
+        <strong>{portfolio.verified_count}{lessonCount!=null?<small> / {lessonCount}</small>:null}</strong>
         <p>Corrections réelles enregistrées</p></div>
       <div><span><Award size={16}/> XP du parcours vérifiés</span>
         <strong>{portfolio.verified_xp}</strong>
         <p>Uniquement les récompenses inscrites en base</p></div>
-      <div><span><CalendarCheck2 size={16}/> Semaines représentées</span>
-        <strong>{availableWeeks.length}<small> / 8</small></strong>
+      <div><span><CalendarCheck2 size={16}/> Périodes représentées</span>
+        <strong>{availableWeeks.length}</strong>
         <p>Par des réalisations approuvées</p></div>
     </section>
 
@@ -96,7 +98,7 @@ export function LearnerVerifiedPortfolio({portfolio}:{portfolio:VerifiedPortfoli
       </button>
     </section>
 
-    <PortfolioPublishing projects={safeProjects}/>
+    <PortfolioPublishing projects={safeProjects} trackSlug={trackSlug} courseTitle={portfolio.course.title}/>
     {safeProjects.length>0&&<section className="portfolio-skill-section">
       <div className="portfolio-section-heading">
         <span>COMPÉTENCES DU PARCOURS</span>
@@ -135,7 +137,7 @@ export function LearnerVerifiedPortfolio({portfolio}:{portfolio:VerifiedPortfoli
           <h3>Ton premier projet vérifié apparaîtra ici.</h3>
           <p>Une remise en attente ou une demande de correction ne suffit pas.
             Après validation humaine et attribution des XP, ton livrable rejoindra ce dossier.</p>
-          <Link href="/espace/parcours/ingenierie-produit-ia">Reprendre mes ateliers <ArrowRight size={16}/></Link>
+          <Link href={studio}>Reprendre mes ateliers <ArrowRight size={16}/></Link>
         </div>:
         shown.length===0?<p className="portfolio-no-result">Aucun projet ne correspond à ces filtres.</p>:
         <div className="portfolio-project-grid">
@@ -173,7 +175,7 @@ export function LearnerVerifiedPortfolio({portfolio}:{portfolio:VerifiedPortfoli
               <a href={safeUrl(project.url)||"#"} target="_blank" rel="noopener noreferrer">
                 Consulter mon livrable <ExternalLink size={15}/>
               </a>
-              <Link href={"/espace/parcours/ingenierie-produit-ia/atelier/"+project.lesson_slug}>
+              <Link href={pilot?studio+"/atelier/"+encodeURIComponent(project.lesson_slug):moduleLinks[project.id]??studio}>
                 Voir l'atelier <ArrowRight size={15}/>
               </Link>
             </div>

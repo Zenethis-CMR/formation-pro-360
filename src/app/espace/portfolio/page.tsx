@@ -3,6 +3,7 @@ import {ProductWorkspaceNav} from "@/components/product-workspace-nav";
 import { ArrowLeft, ArrowRight, BriefcaseBusiness, LockKeyhole, ShieldCheck, TriangleAlert } from "lucide-react";
 import { requireRole } from "@/lib/auth/require-role";
 import { backendRequest } from "@/lib/auth/backend";
+import {PortfolioPublishing} from "@/components/portfolio-publishing";
 import { LearnerVerifiedPortfolio, type VerifiedPortfolio } from "@/components/learner-verified-portfolio";
 
 export const dynamic="force-dynamic";
@@ -51,7 +52,8 @@ export default async function LearnerPortfolioPage(){
           "Impossible de vérifier tes réalisations auprès du serveur. Nous n'affichons pas de projets ou de récompenses non confirmés."}</p>
         <Link href="/espace/parcours/ingenierie-produit-ia">Retourner au parcours <ArrowRight size={16}/></Link>
       </section>:
-      <LearnerVerifiedPortfolio portfolio={data}/>}
+      <LearnerVerifiedPortfolio portfolio={data} lessonCount={16}/>}
+    {!data&&<PortfolioPublishing projects={[]}/>}
     <footer className="portfolio-private-footer">
       <ShieldCheck size={15}/> Espace personnel protégé · Les projets sont issus de véritables corrections enregistrées.
     </footer>

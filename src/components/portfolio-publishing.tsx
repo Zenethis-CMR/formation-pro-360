@@ -9,13 +9,14 @@ type Publication={
   include_scores:boolean;include_links:boolean;
   published_at:string;updated_at:string;currently_accessible?:boolean;
 };
-const endpoint="/api/portfolio-publication";
+
 
 /**
  * An owner must deliberately choose individual, verified projects and exactly
  * which additional details to disclose. No publishing on mount or by default.
  */
-export function PortfolioPublishing({projects}:{projects:VerifiedProject[]}){
+export function PortfolioPublishing({projects,trackSlug="ingenierie-produit-ia",courseTitle="Ingénierie produit et IA"}:{projects:VerifiedProject[];trackSlug?:string;courseTitle?:string}){
+  const endpoint="/api/portfolio-publication?parcours="+encodeURIComponent(trackSlug);
   const [publication,setPublication]=useState<Publication|null>(null);
   const [loaded,setLoaded]=useState(false);
   const [loadFailed,setLoadFailed]=useState(false);
@@ -24,7 +25,7 @@ export function PortfolioPublishing({projects}:{projects:VerifiedProject[]}){
   const [notice,setNotice]=useState("");
   const [saving,setSaving]=useState(false);
   const [chosen,setChosen]=useState<string[]>([]);
-  const [title,setTitle]=useState("Mes réalisations en ingénierie produit et IA");
+  const [title,setTitle]=useState(("Mes réalisations — "+courseTitle).slice(0,80));
   const [scores,setScores]=useState(false);
   const [links,setLinks]=useState(false);
   const [copied,setCopied]=useState(false);
@@ -57,7 +58,7 @@ export function PortfolioPublishing({projects}:{projects:VerifiedProject[]}){
       }
     })();
     return ()=>controller.abort();
-  },[projectIdsKey,reloadKey]);
+  },[endpoint,projectIdsKey,reloadKey]);
 
   const toggle=(id:string)=>{
     setChosen(current=>current.includes(id)?current.filter(x=>x!==id):[...current,id]);
@@ -128,7 +129,7 @@ export function PortfolioPublishing({projects}:{projects:VerifiedProject[]}){
     projects.length===0?
       <div className="portfolio-sharing-empty"><LockKeyhole size={20}/>
         Publie après la validation de ton premier atelier par le formateur.
-        Aucun projet fictif ne sera affiché.</div>:
+        Aucun projet fictif ne sera affiché.{publication&&<div><p>Un lien existe déjà pour cette formation. Tu peux le désactiver même si tes preuves sont actuellement inaccessibles.</p><button type="button" disabled={saving} onClick={revoke}><Trash2 size={16}/> Désactiver le lien</button></div>}</div>:
     <>
       <fieldset className="portfolio-sharing-choices" disabled={saving}>
         <legend><BadgeCheck size={15}/> Choisis les réalisations à montrer</legend>
