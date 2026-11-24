@@ -2,15 +2,15 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight, BookOpen, BrainCircuit, CheckCircle2, Clock3, GraduationCap, Layers3, Rocket, Sparkles, Palette, PenTool, BarChart3, Workflow, ShieldCheck, BriefcaseBusiness } from "lucide-react";
 import { pilotCourse, specializations } from "@/lib/v2-public-catalog";
-import { specializationPrograms } from "@/lib/specialization-programs";
+import { specializationPrograms, getSpecializationProgram, formatProgramDuration } from "@/lib/specialization-programs";
 import "./curriculum-360.css";
 const icons={palette:Palette,pen:PenTool,chart:BarChart3,workflow:Workflow,shield:ShieldCheck,briefcase:BriefcaseBusiness};
 const detailedCount=1+specializationPrograms.length;
-const weeks=pilotCourse.modules.length+specializationPrograms.reduce((n,p)=>n+p.modules.length,0);
+const modules=pilotCourse.modules.length+specializationPrograms.reduce((n,p)=>n+p.modules.length,0);
 const workshops=pilotCourse.modules.reduce((n,m)=>n+m.lessons.length,0)+specializationPrograms.reduce((n,p)=>n+p.modules.reduce((a,m)=>a+m.lessons.length,0),0);
 export const metadata:Metadata={
   title:"Catalogue des formations 360 | Formation Pro 360",
-  description:"Découvrez les sept formations 360, dont le parcours Ingénierie produit et IA : 8 semaines et 16 ateliers pratiques."
+  description:"Sept formations pratiques assistées par IA : spécialisations intensives de 1 à 3 semaines et parcours produit complet de 8 semaines."
 };
 export default function CataloguePage(){
   return <main className="v2catalog cf360">
@@ -23,11 +23,11 @@ export default function CataloguePage(){
         </div>
         <div className="v2catalog-hero-metrics" aria-label="Le programme en chiffres">
           <div><strong>{String(detailedCount).padStart(2,"0")}</strong><span>Programmes détaillés</span></div>
-          <div><strong>{weeks}</strong><span>Modules prévus</span></div>
-          <div><strong>{workshops}</strong><span>Ateliers conçus ou proposés</span></div>
+          <div><strong>{modules}</strong><span>Modules prévus</span></div>
+          <div><strong>{workshops}</strong><span>Activités pratiques conçues ou proposées</span></div>
         </div>
       </section>
-      <section className="v2catalog-section" aria-labelledby="v2catalog-title"><div className="v2catalog-heading"><div><span>CHOISIS TON DOMAINE</span><h2 id="v2catalog-title">Les formations 360</h2></div><p>Un parcours ouvert et six programmes détaillés, en préparation pour les inscriptions. Explore les ateliers, les livrables et les critères proposés.</p></div>
+      <section className="v2catalog-section" aria-labelledby="v2catalog-title"><div className="v2catalog-heading"><div><span>CHOISIS TON DOMAINE</span><h2 id="v2catalog-title">Les formations 360</h2></div><p>Un parcours complet de 8 semaines et six spécialisations intensives de 1 à 3 semaines, en préparation pour les inscriptions.</p></div>
         <div className="v2catalog-feature">
           <div className="v2catalog-feature-symbol"><BrainCircuit size={34}/></div>
           <div className="v2catalog-feature-copy"><span className="v2catalog-state">FORMATION DISPONIBLE</span><h3>{pilotCourse.name}</h3><p>{pilotCourse.summary}</p>
@@ -35,9 +35,9 @@ export default function CataloguePage(){
             <div className="v2catalog-feature-actions"><Link href="/catalogue/ingenierie-produit-ia" className="v2catalog-link">Voir les 16 ateliers <ArrowRight size={16}/></Link><Link href="/espace/parcours/ingenierie-produit-ia" className="v2catalog-enrollment-link">Rejoindre le pilote <ArrowRight size={16}/></Link></div>
           </div>
         </div>
-        <div className="v2catalog-grid">{specializations.map((track,i)=>{const Icon=icons[track.icon];return <article key={track.slug} className="v2catalog-track cf360-track" data-tone={track.icon}>
+        <div className="v2catalog-grid">{specializations.map((track,i)=>{const Icon=icons[track.icon];const program=getSpecializationProgram(track.slug);return <article key={track.slug} className="v2catalog-track cf360-track" data-tone={track.icon}>
           <div className="cf360-track-visual"><span><Icon size={34} strokeWidth={1.6}/></span><span className="v2catalog-soon">PROGRAMME DÉTAILLÉ · EN PRÉPARATION</span></div>
-          <div className="cf360-track-body"><span className="v2catalog-track-index">0{i+2} · INSCRIPTIONS FERMÉES</span><h3>{track.name}</h3><p>{track.summary}</p><div className="cf360-track-meta"><span>8 semaines</span><span>16 ateliers proposés</span></div><div className="v2catalog-track-deliverable"><CheckCircle2 size={15}/><span><b>Projet final :</b> {track.deliverable}</span></div><Link href={"/catalogue/"+track.slug}>Explorer le programme <ArrowRight size={16}/></Link></div>
+          <div className="cf360-track-body"><span className="v2catalog-track-index">0{i+2} · INSCRIPTIONS FERMÉES</span><h3>{track.name}</h3><p>{track.summary}</p><div className="cf360-track-meta">{program&&<><span><Clock3 size={15}/> {formatProgramDuration(program.durationWeeks)}</span><span>{program.durationWeeks*program.daysPerWeek*program.hoursPerDay} h indicatives</span></>}<span>Défis pratiques · IA</span></div><div className="v2catalog-track-deliverable"><CheckCircle2 size={15}/><span><b>Projet final :</b> {track.deliverable}</span></div><Link href={"/catalogue/"+track.slug}>Explorer le programme <ArrowRight size={16}/></Link></div>
         </article>})}</div>
       </section>
       <section className="v2catalog-note" aria-label="Information sur les inscriptions"><Layers3 size={21}/><div><strong>Parcours ouvert : inscription depuis ton espace personnel</strong><p>Le parcours Ingénierie produit et IA est publié. Connecte-toi pour vérifier ton éligibilité, t'inscrire gratuitement et réaliser les ateliers. Les six autres formations restent fermées aux inscriptions, mais leurs programmes détaillés sont consultables. Tes réalisations précédentes et leurs récompenses sont conservées.</p></div><Link href="/espace/parcours/ingenierie-produit-ia">Ouvrir le pilote <ArrowRight size={15}/></Link></section>
