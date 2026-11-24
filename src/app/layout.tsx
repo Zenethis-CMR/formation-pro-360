@@ -6,6 +6,7 @@ import "./globals.css";
 import "./premium.css";
 import "./fullscreen.css";
 import "./login/onboarding-auth.css";
+import "./workspace-motion.css";
 
 const jakarta = Plus_Jakarta_Sans({subsets:["latin"],display:"swap",variable:"--font-jakarta"});
 
