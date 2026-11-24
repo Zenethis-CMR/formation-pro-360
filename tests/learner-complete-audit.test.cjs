@@ -121,7 +121,10 @@ test("learner onboarding and dashboard prioritize the active current course",()=
  assert.match(intro,/primaryLesson/);
  assert.match(intro,/Reprendre mon atelier principal/);
  assert.match(intro,/Voir les huit semaines du parcours principal/);
- assert.match(intro,/action=\{saveLearnerPreferences\}/);
+ assert.match(intro,/<LearnerOnboardingWizard current=\{current\}/);
+ const wizard=read("src/components/learner-onboarding-wizard.tsx");
+ assert.match(wizard,/saveLearnerPreferencesDraft\(data\)/);
+ assert.match(wizard,/Passer cette étape pour le moment/);
 });
 test("private learner progress and portfolio use official statuses and XP",()=>{
  const progress=read("src/components/v2-learner-progress-panel.tsx");
