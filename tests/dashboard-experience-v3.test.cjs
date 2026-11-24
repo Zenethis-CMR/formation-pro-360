@@ -18,7 +18,8 @@ test("dashboard puts the page heading first and groups the operational modules",
 });
 test("navigation prioritizes official routes and preserves secondary workflows",()=>{
  const shell=read("src/components/secure-academy-shell.tsx"),css=read("src/app/espace/workspace-v3.css");
- assert.ok(shell.includes('const detail=dashboard||'));
+ assert.ok(shell.includes("const learnerDashboard=!trainer&&dashboard;"));
+ assert.ok(shell.includes('className="academy-rail secure-academy-rail workspace-learner-rail"'));
  assert.ok(shell.includes("AVEC MON FORMATEUR"));
  assert.ok(shell.includes('href={base+"/corrections"}'));
  assert.ok(shell.includes('href={base+"/suivi"}'));
