@@ -150,9 +150,9 @@ export function WorkshopCoach({lessonId,trainerFeedback}:{lessonId:string;traine
   }
 
   return <section id="coach" className="studio-section studio-live-coach">
-    <span className="studio-eyebrow"><Sparkles size={15}/> COACH PÉDAGOGIQUE INTERACTIF · QWEN3 LOCAL</span>
+    <span className="studio-eyebrow"><Sparkles size={15}/> AIDE PONCTUELLE · QWEN3 LOCAL</span>
     <h2>Débloque ton atelier, une question à la fois.</h2>
-    <p>Le coach propose des pistes et des tests à réaliser par toi-même. Il ne produit pas des résultats de terrain, n'attribue pas de points et ne remplace pas la correction du formateur.</p>
+    <p>Ton formateur dirige les séances pratiques et ses consignes priment toujours. Cette aide facultative propose une piste ou un test à réaliser toi-même, sans cours complet, livrable prêt à remettre, correction ni XP.</p>
     <fieldset className="studio-coach-modes">
       <legend>Quelle aide veux-tu recevoir ?</legend>
       <div className="studio-coach-mode-options">
