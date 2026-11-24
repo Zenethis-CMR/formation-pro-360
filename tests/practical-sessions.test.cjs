@@ -1,0 +1,40 @@
+const test=require("node:test"),assert=require("node:assert/strict"),fs=require("node:fs"),path=require("node:path"),vm=require("node:vm"),ts=require("typescript");
+const read=p=>fs.readFileSync(path.join(__dirname,"..",p),"utf8");
+const output=ts.transpileModule(read("src/lib/practical-sessions.ts"),{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2022}}).outputText;
+const exportsObject={};vm.runInNewContext(output,{exports:exportsObject,URL});
+const {localDateTime,toDoualaTimestamp,newSession,publicationIssues,safeMeetingLink,upcomingSession}=exportsObject;
+test("session scheduling is explicit in Douala, rejects impossible dates and unsafe links",()=>{
+ assert.equal(localDateTime("2026-11-24T08:30:00Z"),"2026-11-24T09:30");
+ assert.equal(toDoualaTimestamp("2026-11-24T09:30"),"2026-11-24T09:30:00+01:00");
+ assert.equal(toDoualaTimestamp("2026-02-30T09:30"),null);
+ assert.equal(safeMeetingLink("javascript:alert(1)"),null);
+ assert.equal(safeMeetingLink("https://user:pass@example.invalid"),null);
+ const s=newSession(new Date("2026-11-24T08:00:00Z"));
+ assert.equal(s.starts_at,"2026-11-25T09:00:00+01:00");
+ assert.ok(publicationIssues(s).length>0);
+ const ready={...s,title:"Prototype pratique",objectives:"Tester le flux",exercise:"Réaliser un test",expected_result:"Preuve",meeting_url:"https://example.invalid/meeting"};
+ assert.equal(publicationIssues(ready).length,0);
+ assert.ok(publicationIssues({...ready,format:"hybrid"}).includes("Le lieu de la séance"));
+});
+test("upcoming session excludes draft, cancelled, completed and elapsed events",()=>{
+ const now=Date.parse("2026-11-24T08:30:00Z");
+ const s={id:"real",status:"published",starts_at:"2026-11-24T08:00:00Z",duration_minutes:60};
+ const result=upcomingSession([{...s,id:"draft",status:"draft"},{...s,id:"cancelled",status:"cancelled"},{...s,id:"past",starts_at:"2026-11-23T08:00:00Z"},s],now);
+ assert.equal(result.id,"real");
+ assert.equal(upcomingSession([],now),null);
+});
+test("role-separated agenda, explicit publication, human guidance and responsive access",()=>{
+ const trainer=read("src/app/espace/formateur/seances/page.tsx"),learner=read("src/app/espace/apprenant/seances/page.tsx"),action=read("src/app/espace/formateur/seances/actions.ts"),ui=read("src/components/practical-session-agenda.tsx");
+ assert.ok(trainer.includes('requireRole("trainer")'));
+ assert.ok(learner.includes('requireRole("learner")'));
+ assert.ok(action.includes('requireRole("trainer")'));
+ assert.ok(ui.includes("Confirmer la publication"));
+ assert.ok(ui.includes("APERÇU · NON PUBLIÉ"));
+ assert.ok(ui.includes("Avant la séance"));
+ assert.ok(ui.includes("Avec le formateur"));
+ assert.ok(ui.includes("Après la séance"));
+ assert.ok(ui.includes("revision_conflict"));
+ assert.ok(ui.includes("prefers-reduced-motion"));
+ assert.ok(!learner.includes("session-participants"));
+ assert.ok(read("src/components/secure-academy-shell.tsx").includes('base+"/seances"'));
+});
