@@ -14,6 +14,6 @@ test("quality gate fails closed for inconsistent or activation-enabled responses
 });
 test("quality screen is trainer-only and separates proposed from sealed workload",()=>{
  const p=read("src/app/espace/formateur/formations/qualite/page.tsx");
- assert.ok(p.includes('requireRole("trainer")'));assert.ok(p.includes("/v1/training/curriculum-quality"));assert.ok(p.includes("Charge proposée"));assert.ok(p.includes("Charge scellée contrôlée"));assert.ok(p.includes("Activation désactivée"));
+ assert.ok(p.includes('requireRole("trainer")'));assert.ok(p.includes("/v1/training/curriculum-quality"));assert.ok(p.includes("Charge proposée"));assert.ok(p.includes("Charge scellée contrôlée"));assert.ok(p.includes("Inscriptions séparées"));assert.ok(p.includes("Charge officielle contrôlée"));
  assert.ok(read("src/app/espace/formateur/formations/page.tsx").includes("/espace/formateur/formations/qualite"));
 });
