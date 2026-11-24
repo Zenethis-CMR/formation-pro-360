@@ -168,3 +168,42 @@
  .workspace-profile-bottom{padding:0 16px 100px}
 }
 @media print{.workspace-profile-bottom,.workspace-learner-rail,.workspace-compact-profile{display:none!important}.secure-academy-frame.workspace-learner-shell{display:block!important}}
+
+/* Learning Studio V3: a single work surface, no competing second sidebar. */
+.secure-academy-content .studio-page{padding:24px clamp(16px,2.2vw,36px) 48px}
+.studio-page .studio-breadcrumb{color:var(--workspace-muted);font-size:12px;margin-bottom:14px}
+.studio-page .studio-hero{padding:clamp(20px,2.5vw,34px);gap:18px;border-radius:16px;margin-bottom:18px}
+.studio-page .studio-hero h1{font-size:clamp(26px,2.6vw,38px);overflow-wrap:anywhere}
+.studio-page .studio-hero-main>p{font-size:14px}
+.studio-page .studio-hero-links a{min-height:44px;font-size:12px}
+.studio-page .studio-hero-side{flex:0 0 210px;min-width:0}
+.studio-page .studio-hero-tags>span{font-size:11px}
+.studio-layout.studio-layout-v3{display:block;min-width:0}
+.studio-layout-v3 .studio-command-bar{position:sticky;top:0;z-index:10;display:block;background:#fff;border:1px solid var(--workspace-line);border-radius:12px;padding:12px 14px;margin:0 0 18px;box-shadow:0 5px 14px #2039540b;min-width:0}
+.studio-command-top{display:flex;align-items:center;justify-content:space-between;gap:10px;min-width:0;margin-bottom:8px}
+.studio-command-top>div{min-width:0;display:flex;flex-direction:column;gap:3px}
+.studio-command-top strong{font-size:14px;color:var(--workspace-ink);overflow-wrap:anywhere}
+.studio-command-status{font-size:11px;font-weight:750;line-height:1.4;padding:6px 9px;border-radius:7px;background:#edf2f7;color:#536b83;flex-shrink:0}
+.studio-command-status.verified{background:#e4f4eb;color:#216645}
+.studio-command-status.pending{background:#fff2db;color:#825514}
+.studio-command-status.rework{background:#fae9e8;color:#982f2d}
+.studio-command-links{display:flex;align-items:center;gap:5px;overflow-x:auto;scrollbar-width:thin;overscroll-behavior-x:contain;padding:3px 3px 5px;min-width:0}
+.studio-command-links>a{flex:0 0 auto;display:inline-flex;align-items:center;gap:6px;padding:9px 11px;min-height:44px;font-size:12px;font-weight:700;color:var(--workspace-blue);background:#f3f7fc;border:1px solid transparent;border-radius:8px;white-space:nowrap}
+.studio-command-links>a:hover{background:#e7f1ff;border-color:#b7d1ef}
+.studio-command-links>a:last-child{background:#e8f3ff}
+.studio-layout-v3 :is(#brief,#studio-checklist-title,#retour-formateur,#carnet,#qualite,#boite-outils,#coach,#livrable){scroll-margin-top:150px}
+.studio-layout-v3 .studio-main{gap:18px}
+.studio-layout-v3 :is(.studio-section,.studio-checklist){padding:clamp(18px,2.2vw,29px);border-radius:14px}
+.studio-layout-v3 :is(.studio-section,.studio-checklist) h2{font-size:clamp(21px,1.8vw,26px);color:var(--workspace-ink)}
+.studio-layout-v3 :is(.studio-section,.studio-checklist) p{font-size:14px;line-height:1.75;overflow-wrap:anywhere}
+.studio-human-note{display:flex;align-items:flex-start;gap:12px;border:1px solid #cfe0f5;border-radius:11px;background:#f3f7fc;padding:15px;margin:16px 0}
+.studio-human-note>svg{flex-shrink:0;color:var(--workspace-blue)}
+.studio-human-note strong{font-size:14px;color:var(--workspace-ink)}
+.studio-human-note p{margin:6px 0;color:var(--workspace-muted)}
+.studio-human-note a{display:inline-flex;align-items:center;gap:7px;color:var(--workspace-blue);font-size:13px;font-weight:750;min-height:44px}
+.studio-layout-v3 :is(.studio-submission-form,.workbook-form) :is(input,textarea){font-size:14px;min-width:0;max-width:100%}
+.studio-layout-v3 :is(.studio-submission-form button,.workbook-submit){min-height:44px}
+@media(max-width:1050px){.studio-page .studio-hero-side{flex:0 0 175px;padding:15px}}
+@media(max-width:820px){.secure-academy-content .studio-page{padding:18px 16px 104px}.studio-page .studio-hero{flex-direction:column}.studio-page .studio-hero-side{flex:none;max-width:none}.studio-layout-v3 .studio-command-bar{padding:10px;border-radius:10px}.studio-command-top strong{font-size:12px}.studio-command-links>a{font-size:11px;padding:8px 10px}.studio-layout-v3 :is(#brief,#studio-checklist-title,#retour-formateur,#carnet,#qualite,#boite-outils,#coach,#livrable){scroll-margin-top:165px}}
+@media(max-width:370px){.studio-command-top{align-items:flex-start}.studio-command-status{max-width:110px;white-space:normal}.studio-human-note{padding:12px}}
+@media print{.studio-layout-v3 .studio-command-bar{position:static;box-shadow:none}.studio-command-links{display:none}}
