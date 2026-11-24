@@ -1,13 +1,14 @@
 import Link from "next/link";
 import {redirect} from "next/navigation";
 import {ArrowRight,BookOpen,BrainCircuit,CheckCircle2,GraduationCap,Target,Users} from "lucide-react";
-import {currentUser} from "@/lib/auth/backend";
+import {cookies} from "next/headers";
+import {authCookieName,currentUser} from "@/lib/auth/backend";
 import {pilotCourse,specializations} from "@/lib/v2-public-catalog";
 import {getAiTrainingPlan,trainingMinutes,formatWorkload} from "@/lib/ai-training-plans";
 import "./catalogue/catalogue.css";
 
 export default async function Home(){
- const user=await currentUser().catch(()=>null);
+ const user=(await cookies()).get(authCookieName)?.value?await currentUser().catch(()=>null):null;
  if(user)redirect("/espace");
  const courses=[{slug:pilotCourse.slug,name:pilotCourse.name,summary:"Concevoir, tester et livrer un produit numérique.",deliverable:"Produit numérique vérifiable"},...specializations];
  return <main className="v2catalog public-home">

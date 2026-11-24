@@ -54,7 +54,7 @@ export function SecureLearnerOverview({missions,submissions,approvedIds,dependen
         <p>Du problème utilisateur au MVP en ligne, puis aux premiers essais commerciaux. Un projet fil rouge et des réalisations évaluées.</p>
         <div className="feature-meta">
           <span className="feature-tech-logos"><TechnologyBadge name="React" compact/><TechnologyBadge name="Next.js" compact/><TechnologyBadge name="PostgreSQL" compact/></span>
-          <span>8 modules · 16 ateliers · {formatWorkload(workload*60)}{duration?" · "+duration+" au rythme choisi":""}</span>
+          <span>8 modules · 16 ateliers · {formatWorkload(workload*60)} estimées{duration?" · "+duration+" au rythme choisi":""}</span>
         </div>
         <div className="v2-feature-actions">
           <Link href={resumeHref} className="feature-action">{actionLabel} <ArrowRight size={16}/></Link>
@@ -88,7 +88,7 @@ export function SecureLearnerOverview({missions,submissions,approvedIds,dependen
     {workspace}
     {primaryAction}
     <section className="academy-milestone"><div className="milestone-marker"><Target size={20}/></div>
-      <div><span>OBJECTIF · JOUR 14</span><strong>Mettre ton premier scénario utilisateur en ligne.</strong>
+      <div><span>OBJECTIF · PROCHAIN JALON</span><strong>Mettre ton premier scénario utilisateur en ligne.</strong>
         <p>Une mission à la fois. Chaque étape donne lieu à un livrable évalué.</p></div>
       <Link href={pilotHref} aria-label="Ouvrir le parcours"><ArrowRight size={20}/></Link>
     </section>

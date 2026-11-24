@@ -56,6 +56,25 @@ jobs:
           cp deploy/formation-pro-360.service .next/standalone/deploy/formation-pro-360.service
           tar -czf "$RUNNER_TEMP/formation-pro-360.tar.gz" -C .next/standalone .
 
+      - name: Install isolated browser acceptance dependencies
+        run: |
+          npm install --prefix "$RUNNER_TEMP/browser-qa" --no-package-lock --no-audit --no-fund playwright@1.56.1
+          "$RUNNER_TEMP/browser-qa/node_modules/.bin/playwright" install --with-deps chromium
+
+      - name: Browser acceptance (public and synthetic authenticated workspaces)
+        env:
+          BROWSER_QA_OUTPUT: browser-qa
+        run: NODE_PATH="$RUNNER_TEMP/browser-qa/node_modules" node scripts/browser-acceptance.cjs
+
+      - name: Preserve browser evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: browser-acceptance
+          path: browser-qa/
+          if-no-files-found: ignore
+          retention-days: 7
+
       - name: Configure production SSH
         env:
           DEPLOY_KEY: ${{ secrets.FORMATION_PRO_DEPLOY_KEY }}

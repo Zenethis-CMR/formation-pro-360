@@ -1,3 +1,4 @@
+import {parseTrackProgress} from "@/lib/universal-learning";
 import { backendRequest } from "@/lib/auth/backend";
 
 export type V2DashboardPilot={
@@ -20,14 +21,17 @@ export async function getV2DashboardPilot():Promise<V2DashboardPilot>{
       track?:{slug?:string;status?:string};
       enrollment?:string|null;
       enrollment_open?:boolean;xp_total?:number;
-      submissions?:{lesson_id?:string;module_id?:string;lesson_slug?:string;status?:string}[];
+      lesson_access?:string;progress_summary?:unknown;
+      workshop_states?:{module_id:string;lesson_slug:string;status:string}[];
       lessons?:{module_id:string;slug:string;version:number;status:string}[];
     };
     if(data.track?.slug!=="ingenierie-produit-ia"||data.track?.status!=="published")
       return unavailable;
     const enrollment=["active","completed","paused","revoked"].includes(data.enrollment||"")
       ?data.enrollment as V2DashboardPilot["enrollment"]:null;
-    const submissions=Array.isArray(data.submissions)?data.submissions:[];
+    const entitled=enrollment==="active"||enrollment==="completed";
+    const progress=entitled?parseTrackProgress(data,"ingenierie-produit-ia"):null;
+    if(entitled&&!progress?.summary)return unavailable;
     const conceptualKey=(moduleId:string,slug:string)=>moduleId+":"+slug;
     const newest=new Map<string,{module_id:string;slug:string;version:number}>();
     for(const l of data.lessons||[]){
@@ -35,17 +39,13 @@ export async function getV2DashboardPilot():Promise<V2DashboardPilot>{
       const key=conceptualKey(l.module_id,l.slug);
       if(!newest.has(key)||(newest.get(key)?.version??0)<l.version)newest.set(key,l);
     }
-    const keyed=(status:string)=>new Set(submissions.filter(s=>s.status===status)
-      .map(s=>s.module_id&&s.lesson_slug?conceptualKey(s.module_id,s.lesson_slug):s.lesson_id)
-      .filter((key):key is string=>typeof key==="string"));
-    const approved=keyed("approved"),pending=keyed("pending");
-    const next=[...newest.values()].find(l=>
-      !approved.has(conceptualKey(l.module_id,l.slug))&&
-      !pending.has(conceptualKey(l.module_id,l.slug)));
+    const states=new Map((data.workshop_states??[]).map(s=>[conceptualKey(s.module_id,s.lesson_slug),s.status]));
+    const next=[...newest.values()].find(l=>states.get(conceptualKey(l.module_id,l.slug))==="changes_requested")
+      ??[...newest.values()].find(l=>states.get(conceptualKey(l.module_id,l.slug))==="not_started");
     return {
       published:true,enrollment,enrollmentOpen:data.enrollment_open===true,
-      xp:Number.isFinite(data.xp_total)&&Number(data.xp_total)>=0?Number(data.xp_total):0,
-      approved:approved.size,pending:pending.size,
+      xp:progress?.xp??0,
+      approved:progress?.summary?.approved??0,pending:progress?.summary?.pending??0,
       resumeSlug:(enrollment==="active"||enrollment==="completed")?next?.slug??null:null
     };
   }catch{return unavailable;}
