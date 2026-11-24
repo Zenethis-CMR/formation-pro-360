@@ -22,7 +22,8 @@ test("progress uses only confirmed selected enrollment and exact counters",()=>{
 test("read-only selector is reachable and requests detail only after permission filtering",()=>{
  const page=read("src/app/espace/apprenant/formations/page.tsx");
  assert.ok(page.includes('await requireRole("learner")'));
- assert.ok(page.includes('selected?await backendRequest'));
+ assert.ok(page.includes('selected?await loadLearningDetail'));
+ assert.ok(read('src/lib/active-learning-context.ts').includes('if(!selectEnrolledTrack(tracks,slug))return null'));
  assert.ok(!page.includes('method:"POST"'));
  assert.ok(read("src/app/espace/apprenant/page.tsx").includes('href="/espace/apprenant/formations"'));
 });

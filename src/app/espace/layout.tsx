@@ -1,6 +1,7 @@
 import "./workspace-v3.css";
 import "./dashboard-v5.css";
 import "./workspace-sidebars.css";
+import { loadLearningContext } from "@/lib/active-learning-context";
 import { requireRole } from "@/lib/auth/require-role";
 import { SecureAcademyShell, type SecureWorkspaceStats } from "@/components/secure-academy-shell";
 
@@ -13,12 +14,13 @@ export default async function SecureWorkspaceLayout({children}:{children:React.R
     role,displayName:null,missionCount:0,approvedCount:0,xp:0,pending:0,learners:0,nextTitle:null,nextHref:null
   };
   if(role==="learner"){
-    const [missionsR,awardsR,subsR,depsR,prefsR]=await Promise.all([
+    const [missionsR,awardsR,subsR,depsR,prefsR,learning]=await Promise.all([
       db.from("missions").select("id,title").eq("published",true).order("week").order("created_at"),
       db.from("xp_ledger").select("mission_id,xp").eq("learner_id",user.id),
       db.from("submissions").select("mission_id,status,created_at").eq("learner_id",user.id).order("created_at",{ascending:false}),
       db.from("mission_prerequisites").select("mission_id,prerequisite_id"),
-      db.from("learner_preferences").select("preferred_name").eq("learner_id",user.id).maybeSingle()
+      db.from("learner_preferences").select("preferred_name").eq("learner_id",user.id).maybeSingle(),
+      loadLearningContext()
     ]);
     if(missionsR.error||awardsR.error||subsR.error||depsR.error||prefsR.error) {
       throw new Error("Impossible de charger le profil sécurisé.");
@@ -37,6 +39,7 @@ export default async function SecureWorkspaceLayout({children}:{children:React.R
     stats={
       ...stats,
       displayName:prefsR.data?.preferred_name??null,
+      activeTrack:learning.active?{slug:learning.active.slug,title:learning.active.title}:null,
       missionCount:missions.length,
       approvedCount:approved.size,
       xp:(awardsR.data||[]).reduce((sum,a)=>sum+Number(a.xp),0),

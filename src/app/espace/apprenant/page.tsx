@@ -23,6 +23,8 @@ import { V2LearnerProgressPanel } from "@/components/v2-learner-progress-panel";
 import { LearnerJourneyGuide } from "@/components/learner-journey-guide";
 import { LearnerWeekPlan } from "@/components/learner-week-plan";
 import { V2LearnerResourcesPanel, type LearnerCourseResources } from "@/components/v2-learner-resources-panel";
+import { loadLearningContext,loadLearningDetail } from "@/lib/active-learning-context";
+import { AdaptiveLearningPanel } from "@/components/adaptive-learning-panel";
 import { backendRequest } from "@/lib/auth/backend";
 
 type Params = { error?: string; success?: string; welcome?: string; onglet?: string };
@@ -48,7 +50,7 @@ export default async function LearnerSpace({searchParams}:{searchParams:Promise<
     tab==="progression"||tab==="programme" ? db.from("training_settings").select("start_date").eq("id",true).maybeSingle() : skipped,
     tab==="progression" ? db.from("coach_messages").select("id,trainer_id,learner_id,body,created_at").eq("learner_id",user.id).order("created_at",{ascending:false}).limit(8) : skipped,
     tab==="progression" ? db.from("workshop_steps").select("learner_id,mission_id,completed_at").eq("learner_id",user.id) : skipped,
-    tab==="dashboard"||tab==="programme" ? db.from("learner_preferences").select("learner_id,preferred_name,goal,experience,minutes_per_day,regular_days,optional_days").eq("learner_id",user.id).maybeSingle() : skipped
+    tab!=="missions" ? db.from("learner_preferences").select("learner_id,preferred_name,goal,experience,minutes_per_day,regular_days,optional_days").eq("learner_id",user.id).maybeSingle() : skipped
   ]);
   if(missionError || subsError || xpError || depsError || badgeError || earnedError || practiceError || settingsError || messagesError || stepsError || preferencesError) return <main className="page"><p className="alert danger">Impossible de charger le parcours. Vérifie que les migrations SQL sont appliquées.</p></main>;
   const missions = (rawMissions || []) as Mission[];
@@ -60,6 +62,11 @@ export default async function LearnerSpace({searchParams}:{searchParams:Promise<
   const activeWeek = curriculumWeeks.find(w => missions.some(m => m.week===w.week && !approved.has(m.id)))?.week ?? 8;
   const currentMission = missions.find(m => !approved.has(m.id) &&
     !deps.some(d => d.mission_id===m.id && !approved.has(d.prerequisite_id)));
+  const learning=tab!=="missions"?await loadLearningContext():null;
+  const active=learning?.active??null;
+  const activeDetail=active?await loadLearningDetail(active.slug):null;
+  const nonPilot=!!active&&active.slug!=="ingenierie-produit-ia";
+  const adaptive=active&&activeDetail?<AdaptiveLearningPanel slug={active.slug} track={activeDetail.studio} summary={activeDetail.progress.summary} xp={activeDetail.progress.xp} availability={rawPreferences as LearnerPreferences|null}/>:null;
   // V2 rights and XP are independent of the historical V1 mission ledger.
   const pilot=tab==="dashboard"||tab==="programme"?await getV2DashboardPilot():null;
   const v2Progress=tab==="progression"?await loadV2LearnerProgress():null;
@@ -79,15 +86,16 @@ export default async function LearnerSpace({searchParams}:{searchParams:Promise<
     {tab!=="dashboard"&&<WorkspaceTabHeading role="learner" tab={tab}/>}
     {tab==="dashboard"&&<>
       <DashboardHeader trainer={false} name={(rawPreferences as LearnerPreferences|null)?.preferred_name}/>
-      {pilot?<SecureLearnerOverview missions={missions} submissions={submissions} approvedIds={[...approved]} dependencies={deps} xp={xp} level={level} pilot={pilot} rhythm={rawPreferences as LearnerPreferences|null}
+      {nonPilot?(adaptive??<section className="panel" role="status"><h2>Formation active momentanément indisponible</h2><Link href="/espace/apprenant/formations">Vérifier mes formations</Link></section>):pilot?<SecureLearnerOverview missions={missions} submissions={submissions} approvedIds={[...approved]} dependencies={deps} xp={xp} level={level} pilot={pilot} rhythm={rawPreferences as LearnerPreferences|null}
         primaryAction={<DashboardDisclosure title="Les étapes de mon parcours" description="Objectifs, inscription, diagnostic facultatif et progression" initiallyOpen={pilot.published&&pilot.enrollment===null}><LearnerJourneyGuide pilot={pilot} profileSaved={!!rawPreferences}/></DashboardDisclosure>}
         workspace={<DashboardQuickLinks trainer={false} enrolled={pilot.enrollment==="active"||pilot.enrollment==="completed"}/>}/>
         :<><section className="panel" role="status"><h2>Le parcours est momentanément indisponible</h2><p>Tu peux consulter tes réalisations et revenir au programme.</p><Link className="primary-btn" href="/espace/parcours/ingenierie-produit-ia">Voir le parcours</Link></section><LearnerCompactProfile/><DashboardQuickLinks trainer={false} enrolled={false}/></>}
+      {!nonPilot&&adaptive}
       <DashboardDisclosure title="Mes objectifs et mon rythme" description="Personnaliser mon parcours et mon planning">
-        <LearnerWelcomeBanner preferences={rawPreferences as LearnerPreferences|null} mission={insight.nextMission} pilot={pilot}/>
+        <LearnerWelcomeBanner preferences={rawPreferences as LearnerPreferences|null} mission={insight.nextMission} pilot={nonPilot?null:pilot}/>
       </DashboardDisclosure>
       <section className="panel"><h2>Mes formations</h2><p>Retrouve tes inscriptions et consulte les résultats de chaque parcours séparément.</p><Link className="primary-btn" href="/espace/apprenant/formations">Gérer mes parcours <ArrowUpRight size={16}/></Link></section>
-      <section className="v2-catalog-banner"><div><span>LE CATALOGUE 360</span><h2>Sept formations, une première spécialisation active</h2><p>Compare les charges et les durées estimées selon ton rythme personnel. Six spécialisations restent en préparation pour les inscriptions.</p></div><Link href="/catalogue" className="v2-catalog-banner-link">Explorer le catalogue <ArrowUpRight size={16}/></Link></section>
+      <section className="v2-catalog-banner"><div><span>LE CATALOGUE 360</span><h2>Découvrir les sept formations</h2><p>Compare les charges et les durées estimées selon ton rythme personnel. Le catalogue indique les parcours disponibles.</p></div><Link href="/catalogue" className="v2-catalog-banner-link">Explorer le catalogue <ArrowUpRight size={16}/></Link></section>
     </>}
     <div className="secure-learner-alerts">
       {params.welcome && <p className="alert success" role="status">Tes préférences sont enregistrées. Tu peux maintenant continuer ton parcours.</p>}
@@ -96,20 +104,22 @@ export default async function LearnerSpace({searchParams}:{searchParams:Promise<
     </div>
     {tab==="progression"&&<>
       <p><Link className="primary-btn" href="/espace/apprenant/formations">Progression par formation <ArrowUpRight size={16}/></Link></p>
-      {v2Progress&&<V2LearnerProgressPanel progress={v2Progress} otherXp={xp}/>}
+      {nonPilot?adaptive:v2Progress&&<V2LearnerProgressPanel progress={v2Progress} otherXp={xp}/>}
       <div className="v2-legacy-section-head"><span>MES AUTRES ACQUIS · RÉALISATIONS CONSERVÉES</span><h2>Mes compétences et récompenses</h2><p>Badges, exercices et retours de tes autres réalisations, conservés sur ton compte.</p></div>
       <LearnerCoachingPanel insight={insight} messages={(coachMessages||[]) as CoachMessage[]} startDate={settings?.start_date??null}/>
       <LearningAchievements catalog={(badgeCatalog||[]) as Badge[]} earned={(myBadges||[]) as EarnedBadge[]} practice={(practice||[]) as PracticeCheckin[]} validatedCount={approved.size} currentMission={currentMission ? {id:currentMission.id,title:currentMission.title} : null}/>
       <SkillMastery missions={missions} approved={approved}/>
     </>}
     {tab==="programme"&&<>
-      <LearnerWeekPlan preferences={rawPreferences as LearnerPreferences|null} pilot={pilot}/>
-      <V2LearnerResourcesPanel data={courseResources}/>
+      {adaptive}
+      {!nonPilot&&<><LearnerWeekPlan preferences={rawPreferences as LearnerPreferences|null} pilot={pilot}/>
+      <V2LearnerResourcesPanel data={courseResources}/></>}
+      {nonPilot&&<p><Link className="primary-btn" href={"/espace/apprenant/formations/"+encodeURIComponent(active!.slug)+"/studio"}>Ressources et consignes de ma formation <ArrowUpRight size={16}/></Link></p>}
       <section className="learner-other-resources">
         <div className="v2-legacy-section-head"><span>AUTRES RÉALISATIONS · RESSOURCES CONSERVÉES</span>
           <h2>Calendrier et fiches de mes autres missions</h2>
           <p>Les activités ci-dessous appartiennent à tes réalisations complémentaires.
-            Le programme principal « Ingénierie produit et IA » est présenté au-dessus.</p>
+            Les ressources de ta formation active sont présentées au-dessus.</p>
         </div>
         <TrainingSchedule startDate={settings?.start_date??null} missions={missions} approved={approved}/>
         <CurriculumRoadmap missions={missions} approved={approved} prerequisites={deps}/>

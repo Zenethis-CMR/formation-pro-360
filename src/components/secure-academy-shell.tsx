@@ -16,11 +16,15 @@ export type SecureWorkspaceStats={
   learners:number;
   nextTitle:string|null;
   nextHref:string|null;
+  activeTrack?:{slug:string;title:string}|null;
 };
 function ProfileStat({label,value}:{label:string;value:string}){
  return <div className="profile-mini-stat workspace-profile-stat"><b>{value}</b><span>{label}</span></div>;
 }
 const WorkspaceStatsContext=createContext<SecureWorkspaceStats|null>(null);
+function activeCourseHref(stats:SecureWorkspaceStats){
+ return stats.activeTrack?.slug==="ingenierie-produit-ia"?"/espace/parcours/ingenierie-produit-ia":stats.activeTrack?"/espace/apprenant/formations/"+encodeURIComponent(stats.activeTrack.slug)+"/studio":"/espace/apprenant/formations";
+}
 function LearnerProfileWidgets({stats}:{stats:SecureWorkspaceStats}){
  return <>
   <div className="rail-heading"><span>Mon profil</span><Link href="/espace/compte" className="rail-heading-icon" aria-label="Gérer mon profil"><Settings2 size={18}/></Link></div>
@@ -35,11 +39,12 @@ function LearnerProfileWidgets({stats}:{stats:SecureWorkspaceStats}){
    </div>
   </div>
   <div className="rail-widget">
-   <div className="rail-widget-heading"><h3>Mon parcours</h3><span>16 ateliers</span></div>
+   <div className="rail-widget-heading"><h3>Formation active</h3></div>
    <div className="rail-next-icon"><Sparkles size={20}/></div>
-   <strong>Ingénierie produit et IA</strong>
+   <strong>{stats.activeTrack?.title??"Choisir une formation"}</strong>
    <p>Retrouve le programme, tes ateliers et ton inscription.</p>
-   <Link className="rail-cta" href="/espace/parcours/ingenierie-produit-ia">Ouvrir mon parcours <ArrowRight size={16}/></Link>
+   <Link className="rail-cta" href={activeCourseHref(stats)}>Ouvrir mon parcours <ArrowRight size={16}/></Link>
+   <Link className="rail-cta" href="/espace/apprenant/formations">Mes formations <ArrowRight size={16}/></Link>
   </div>
   <div className="rail-widget rail-coach"><span className="rail-coach-label"><Sparkles size={15}/> CONSEIL PÉDAGOGIQUE</span>
    <p>Une compétence s'acquiert quand tu sais expliquer et refaire ton travail.</p><span>Pratique · Autonomie · Qualité</span>
@@ -78,7 +83,7 @@ export function SecureAcademyShell({children,stats}:{children:React.ReactNode;st
     {href:"/catalogue",label:"Catalogue",icon:Sparkles}
   ]:[
     {href:base,label:"Tableau de bord",icon:LayoutDashboard},
-    {href:"/espace/parcours/ingenierie-produit-ia",label:"Mon parcours",icon:Sparkles},
+    {href:"/espace/apprenant/formations",label:"Mes formations",icon:Sparkles},
     {href:"/espace/projet",label:"Mon projet",icon:FolderKanban},
     {href:base+"/seances",label:"Mes séances",icon:CalendarDays},
     {href:base+"/defis",label:"Mes défis",icon:ClipboardCheck},
@@ -103,8 +108,7 @@ export function SecureAcademyShell({children,stats}:{children:React.ReactNode;st
   const isActive=(href:string)=>{
     const [path,query]=href.split("?");
     if(!trainer&&path==="/espace/projet"&&(pathname===path||pathname.startsWith(path+"/")))return true;
-    if(!trainer&&path==="/espace/parcours/ingenierie-produit-ia"&&
-      pathname.startsWith(path))return true;
+    if(!trainer&&path==="/espace/apprenant/formations"&&(pathname.startsWith(path)||pathname.startsWith("/espace/parcours/")))return true;
     if(trainer&&path===base+"/suivi"&&pathname===base+"/bilan")return true;
     if(trainer&&path===base&&new URLSearchParams(query||"").get("onglet")==="programme"&&(pathname===base+"/formations"||pathname.startsWith(base+"/formations/")))return true;
     if(path!==pathname)return false;
@@ -130,7 +134,7 @@ export function SecureAcademyShell({children,stats}:{children:React.ReactNode;st
       <div className="sidebar-ad dash-secondary-promo"><div className="sidebar-ad-icon"><Sparkles size={21}/></div>
         <b>{trainer?"Chaque correction compte.":"Chaque projet compte."}</b>
         <p>{trainer?"Un retour précis aide chaque apprenant à progresser.":"Apprends en réalisant de vrais projets."}</p>
-        <Link href={trainer?base+"?onglet=evaluations":"/espace/parcours/ingenierie-produit-ia"}>{trainer?"Voir les évaluations":"Ouvrir mon parcours"} <ArrowRight size={16}/></Link>
+        <Link href={trainer?base+"?onglet=evaluations":activeCourseHref(stats)}>{trainer?"Voir les évaluations":"Ouvrir mon parcours"} <ArrowRight size={16}/></Link>
       </div>
       <form action={signOut} className="secure-sidebar-signout"><button type="submit"><LogOut size={16}/> Se déconnecter</button></form>
       <div className="sidebar-footer">© Formation Pro 360<br/><small>Espace personnel sécurisé</small></div>
@@ -180,7 +184,7 @@ export function SecureAcademyShell({children,stats}:{children:React.ReactNode;st
       <Link href="/espace/projet" className={pathname.startsWith("/espace/projet")?"on":""}><FolderKanban size={19}/>Projet</Link>
       <Link href={base+"/bilan"} className={pathname===base+"/bilan"?"on":""}><BarChart3 size={19}/>Bilan</Link>
     </>}
-    <Link href={trainer?base+"/seances":"/espace/parcours/ingenierie-produit-ia"} className={(trainer?pathname===base+"/seances":pathname.startsWith("/espace/parcours/ingenierie-produit-ia"))?"on":""}><CalendarDays size={19}/>{trainer?"Séances":"Parcours"}</Link>
+    <Link href={trainer?base+"/seances":"/espace/apprenant/formations"} className={(trainer?pathname===base+"/seances":pathname.startsWith("/espace/parcours/")||pathname.startsWith("/espace/apprenant/formations"))?"on":""}><CalendarDays size={19}/>{trainer?"Séances":"Formations"}</Link>
     {trainer?<details ref={mobileMore} className="academy-mobile-more"><summary aria-label="Autres rubriques formateur" className={pathname==="/espace/compte"||pathname===base+"/defis"||pathname===base+"/aide"||pathname===base+"/revues"||pathname===base+"/formations"||(pathname===base&&currentTab!=="dashboard")?"on":""}><Settings2 size={19}/>Plus</summary><nav className="academy-mobile-more-menu" aria-label="Autres rubriques formateur"><Link href="/catalogue"><BookOpen size={16}/> Catalogue des formations</Link><Link href={base+"?onglet=evaluations"}><ClipboardCheck size={16}/> Autres évaluations</Link><Link href={base+"?onglet=apprenants"}><Users size={16}/> Autres apprenants</Link><Link href={base+"/revues"}><FolderKanban size={16}/> Revues de projets</Link><Link href={base+"/aide"}><MessageCircle size={16}/> Suivi des blocages</Link><Link href={base+"/defis"}><ClipboardCheck size={16}/> Consignes et défis</Link><Link href={base+"?onglet=programme"}><CalendarDays size={16}/> Programme</Link><Link href="/espace/compte"><Settings2 size={16}/> Mon compte</Link></nav></details>:
       <details ref={mobileMore} className="academy-mobile-more">
         <summary aria-label="Afficher les autres rubriques de mon espace" className={
