@@ -2,6 +2,8 @@ import Link from "next/link";
 import {ArrowRight,CalendarDays,Clock3} from "lucide-react";
 import type {LearnerPreferences} from "@/lib/learner-preferences";
 import type {V2DashboardPilot} from "@/lib/v2-dashboard-pilot";
+import {aiTrainingPlans} from "@/lib/ai-training-plans";
+import {TrainingEstimateList} from "@/components/training-duration";
 import {pilotCourse} from "@/lib/v2-public-catalog";
 import {buildLearnerWeekPlan,doualaCalendarDate} from "@/lib/learner-week-plan";
 
@@ -30,6 +32,7 @@ export function LearnerWeekPlan({preferences,pilot}:{preferences:LearnerPreferen
     </li>)}</ol>
     {lesson?<div className="personal-week-next"><div><strong>Objectif de travail proposé · semaine {lesson.week}</strong><p>{lesson.title}</p></div><Link href={base+"/atelier/"+lesson.slug}>Ouvrir mon atelier <ArrowRight size={16}/></Link></div>:
       <p className="personal-week-note">Consulte ton parcours pour vérifier ton inscription, tes corrections ou les prochaines réalisations.</p>}
+    <details className="ai-duration-card"><summary>Durée estimée des sept formations</summary><TrainingEstimateList rhythm={preferences} plans={aiTrainingPlans}/><p>Depuis le début de chaque formation, jours fixes uniquement.</p></details>
     <p className="personal-week-note">Répartition indicative : 30 % compréhension, 70 % réalisation. Prévois des pauses. Aucun retard ni XP n'est calculé à partir de ce planning.</p>
     </>:<p className="personal-week-note">Renseigne tes jours fixes, facultatifs et la durée de séance pour afficher ton planning. Tu peux continuer tes ateliers sans cette étape.</p>}
   </section>;
