@@ -13,6 +13,7 @@ import { TrainingSchedule } from "@/components/training-schedule";
 import { LearnerCoachingPanel } from "@/components/learner-coaching-panel";
 import { learnerInsight, type CoachMessage } from "@/lib/coaching-insights";
 import { LearnerWelcomeBanner } from "@/components/learner-welcome-banner";
+import { LearnerCompactProfile } from "@/components/secure-academy-shell";
 import { SecureLearnerOverview } from "@/components/secure-learner-overview";
 import { WorkspaceTabHeading } from "@/components/workspace-tab-heading";
 import { type LearnerPreferences } from "@/lib/learner-preferences";
@@ -81,7 +82,7 @@ export default async function LearnerSpace({searchParams}:{searchParams:Promise<
       {pilot?<SecureLearnerOverview missions={missions} submissions={submissions} approvedIds={[...approved]} dependencies={deps} xp={xp} level={level} pilot={pilot}
         primaryAction={<DashboardDisclosure title="Les étapes de mon parcours" description="Objectifs, inscription, diagnostic facultatif et progression" initiallyOpen={pilot.published&&pilot.enrollment===null}><LearnerJourneyGuide pilot={pilot} profileSaved={!!rawPreferences}/></DashboardDisclosure>}
         workspace={<DashboardQuickLinks trainer={false} enrolled={pilot.enrollment==="active"||pilot.enrollment==="completed"}/>}/>
-        :<><section className="panel" role="status"><h2>Le parcours est momentanément indisponible</h2><p>Tu peux consulter tes réalisations et revenir au programme.</p><Link className="primary-btn" href="/espace/parcours/ingenierie-produit-ia">Voir le parcours</Link></section><DashboardQuickLinks trainer={false} enrolled={false}/></>}
+        :<><section className="panel" role="status"><h2>Le parcours est momentanément indisponible</h2><p>Tu peux consulter tes réalisations et revenir au programme.</p><Link className="primary-btn" href="/espace/parcours/ingenierie-produit-ia">Voir le parcours</Link></section><LearnerCompactProfile/><DashboardQuickLinks trainer={false} enrolled={false}/></>}
       <DashboardDisclosure title="Mes objectifs et mon rythme" description="Personnaliser mon parcours et mon planning">
         <LearnerWelcomeBanner preferences={rawPreferences as LearnerPreferences|null} mission={insight.nextMission} pilot={pilot}/>
       </DashboardDisclosure>
