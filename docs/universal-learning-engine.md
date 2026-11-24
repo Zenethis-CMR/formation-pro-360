@@ -31,3 +31,7 @@ Practical sessions, personalized briefs and support threads reuse existing track
 ## Phase 8 — collaborative project intelligence
 
 Existing project/backlog/review storage remains per learner and track. The generic project navigation links to explicit track-scoped backlog, voluntary review and preparation coach. Backlog references for non-pilot tracks must be unique published workshop slugs; legacy pilot associations remain supported. Revoked/suspended owners can revoke review access through Mes formations. Trainer can only see explicitly shared snapshots, never later private edits. Coach uses authorized official course title and voluntary summary/question only; no automatic task creation, grading or publication. Provider integration tested with mock only; authenticated live QA remains outstanding.
+
+## Phase 9a — curriculum quality gate
+
+Read-only trainer quality audit of all tracks, published logical lessons and draft latest authoring copies. Detects incomplete copies, schema length incompatibilities, ambiguous workshop slugs, missing/stale private seals, coverage and total discrepancies. Published legacy tracks are reviewed separately; their proposed editorial workload is not promoted to official duration. A technically consistent seal is only a candidate for human review, not permission to activate. No publication, enrollment, migrations or private learner data writes. Activation and official duration/content projection require a distinct implementation and authenticated UI/UX acceptance.
