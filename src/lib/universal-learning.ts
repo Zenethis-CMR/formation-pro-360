@@ -34,13 +34,21 @@ export function parseTrackProgress(value:unknown,slug:string):{summary:ProgressS
 export type WorkshopState="not_started"|"pending"|"approved"|"changes_requested"|"unknown";
 export type StudioModule={id:string;slug:string;title:string;outcome:string;week:number;skills:string[]};
 export type StudioCriterion={label:string;descriptor:string};
-export type StudioLesson={id:string;module_id:string;slug:string;version:number;title:string;objective:string;guided_work:string;independent_work:string;evidence_required:string;rubric:StudioCriterion[];state:WorkshopState};
+export type PublishedPedagogy={source:"sealed_release";release_version:number;minutes:number;demonstration:string;ai_context:string;ai_procedure:string;ai_verification:string;resources:string};
+export type StudioLesson={id:string;module_id:string;slug:string;version:number;title:string;objective:string;guided_work:string;independent_work:string;evidence_required:string;rubric:StudioCriterion[];state:WorkshopState;pedagogy?:PublishedPedagogy|null};
 export type StudioTrack={title:string;summary:string;enrollment:"active"|"completed";modules:StudioModule[];lessons:StudioLesson[];notebookAvailable:boolean;coachAvailable:boolean;evaluationOpen:boolean;submissions:StudioSubmission[]};
 export type StudioSubmission={id:string;module_id:string;lesson_slug:string;status:"pending"|"approved"|"changes_requested";score:number|null;feedback:string|null;reviewed_at:string|null;created_at:string;url:string};
 const uuid=/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const str=(v:unknown):string=>typeof v==="string"?v:"";
 const validSlug=(v:unknown):v is string=>typeof v==="string"&&v.length<=100&&slugPattern.test(v);
 export function validStudioTrackSlug(v:unknown){return validSlug(v);}
+export function parsePublishedPedagogy(value:unknown):PublishedPedagogy|null{
+ const p=record(value);
+ if(!p||p.source!=="sealed_release"||typeof p.release_version!=="number"||!Number.isInteger(p.release_version)||p.release_version<1||p.release_version>1000||typeof p.minutes!=="number"||!Number.isInteger(p.minutes)||p.minutes<30||p.minutes>6000)return null;
+ const fields=["demonstration","ai_context","ai_procedure","ai_verification","resources"] as const;
+ if(fields.some(k=>typeof p[k]!=="string"||(k!=="resources"&&str(p[k]).trim().length<20)))return null;
+ return {source:"sealed_release",release_version:p.release_version,minutes:p.minutes,demonstration:str(p.demonstration),ai_context:str(p.ai_context),ai_procedure:str(p.ai_procedure),ai_verification:str(p.ai_verification),resources:str(p.resources)};
+}
 export function parseStudioTrack(value:unknown,slug:string):StudioTrack|null{
  const data=record(value),track=record(data?.track);
  if(!data||!track||!validSlug(slug)||track.slug!==slug||track.status!=="published"||data.lesson_access!=="granted"||(data.enrollment!=="active"&&data.enrollment!=="completed")||!str(track.title).trim()||!Array.isArray(data.modules)||!Array.isArray(data.lessons))return null;
@@ -66,7 +74,7 @@ export function parseStudioTrack(value:unknown,slug:string):StudioTrack|null{
     if(typeof raw==="string"&&raw.trim())return [{label:raw,descriptor:""}];
     const c=record(raw);return c&&str(c.label).trim()?[{label:str(c.label),descriptor:str(c.descriptor)}]:[];
   }):[];
-  latest.set(k,{id:l.id,module_id:l.module_id,slug:l.slug,version:l.version,title:str(l.title),objective:str(l.objective),guided_work:str(l.guided_work),independent_work:str(l.independent_work),evidence_required:str(l.evidence_required),rubric,state:states.get(k)??"unknown"});
+  latest.set(k,{id:l.id,module_id:l.module_id,slug:l.slug,version:l.version,title:str(l.title),objective:str(l.objective),guided_work:str(l.guided_work),independent_work:str(l.independent_work),evidence_required:str(l.evidence_required),rubric,state:states.get(k)??"unknown",pedagogy:parsePublishedPedagogy(l.published_curriculum)});
  }
  // Preserve backend module order and lesson order within each module, without assuming two lessons or eight modules.
  const lessons=modules.flatMap(m=>[...latest.values()].filter(l=>l.module_id===m.id));

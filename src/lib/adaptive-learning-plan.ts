@@ -10,6 +10,13 @@ type Slot={date:string;minutes:number;tasks:{id:string;title:string;minutes:numb
  * New revisions must carry approved workload metadata in a future publication contract.
  * No private draft/sealed content is ever read. */
 export function publishedWorkItems(slug:string,track:StudioTrack):{items:WorkItem[];completeCoverage:boolean}{
+ const official=track.lessons.filter(l=>l.pedagogy?.source==="sealed_release");
+ // Do not mix official workloads and editorial estimates when a projection is incomplete.
+ if(official.length){
+  const versions=new Set(official.map(l=>l.pedagogy!.release_version));
+  const completeCoverage=official.length===track.lessons.length&&versions.size===1&&track.modules.every(m=>track.lessons.some(l=>l.module_id===m.id));
+  return {items:track.lessons.map(l=>({id:l.id,title:l.title,state:l.state,minutes:l.pedagogy?.minutes??null})),completeCoverage};
+ }
  const plan=getAiTrainingPlan(slug);
  const editorial=slug===pilotCourse.slug?pilotCourse.modules:getSpecializationProgram(slug)?.modules;
  const budgets=new Map<string,{minutes:number;title:string;objective:string;evidence:string;order:number}>();
