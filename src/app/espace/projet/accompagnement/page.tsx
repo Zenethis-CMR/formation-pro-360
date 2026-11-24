@@ -13,6 +13,7 @@ export default async function PracticePage(){
  return <main className="page practice-page">
   <Link className="practice-back" href="/espace/projet"><ArrowLeft size={16}/> Mon projet</Link>
   <header className="practice-hero"><span><GraduationCap size={18}/> ACCOMPAGNEMENT HUMAIN · TRAVAIL PRATIQUE</span><h1>Mon accompagnement<span>.</span></h1><p>Apprends en réalisant, prépare tes questions et avance avec ton formateur.</p></header>
+  <div className="panel"><h2>Un blocage à transmettre au formateur ?</h2><p>Utilise le centre d’aide pour conserver la demande et les réponses.</p><Link href="/espace/apprenant/aide">Ouvrir le centre d’aide</Link></div>
   <ProductPracticeAssistance aiAvailable={allowed&&data?.coach_available===true}/>
  </main>;
 }
