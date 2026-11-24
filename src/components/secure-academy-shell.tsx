@@ -1,5 +1,6 @@
 "use client";
 import Link from "next/link";
+import { useEffect, useRef } from "react";
 import { usePathname, useSearchParams } from "next/navigation";
 import { ArrowRight, BadgeCheck, BarChart3, BookOpen, BriefcaseBusiness, CalendarDays, ClipboardCheck, FolderKanban, GraduationCap, LayoutDashboard, LogOut, MessageCircle, Settings2, Sparkles, Users } from "lucide-react";
 import { signOut } from "@/app/auth/actions";
@@ -27,6 +28,8 @@ function CircleStat({label,value,percent,color}:{label:string;value:string;perce
 export function SecureAcademyShell({children,stats}:{children:React.ReactNode;stats:SecureWorkspaceStats}) {
   const pathname=usePathname();
   const currentTab=useSearchParams().get("onglet")||"dashboard";
+  const mobileMore=useRef<HTMLDetailsElement>(null);
+  useEffect(()=>{if(mobileMore.current)mobileMore.current.open=false;},[pathname,currentTab]);
   const trainer=stats.role==="trainer";
   const base=trainer?"/espace/formateur":"/espace/apprenant";
   const dashboard=pathname===base&&currentTab==="dashboard";
@@ -59,9 +62,10 @@ export function SecureAcademyShell({children,stats}:{children:React.ReactNode;st
     {href:"/catalogue",label:"Catalogue",icon:Sparkles}
   ];
   const groups=trainer?[
-    {label:"PILOTAGE",items:links.slice(0,4)},
-    {label:"ACCOMPAGNEMENT",items:links.slice(4,9)},
-    {label:"FORMATION",items:links.slice(9)}
+    {label:"PILOTAGE",items:[links[0],links[2],links[3]]},
+    {label:"ACCOMPAGNEMENT",items:links.slice(5,9)},
+    {label:"FORMATION",items:links.slice(9)},
+    {label:"AUTRES RÉALISATIONS",items:[links[1],links[4]]}
   ]:[
     {label:"APPRENDRE",items:links.slice(0,3)},
     {label:"AVEC MON FORMATEUR",items:links.slice(3,6)},
@@ -75,6 +79,7 @@ export function SecureAcademyShell({children,stats}:{children:React.ReactNode;st
     if(!trainer&&path==="/espace/projet"&&(pathname===path||pathname.startsWith(path+"/")))return true;
     if(!trainer&&path==="/espace/parcours/ingenierie-produit-ia"&&
       pathname.startsWith(path))return true;
+    if(trainer&&path===base+"/suivi"&&pathname===base+"/bilan")return true;
     if(path!==pathname)return false;
     const tab=new URLSearchParams(query||"").get("onglet")||"dashboard";
     return tab===currentTab;
@@ -145,11 +150,10 @@ export function SecureAcademyShell({children,stats}:{children:React.ReactNode;st
       <Link href={base+"/bilan"} className={pathname===base+"/bilan"?"on":""}><BarChart3 size={19}/>Bilan</Link>
     </>}
     <Link href={trainer?base+"/seances":"/espace/parcours/ingenierie-produit-ia"} className={(trainer?pathname===base+"/seances":pathname.startsWith("/espace/parcours/ingenierie-produit-ia"))?"on":""}><CalendarDays size={19}/>{trainer?"Séances":"Parcours"}</Link>
-    {trainer?<details className="academy-mobile-more"><summary aria-label="Autres rubriques formateur" className={pathname==="/espace/compte"||(pathname===base+"/defis"||pathname===base+"/aide"||pathname===base+"/revues"||pathname===base+"/bilan")||(pathname===base&&currentTab==="programme")?"on":""}><Settings2 size={19}/>Plus</summary><nav className="academy-mobile-more-menu" aria-label="Autres rubriques formateur"><Link href={base+"?onglet=evaluations"}><ClipboardCheck size={16}/> Autres évaluations</Link><Link href={base+"?onglet=apprenants"}><Users size={16}/> Autres apprenants</Link><Link href={base+"/revues"}><FolderKanban size={16}/> Revues de projets</Link><Link href={base+"/aide"}><MessageCircle size={16}/> Suivi des blocages</Link><Link href={base+"/defis"}><ClipboardCheck size={16}/> Consignes et défis</Link><Link href={base+"?onglet=programme"}><CalendarDays size={16}/> Programme</Link><Link href="/espace/compte"><Settings2 size={16}/> Mon compte</Link></nav></details>:
-      <details className="academy-mobile-more">
+    {trainer?<details ref={mobileMore} className="academy-mobile-more"><summary aria-label="Autres rubriques formateur" className={pathname==="/espace/compte"||pathname===base+"/defis"||pathname===base+"/aide"||pathname===base+"/revues"||(pathname===base&&currentTab!=="dashboard")?"on":""}><Settings2 size={19}/>Plus</summary><nav className="academy-mobile-more-menu" aria-label="Autres rubriques formateur"><Link href="/catalogue"><BookOpen size={16}/> Catalogue des formations</Link><Link href={base+"?onglet=evaluations"}><ClipboardCheck size={16}/> Autres évaluations</Link><Link href={base+"?onglet=apprenants"}><Users size={16}/> Autres apprenants</Link><Link href={base+"/revues"}><FolderKanban size={16}/> Revues de projets</Link><Link href={base+"/aide"}><MessageCircle size={16}/> Suivi des blocages</Link><Link href={base+"/defis"}><ClipboardCheck size={16}/> Consignes et défis</Link><Link href={base+"?onglet=programme"}><CalendarDays size={16}/> Programme</Link><Link href="/espace/compte"><Settings2 size={16}/> Mon compte</Link></nav></details>:
+      <details ref={mobileMore} className="academy-mobile-more">
         <summary aria-label="Afficher les autres rubriques de mon espace" className={
-          (pathname===base+"/seances"||(pathname===base+"/defis"||pathname===base+"/aide"||pathname===base+"/revues"||pathname===base+"/bilan")||pathname.startsWith("/espace/projet")||pathname==="/espace/portfolio"||pathname==="/espace/bienvenue"||
-          pathname==="/espace/compte"||(pathname===base&&currentTab==="programme"))?"on":""
+          (pathname===base+"/seances"||pathname===base+"/defis"||pathname===base+"/aide"||pathname==="/espace/portfolio"||pathname==="/espace/bienvenue"||pathname==="/espace/compte"||(pathname===base&&currentTab!=="dashboard"))?"on":""
         }><Settings2 size={19}/>Plus</summary>
         <nav className="academy-mobile-more-menu" aria-label="Autres rubriques apprenant">
           <Link href={base+"/seances"}><CalendarDays size={16}/> Mes séances</Link>
