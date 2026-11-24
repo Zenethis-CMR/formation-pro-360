@@ -20,7 +20,7 @@
   font-size:14px;gap:8px;white-space:nowrap
  }
 }
-@media(min-width:1280px){
+@media(min-width:1151px){
  .secure-academy-viewport .secure-academy-frame:not(.secure-academy-detail):not(.workspace-learner-shell){
   grid-template-columns:var(--workspace-nav-width) minmax(0,1fr) var(--workspace-rail-width)
  }
@@ -66,10 +66,6 @@
 .secure-academy-frame .secure-academy-rail .rail-widget p{font-size:13px;line-height:1.6;color:#536b83}
 .secure-academy-frame .secure-academy-rail .rail-cta{min-height:44px;gap:8px;line-height:1.4;white-space:normal}
 .secure-academy-frame .secure-academy-rail .rail-cta svg{flex-shrink:0}
-/* At laptop widths, give the work surface the room recovered from the rail. */
-@media(min-width:821px) and (max-width:1279px){
- .secure-academy-viewport .secure-academy-frame .secure-academy-rail{display:none}
-}
 @media(max-width:820px){
  .secure-academy-viewport .secure-academy-frame,
  .secure-academy-viewport .secure-academy-frame.secure-academy-detail,
