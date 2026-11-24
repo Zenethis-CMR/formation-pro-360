@@ -4,7 +4,8 @@ import {requireRole} from "@/lib/auth/require-role";
 import {backendRequest} from "@/lib/auth/backend";
 import {getAiTrainingPlan} from "@/lib/ai-training-plans";
 import {pilotCourse} from "@/lib/v2-public-catalog";
-import {initialAuthoring,type AuthoringDetail} from "@/lib/curriculum-authoring";
+import {getProductionGuide} from "@/lib/technical-production-guides";
+import {initialAuthoring,proposedAuthoring,type AuthoringDetail} from "@/lib/curriculum-authoring";
 import {CurriculumEditor} from "@/components/curriculum-editor";
 import "../../../authoring.css";
 export const dynamic="force-dynamic";
@@ -20,5 +21,8 @@ export default async function AuthoringPage({params,searchParams}:{params:Promis
  const mi=slug===pilotCourse.slug?pilotCourse.modules.findIndex(m=>m.slug===lesson.module_slug):Number(/^semaine-(\d+)$/.exec(lesson.module_slug)?.[1])-1;
  const li=slug===pilotCourse.slug?pilotCourse.modules[mi]?.lessons.findIndex(l=>l.slug===lesson.slug):Number(/^s\d+-a(\d+)$/.exec(lesson.slug)?.[1])-1;
  const activity=li!==undefined?getAiTrainingPlan(slug)?.modules[mi]?.activities[li]:undefined;
- return <main className="page ca-page"><CurriculumEditor key={lesson.id+":"+String(query.revision??"latest")} slug={slug} detail={detail} initial={detail.current?.content??initialAuthoring(lesson,activity)} historical={!!query.revision}/></main>;
+ const initial=detail.current?.content??initialAuthoring(lesson,activity);
+ const guide=!detail.current&&lesson.version===1?getProductionGuide(slug,lesson.slug):undefined;
+ const proposal=guide&&guide.title===lesson.title?proposedAuthoring(initial,guide):undefined;
+ return <main className="page ca-page"><CurriculumEditor key={lesson.id+":"+String(query.revision??"latest")} slug={slug} detail={detail} initial={initial} proposal={proposal} historical={!!query.revision}/></main>;
 }

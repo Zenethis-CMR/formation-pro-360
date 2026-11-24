@@ -11,3 +11,9 @@ export function initialAuthoring(source:AuthoringSource,activity?:{hours:number;
  const labels=(Array.isArray(source.rubric)?source.rubric:[]).map(c=>typeof c==="string"?c:c&&typeof c==="object"&&"label" in c&&typeof c.label==="string"?c.label:"");
  return {title:source.title,objective:source.objective,minutes:activity?activity.minutes??Math.round(activity.hours*60):60,demonstration:"",guided_work:source.guided_work,independent_work:source.independent_work,ai_context:"",ai_procedure:activity?.procedure??"",ai_verification:"",resources:"",evidence:source.evidence_required,rubric:Array.from({length:4},(_,i)=>({label:labels[i]??"",descriptor:""}))};
 }
+
+/** Merge suggestions only into empty fields or a fresh, unmodified authoring copy. */
+export function proposedAuthoring(base:CurriculumContent,guide:{context:string;demonstration:string;guidedWork:string;prompt:string;verification:string;rubric:{label:string;descriptor:string}[]}):CurriculumContent{
+ const descriptors=new Map(guide.rubric.map(c=>[c.label,c.descriptor]));
+ return {...base,demonstration:base.demonstration||guide.demonstration,guided_work:guide.guidedWork,ai_context:base.ai_context||guide.context+". Utiliser des données autorisées ou synthétiques, le modèle adapté au besoin et un environnement préparé. Justifier le choix.",ai_procedure:base.ai_procedure+"\n\nPrompt de départ à adapter :\n"+guide.prompt,ai_verification:base.ai_verification||guide.verification,independent_work:base.independent_work+"\n\nReproduire sur le projet de laboratoire, joindre le livrable attendu, les preuves des tests et expliquer les corrections au formateur.",rubric:base.rubric.map(c=>({...c,descriptor:c.descriptor||descriptors.get(c.label)||""}))};
+}
