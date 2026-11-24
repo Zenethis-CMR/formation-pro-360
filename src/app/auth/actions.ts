@@ -43,16 +43,16 @@ export async function registerLearner(formData:FormData) {
 }
 
 export async function resendVerificationEmail(formData:FormData) {
-  if(!isBackendConfigured()) redirect("/login?mode=inscription&error=setup");
+  if(!isBackendConfigured()) redirect("/login?mode=inscription&verification=1&error=setup");
   const email=String(formData.get("email")||"").trim().toLowerCase();
   const mode=String(formData.get("mode")||"")==="connexion"?"connexion":"inscription";
-  if(!isValidEmail(email)) redirect(`/login?mode=${mode}&error=email`);
+  if(!isValidEmail(email)) redirect(`/login?mode=${mode}&verification=1&error=email`);
   const response=await backendRequest(`${authApi}/resend-verification`,{
     method:"POST",body:JSON.stringify({email})
   }).catch(()=>null);
   if(!response?.ok) {
-    if(response?.status===429) redirect(`/login?mode=${mode}&error=quota`);
-    redirect(`/login?mode=${mode}&error=resend`);
+    if(response?.status===429) redirect(`/login?mode=${mode}&verification=1&error=quota`);
+    redirect(`/login?mode=${mode}&verification=1&error=resend`);
   }
   redirect(`/login?mode=${mode}&sent=resend`);
 }
