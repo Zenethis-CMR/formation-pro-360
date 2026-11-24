@@ -32,7 +32,7 @@ test("portfolio is discoverable in learner navigation, dashboard and progress",(
  const shell=read("src/components/secure-academy-shell.tsx");
  const overview=read("src/components/secure-learner-overview.tsx");
  const progress=read("src/components/v2-learner-progress-panel.tsx");
- assert.match(shell,/label:"Mon portfolio"/);
+ assert.match(shell,/label:otherCourse\?"Portfolio du pilote":"Mon portfolio"/);
  assert.match(shell,/\/espace\/portfolio/);
  const workspace=read("src/components/dashboard-workspace.tsx");
  const home=read("src/app/espace/apprenant/page.tsx");
