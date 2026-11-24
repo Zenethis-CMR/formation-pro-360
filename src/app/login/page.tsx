@@ -12,13 +12,14 @@ const messages:Record<string,string>={
   email:"Entre une adresse e-mail valide pour continuer.",
   credentials:"Adresse e-mail ou mot de passe incorrect. Si tu ne connais pas ton mot de passe, demande une réinitialisation.",
   confirm:"Confirme d'abord ton adresse depuis le message reçu, puis réessaie.",
-  password:"Choisis au moins 12 caractères.",
+  password:"Choisis entre 12 et 128 caractères, avec une majuscule, une minuscule et un chiffre.",
   mismatch:"Les deux mots de passe ne correspondent pas.",
   quota:"Trop de tentatives ou d'e-mails demandés. Patiente avant de réessayer.",
   unauthorized:"L'envoi vers cette adresse a été refusé. Contacte ton formateur.",
   signup:"Impossible de créer le compte pour le moment. Vérifie les informations et réessaie.",
   exists:"Cette adresse possède déjà un compte. Connecte-toi ou réinitialise son mot de passe.",
   verification:"Ce lien de confirmation est invalide ou a expiré. Demande une nouvelle confirmation.",
+  verification_unavailable:"La vérification est temporairement indisponible. Réessaie avec le lien reçu quand le service sera rétabli, ou demande un nouveau lien.",
   recovery:"Impossible d'envoyer les instructions de récupération pour le moment.",
   resend:"Le renvoi n'a pas abouti. Réessaie dans quelques instants.",
   callback:"Le lien est invalide ou expiré. Demande un nouveau lien depuis cette page."
@@ -37,8 +38,8 @@ export default async function Login({searchParams}:{searchParams:Promise<Params>
   const configured=isBackendConfigured();
   const creating=mode==="inscription";
   const needsConfirmation=params.sent==="signup"||params.sent==="resend"
-    ||params.error==="confirm"||params.error==="verification";
-  const title=params.sent==="signup"?"Vérifie ton adresse e-mail"
+    ||params.error==="confirm"||params.error==="verification"||params.error==="verification_unavailable";
+  const title=needsConfirmation?"Vérifie ton adresse e-mail"
     :params.sent==="verified"?"Ton compte est prêt !"
     :mode==="connexion"?"Bienvenue à nouveau"
     :creating?"Commence ton parcours"
@@ -62,7 +63,8 @@ export default async function Login({searchParams}:{searchParams:Promise<Params>
       <section className="auth-new-form-side">
         <div className="auth-new-intro"><span className="auth-form-kicker"><ShieldCheck size={15}/> ESPACE SÉCURISÉ</span>
           <h2>{title}</h2>
-          <p>{creating?"Crée ton compte apprenant pour accéder aux ateliers et suivre tes progrès."
+          <p>{needsConfirmation?"Confirme ton adresse avant de commencer ta formation."
+            :creating?"Crée ton compte apprenant pour accéder aux ateliers et suivre tes progrès."
             :mode==="connexion"?"Retrouve tes missions et reprends exactement là où tu t'étais arrêté."
             :"Nous t'enverrons un lien pour définir un nouveau mot de passe."}</p>
         </div>
@@ -103,7 +105,7 @@ export default async function Login({searchParams}:{searchParams:Promise<Params>
           {needsConfirmation&&<section className="auth-verification-journey" aria-label="Étapes de création du compte">
             <p><MailCheck size={20}/> Confirme ton adresse, puis connecte-toi pour commencer.</p>
             <ol className="auth-signup-steps">
-              <li><CheckCircle2 size={16}/> Compte créé</li>
+              <li>{params.sent==="signup"||params.error==="confirm"?<><CheckCircle2 size={16}/> Compte créé</>:<>1 · Demande de confirmation</>}</li>
               <li className="is-current"><MailCheck size={16}/> Confirmer l'e-mail reçu</li>
               <li><BookOpenCheck size={16}/> Se connecter et découvrir les ateliers</li>
             </ol>
