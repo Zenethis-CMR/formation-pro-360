@@ -61,8 +61,8 @@ export function SecureAcademyShell({children,stats}:{children:React.ReactNode;st
   const base=trainer?"/espace/formateur":"/espace/apprenant";
   const dashboard=pathname===base&&currentTab==="dashboard";
   const learnerDashboard=!trainer&&dashboard;
-  const detail=(dashboard&&!learnerDashboard)||pathname.startsWith("/espace/atelier/")||pathname.includes("/atelier/")||
-    pathname.startsWith("/espace/compte")||pathname.startsWith("/espace/bienvenue")||pathname.startsWith("/espace/projet")||pathname.endsWith("/seances")||pathname.endsWith("/defis")||pathname.endsWith("/aide")||pathname.endsWith("/revues")||pathname.endsWith("/bilan");
+  const detail=trainer&&(dashboard||pathname.startsWith("/espace/atelier/")||pathname.includes("/atelier/")||
+    pathname.startsWith("/espace/compte")||pathname.startsWith("/espace/bienvenue")||pathname.startsWith("/espace/projet")||pathname.endsWith("/seances")||pathname.endsWith("/defis")||pathname.endsWith("/aide")||pathname.endsWith("/revues")||pathname.endsWith("/bilan"));
   const links=trainer?[
     {href:base,label:"Tableau de bord",icon:LayoutDashboard},
     {href:base+"?onglet=evaluations",label:"Évaluations",icon:ClipboardCheck},
@@ -138,8 +138,9 @@ export function SecureAcademyShell({children,stats}:{children:React.ReactNode;st
         <Link className="secure-mobile-account" href="/espace/compte" aria-label="Mon compte"><Settings2 size={19}/></Link>
       </div>
       {children}
+      {!trainer&&!learnerDashboard&&<div className="workspace-profile-bottom"><LearnerCompactProfile/></div>}
     </section>
-    {learnerDashboard?<aside className="academy-rail secure-academy-rail workspace-learner-rail" aria-label="Profil et contexte personnel"><LearnerProfileWidgets stats={stats}/></aside>:!detail&&<aside className="academy-rail secure-academy-rail" aria-label="Profil et progression réelle">
+    {!trainer?<aside className="academy-rail secure-academy-rail workspace-learner-rail" aria-label="Profil et contexte personnel"><LearnerProfileWidgets stats={stats}/></aside>:!detail&&<aside className="academy-rail secure-academy-rail" aria-label="Profil et progression réelle">
       <div className="rail-heading"><span>Mon profil</span><Link href="/espace/compte" className="rail-heading-icon" aria-label="Gérer mon profil"><Settings2 size={18}/></Link></div>
       <div className="profile-card">
         <div className="profile-avatar profile-avatar-pro" aria-hidden="true"><GraduationCap size={37} strokeWidth={1.8}/></div>
