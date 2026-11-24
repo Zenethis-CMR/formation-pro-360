@@ -126,7 +126,7 @@ export default async function TrainerSpace({searchParams}:{searchParams:Promise<
     {tab!=="dashboard"&&<WorkspaceTabHeading role="trainer" tab={tab}/>}
     {tab==="dashboard"&&<>
       <DashboardHeader trainer/>
-      <V2TrainerEvaluationOverview/>
+      <V2TrainerEvaluationOverview dashboard/>
       <DashboardQuickLinks trainer/>
       <DashboardDisclosure title="Réalisations complémentaires" description="Missions historiques, statistiques et corrections">
         <SecureTrainerOverview pending={pendingCount} learners={learnerCount}
