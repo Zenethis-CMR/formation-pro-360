@@ -3,6 +3,7 @@ import {notFound} from "next/navigation";
 import {ArrowLeft,ArrowRight,ArrowUpRight,Award,BookOpen,CheckCircle2,ChevronRight,ClipboardCheck,Clock3,ExternalLink,Flag,LockKeyhole,MessageSquare,ShieldCheck,Sparkles,Target,TriangleAlert,Trophy} from "lucide-react";
 import {requireRole} from "@/lib/auth/require-role";
 import {backendRequest} from "@/lib/auth/backend";
+import {getAiTrainingPlan} from "@/lib/ai-training-plans";
 import {pilotCourse} from "@/lib/v2-public-catalog";
 import {v2WorkshopGuides} from "@/lib/v2-workshop-guides";
 import {V2WorkshopChecklist,V2WorkshopCopyTools} from "@/components/v2-workshop-tools";
@@ -93,6 +94,7 @@ export default async function V2WorkshopStudio({params,searchParams}:{
     data?.enrollment==="active"&&!approved&&
     (!latest||latest.status==="changes_requested"));
   const position=allLessons.findIndex(l=>l.slug===slug);
+  const aiActivity=getAiTrainingPlan(pilotCourse.slug)?.modules[Math.floor(position/2)]?.activities[position%2];
   const previous=position>0?allLessons[position-1]:null;
   const next=position>=0&&position<allLessons.length-1?allLessons[position+1]:null;
   const verifiedLessons=new Set((data?.submissions||[]).filter(s=>s.status==="approved")
@@ -128,7 +130,7 @@ export default async function V2WorkshopStudio({params,searchParams}:{
         <h1>{lesson?.title||editorial.title}<span>.</span></h1>
         <p>{lesson?.objective||editorial.objective}</p>
         <div className="studio-hero-tags"><span><BookOpen size={15}/> Atelier {position+1}/16</span>
-          <span><Clock3 size={15}/> {v2WorkshopGuides[slug].minutes} min indicatives</span>
+          <span><Clock3 size={15}/> {aiActivity?.hours??v2WorkshopGuides[slug].minutes/60} h de travail indicatives</span>
           <span><Award size={15}/> 100 XP après validation</span>
           {lesson&&<span><ShieldCheck size={15}/> Leçon officielle publiée</span>}
         </div>
@@ -176,6 +178,7 @@ export default async function V2WorkshopStudio({params,searchParams}:{
           <p className="studio-leading">{guide?.brief}</p>
           <div className="studio-human-note"><MessageSquare size={19}/><div><strong>Un atelier pratique, avec ton formateur.</strong><p>Les consignes et démonstrations se travaillent ensemble. Les outils servent à préparer, pratiquer et documenter ton travail ; seul le formateur valide les réalisations.</p><Link href="/espace/apprenant/aide">Demander un accompagnement <ArrowRight size={14}/></Link></div></div>
           <div className="studio-objective-card"><span>CONSIGNE OFFICIELLE · EXERCICE GUIDÉ</span><p>{lesson?.guided_work}</p></div>
+          {aiActivity&&<div className="studio-objective-card"><span>MÉTHODE IA · REPÈRE DE PRODUCTION COMPLÉMENTAIRE</span><p>{aiActivity.procedure}</p><p>Vérifie le résultat, documente les corrections et explique tes choix au formateur. Les critères officiels restent inchangés.</p></div>}
           <div className="studio-objective-card is-independent"><span>CONSIGNE OFFICIELLE · TRAVAIL AUTONOME</span><p>{lesson?.independent_work}</p></div>
         </section>
         {guide&&(workbook&&lesson&&data?.enrollment==="active"?
