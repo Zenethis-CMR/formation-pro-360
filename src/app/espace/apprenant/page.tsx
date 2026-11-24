@@ -77,6 +77,7 @@ export default async function LearnerSpace({searchParams}:{searchParams:Promise<
     {tab!=="dashboard"&&<WorkspaceTabHeading role="learner" tab={tab}/>}
     {tab==="dashboard"&&<>
       {pilot&&<LearnerJourneyGuide pilot={pilot} profileSaved={!!rawPreferences}/>}
+      <section className="panel"><span className="eyebrow">TON FORMATEUR T’ACCOMPAGNE</span><h2>Une difficulté dans ton projet ?</h2><p className="muted">Décris ton blocage et retrouve vos échanges.</p><Link className="primary-btn" href="/espace/apprenant/aide">Demander de l’aide</Link></section>
       <section className="panel"><span className="eyebrow">PRATIQUE PERSONNALISÉE</span><h2>Mes défis</h2><p className="muted">Retrouve les exercices de ton formateur et ses retours sur tes preuves.</p><Link className="primary-btn" href="/espace/apprenant/defis">Ouvrir mes défis</Link></section>
       <section className="panel"><span className="eyebrow">AVEC TON FORMATEUR</span><h2>Mes séances pratiques</h2><p className="muted">Retrouve les rendez-vous, la préparation et les travaux attendus.</p><Link className="primary-btn" href="/espace/apprenant/seances">Consulter mes séances</Link></section>
       {pilot&&<SecureLearnerOverview missions={missions} submissions={submissions} approvedIds={[...approved]} dependencies={deps} xp={xp} level={level} pilot={pilot}/>}
