@@ -2,6 +2,9 @@ import Link from "next/link";
 import { ArrowLeft, ArrowRight, BadgeCheck, BookOpen, CheckCircle2, Clock3, LockKeyhole, Sparkles } from "lucide-react";
 import { requireRole } from "@/lib/auth/require-role";
 import { backendRequest } from "@/lib/auth/backend";
+import {getAiTrainingPlan,trainingHours} from "@/lib/ai-training-plans";
+import {TrainingDuration} from "@/components/training-duration";
+import {getCatalogStudyRhythm} from "@/lib/catalog-study-rhythm";
 import { pilotCourse } from "@/lib/v2-public-catalog";
 import { enrollInV2Pilot } from "@/app/espace/actions";
 
@@ -34,6 +37,8 @@ export default async function V2LearnerTrack({searchParams}:{
 }) {
   await requireRole("learner");
   const params=await searchParams;
+  const plan=getAiTrainingPlan(pilotCourse.slug)!;
+  const {rhythm}=await getCatalogStudyRhythm();
   const response=await backendRequest("/v1/training/catalog/ingenierie-produit-ia").catch(()=>null);
   // For an installation where the V2 schema is still off, fail closed and
   // keep a useful, accurate public preview of the educational program.
@@ -54,9 +59,10 @@ export default async function V2LearnerTrack({searchParams}:{
     <header className="v2-track-head">
       <span className="journey-overline"><Sparkles size={15}/> FORMATION · PROJET FIL ROUGE</span>
       <h1>Ingénierie produit et IA<span>.</span></h1>
-      <p>Construis ton produit numérique en huit semaines. Premier flux en ligne au jour 14, MVP au premier mois, puis premiers essais de commercialisation.</p>
-      <div className="v2-track-facts"><span><BookOpen size={15}/> 8 modules</span><span><BadgeCheck size={15}/> 16 ateliers</span><span><Clock3 size={15}/> 8 semaines</span></div>
+      <p>Construis ton produit numérique : premier flux en ligne, MVP testé, puis essais de commercialisation. Les huit modules sont des étapes pédagogiques, pas une échéance imposée.</p>
+      <div className="v2-track-facts"><span><BookOpen size={15}/> 8 modules</span><span><BadgeCheck size={15}/> 16 ateliers</span><span><Clock3 size={15}/> {trainingHours(plan)} h de travail</span></div>
     </header>
+    <TrainingDuration plan={plan} rhythm={rhythm}/>
     {params.livrable==="envoye"&&<p className="alert success" role="status">Ton livrable a été transmis. Le formateur peut maintenant le corriger.</p>}
     {params.livrable==="erreur"&&<p className="alert danger" role="alert">L'envoi n'a pas abouti. Vérifie ton inscription, le lien et l'état de l'atelier.</p>}
     {params.inscription==="confirmee"&&enrolled&&<p className="alert success" role="status">Ton inscription gratuite au parcours pilote est confirmée.</p>}
