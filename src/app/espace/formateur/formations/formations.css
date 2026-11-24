@@ -2,3 +2,5 @@
 .mf-page{container-type:inline-size}.mf-weeks summary::-webkit-details-marker{display:none}@container(max-width:680px){.mf-layout{grid-template-columns:minmax(0,1fr)}.mf-list{display:grid;grid-template-columns:minmax(0,1fr)}.mf-hero{align-items:start;flex-direction:column}.mf-hero-count{display:flex;align-items:center;gap:12px}.mf-metrics article{padding:10px}.mf-lesson-title{flex-wrap:wrap}}
 
 .mf-authoring-link{display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:8px 12px;margin:10px 0;color:#245fa6;background:#e9f2ff;border:1px solid #c6ddf8;border-radius:9px;font-size:13px;font-weight:750;text-decoration:none}.mf-authoring-link:hover{background:#dbeaff}.mf-authoring-link svg{flex:none}
+
+.mf-authoring-summary{display:grid;gap:6px;background:#edf5ff;border:1px solid #c6ddf8;border-radius:10px;padding:13px;margin:14px 0;color:#173451;font-size:13px;line-height:1.5}.mf-authoring-summary span{color:#245fa6;font-weight:700}.mf-authoring-summary small{color:#536b83;font-size:12px}
