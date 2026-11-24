@@ -77,3 +77,16 @@ test("studio primary actions remain reachable when access or review information 
  assert.ok(notebook.includes('{review&&<WorkshopTrainerFeedback'));
  assert.ok(studio.includes('{review&&<WorkshopTrainerFeedback'));
 });
+
+test("authentication outage is distinguishable from invalid credentials or expired email links",()=>{
+ const actions=read("src/app/auth/actions.ts");
+ const verification=read("src/app/auth/verify/route.ts");
+ const login=read("src/app/login/page.tsx");
+ assert.ok(actions.includes('if(!response||response.status>=500) redirect("/login?error=setup")'));
+ assert.ok(verification.includes('!result || result.status >= 500'));
+ assert.ok(verification.includes('error=verification_unavailable'));
+ assert.ok(login.includes('params.error==="verification_unavailable"'));
+ assert.ok(login.includes("La vérification est temporairement indisponible"));
+ assert.ok(login.includes("12 et 128 caractères, avec une majuscule, une minuscule et un chiffre"));
+ assert.ok(login.includes("1 · Demande de confirmation"));
+});
