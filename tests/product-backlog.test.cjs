@@ -33,5 +33,6 @@ test("the board is optional, private, linked to the project and never grants XP"
  assert.ok(ui.includes("canCompleteTask"));
  assert.ok(ui.includes("Exporter")||ui.includes("Export JSON"));
  assert.ok(!ui.includes("localStorage"));
- assert.ok(read("src/app/espace/projet/page.tsx").includes('href="/espace/projet/backlog"'));
+ assert.ok(read("src/app/espace/projet/page.tsx").includes('<ProductWorkspaceNav active="dossier"/>'));
+ assert.ok(read("src/components/product-workspace-nav.tsx").includes('href:"/espace/projet/backlog"'));
 });

@@ -12,7 +12,8 @@ test("session preparation works independently of the optional model",()=>{
  assert.ok(ui.includes("Piste IA non validée"));
  assert.ok(ui.includes("Aucun XP"));
  assert.ok(!ui.includes("localStorage"));
- assert.ok(read("src/app/espace/projet/page.tsx").includes('href="/espace/projet/accompagnement"'));
+ assert.ok(read("src/app/espace/projet/page.tsx").includes('<ProductWorkspaceNav active="dossier"/>'));
+ assert.ok(read("src/components/product-workspace-nav.tsx").includes('href:"/espace/projet/accompagnement"'));
 });
 test("project coaching needs explicit consent and bounded voluntary context",()=>{
  const api=read("src/app/api/coach/route.ts");

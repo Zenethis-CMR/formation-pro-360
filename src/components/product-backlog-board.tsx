@@ -20,6 +20,7 @@ export function ProductBacklogBoard({initial,editable}:{initial:ProductBacklog|n
  const [search,setSearch]=useState("");
  const [priority,setPriority]=useState("all");
  const [workshop,setWorkshop]=useState("all");
+ const [statusFilter,setStatusFilter]=useState<"all"|TaskStatus>("all");
  const [pending,setPending]=useState(false);
  const saving=useRef(false);
  const [notice,setNotice]=useState<{error:boolean;text:string}|null>(null);
@@ -84,11 +85,12 @@ export function ProductBacklogBoard({initial,editable}:{initial:ProductBacklog|n
    {formError&&<p role="alert" className="backlog-error">{formError}</p>}
    <div className="backlog-buttons"><button type="submit" className="backlog-primary">Appliquer au brouillon</button><button type="button" onClick={()=>{setEditing(null);setFormError("");}}>Annuler</button></div>
   </form>}
-  <div className="backlog-board">{taskStatuses.map(column=>{
+  <div className="pw-board-heading"><div><h2>Tableau de travail</h2><p>{filtered.length} tâche(s) correspondant aux filtres.</p></div><label>Afficher une colonne<select value={statusFilter} onChange={e=>setStatusFilter(e.target.value as "all"|TaskStatus)}><option value="all">Toutes les colonnes</option>{taskStatuses.map(s=><option key={s.id} value={s.id}>{s.label}</option>)}</select></label></div>
+  <div className={"backlog-board"+(statusFilter==="all"?"":" pw-board-single")}>{taskStatuses.filter(s=>statusFilter==="all"||s.id===statusFilter).map(column=>{
    const items=filtered.filter(t=>t.status===column.id);
    return <section key={column.id} className={"backlog-column "+column.id} aria-label={column.label}>
     <h2>{column.label} <span>{items.length}</span></h2>
-    {!items.length&&<p className="backlog-empty">Aucune tâche affichée.</p>}
+    {!items.length&&<p className="backlog-empty">{tasks.length?"Aucune tâche dans cette colonne avec les filtres actuels.":"Ton tableau est vide. Crée une première tâche à partir de ton projet."}</p>}
     {items.map(task=><article className="backlog-task" key={task.id}>
      <div className="backlog-task-top"><span className={"backlog-priority "+task.priority}>{taskPriorities.find(p=>p.id===task.priority)?.label}</span>{task.due_date&&<time className={task.status!=="done"&&task.due_date<today?"backlog-error":""} dateTime={task.due_date}>{task.due_date.split("-").reverse().join("/")}</time>}</div>
      <h3>{task.title}</h3>{task.description&&<p>{task.description}</p>}

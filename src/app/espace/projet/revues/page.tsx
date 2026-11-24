@@ -1,6 +1,7 @@
 import "@/app/espace/revues/reviews.css";
 import Link from "next/link";
-import {ArrowLeft,FolderOpen} from "lucide-react";
+import {ProductWorkspaceNav} from "@/components/product-workspace-nav";
+import {FolderOpen} from "lucide-react";
 import {requireRole} from "@/lib/auth/require-role";
 import {backendRequest} from "@/lib/auth/backend";
 import {CollaborativeReviewWorkspace} from "@/components/collaborative-review-workspace";
@@ -17,7 +18,8 @@ export default async function ReviewsPage({searchParams}:{searchParams:Promise<{
  const data=await read<ReviewList>("/project-reviews?page="+page+(id?"&id="+encodeURIComponent(id):""));
  const [project,backlog,portfolio]=data?.can_share?await Promise.all([read<{project:ProductProject|null}>("/project"),read<{backlog:ProductBacklog|null}>("/backlog"),read<{projects:ReviewProof[];source:string}>("/portfolio")]):[null,null,null];
  const sources:ShareSources={project:project?.project??null,backlog:backlog?.backlog??null,proofs:portfolio?.source==="trainer_approved_with_xp_ledger"?portfolio.projects.filter(p=>p.xp===100&&p.score>=80):null};
- return <main className="page cr-page"><Link className="cr-back" href="/espace/projet"><ArrowLeft size={16}/> Mon projet</Link><header className="cr-header"><span><FolderOpen size={17}/> FORMATION PRO 360 / PRODUCT WORKSPACE</span><h1>Mes revues<i>.</i></h1><p>Présente ton travail et conserve les recommandations de ton formateur.</p></header>
+ return <main className="page cr-page"><header className="cr-header"><span><FolderOpen size={17}/> FORMATION PRO 360 / PRODUCT WORKSPACE</span><h1>Mes revues<i>.</i></h1><p>Présente ton travail et conserve les recommandations de ton formateur.</p></header>
+  <ProductWorkspaceNav active="revues"/>
  {data?<CollaborativeReviewWorkspace data={data} trainer={false} sources={sources} base="/espace/projet/revues"/>:<section className="cr-empty" role="status"><h2>Revue momentanément indisponible</h2><p>Impossible de charger les versions accessibles. Aucun dossier fictif n'est affiché.</p><Link href="/espace/projet">Revenir à mon espace</Link></section>}
  </main>;
 }
