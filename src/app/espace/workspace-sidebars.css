@@ -1,13 +1,11 @@
 /* Shared sizing for every secure workspace. Preserve existing mobile/rail visibility. */
 .secure-academy-viewport{
- --workspace-nav-width:230px;
- --workspace-rail-width:290px;
+ /* Percentages follow the actual grid width; bounds preserve reading comfort. */
+ --workspace-nav-width:clamp(220px,16%,320px);
+ --workspace-rail-width:clamp(260px,19%,380px);
 }
-@media(min-width:1280px){
- .secure-academy-viewport{--workspace-nav-width:245px;--workspace-rail-width:300px}
-}
-@media(min-width:1500px){
- .secure-academy-viewport{--workspace-nav-width:265px;--workspace-rail-width:325px}
+@media(min-width:821px) and (max-width:1279px){
+ .secure-academy-viewport{--workspace-nav-width:clamp(210px,22%,250px)}
 }
 @media(min-width:821px){
  .secure-academy-viewport .secure-academy-frame,
@@ -16,13 +14,13 @@
   grid-template-columns:var(--workspace-nav-width) minmax(0,1fr)
  }
  .secure-academy-viewport .secure-academy-frame .academy-sidebar{
-  min-width:0;padding-inline:16px;scrollbar-gutter:stable
+  min-width:0;padding-inline:clamp(12px,1vw,18px);scrollbar-gutter:stable
  }
  .secure-academy-viewport .secure-academy-frame .academy-brand{
   font-size:14px;gap:8px;white-space:nowrap
  }
 }
-@media(min-width:1151px){
+@media(min-width:1280px){
  .secure-academy-viewport .secure-academy-frame:not(.secure-academy-detail):not(.workspace-learner-shell){
   grid-template-columns:var(--workspace-nav-width) minmax(0,1fr) var(--workspace-rail-width)
  }
@@ -34,9 +32,9 @@
 }
 .secure-academy-frame .sidebar-link{position:relative;gap:10px;min-height:44px;padding-block:9px;font-size:13px}
 .secure-academy-frame .sidebar-link>span:not(.ux-link-indicator){
- flex:1 1 auto;min-width:0;white-space:normal;overflow-wrap:anywhere;line-height:1.4
+ flex:1 1 auto;min-width:0;white-space:normal;overflow-wrap:normal;word-break:normal;line-height:1.4
 }
-.secure-academy-frame .sidebar-link:has(>.ux-link-indicator){padding-right:27px}
+.secure-academy-frame .sidebar-link:has(>.ux-link-indicator[data-pending=true]){padding-right:27px}
 .secure-academy-frame .sidebar-link>.ux-link-indicator{
  position:absolute;right:8px;top:50%;transform:translateY(-50%);
  width:15px;height:15px;flex:none;margin:0;pointer-events:none
@@ -44,7 +42,7 @@
 .secure-academy-frame .sidebar-link>.ux-link-indicator[data-pending=false]{display:none}
 .secure-academy-frame .workspace-more-links .sidebar-link{font-size:12px;gap:8px}
 .secure-academy-frame .secure-academy-rail{
- min-width:0;padding:25px 20px;position:sticky;top:0;align-self:start;
+ min-width:0;padding:25px clamp(14px,1.2vw,22px);position:sticky;top:0;align-self:start;
  min-height:100dvh;max-height:100dvh;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin
 }
 .secure-academy-frame .secure-academy-rail .profile-mini-grid,
@@ -68,6 +66,10 @@
 .secure-academy-frame .secure-academy-rail .rail-widget p{font-size:13px;line-height:1.6;color:#536b83}
 .secure-academy-frame .secure-academy-rail .rail-cta{min-height:44px;gap:8px;line-height:1.4;white-space:normal}
 .secure-academy-frame .secure-academy-rail .rail-cta svg{flex-shrink:0}
+/* At laptop widths, give the work surface the room recovered from the rail. */
+@media(min-width:821px) and (max-width:1279px){
+ .secure-academy-viewport .secure-academy-frame .secure-academy-rail{display:none}
+}
 @media(max-width:820px){
  .secure-academy-viewport .secure-academy-frame,
  .secure-academy-viewport .secure-academy-frame.secure-academy-detail,
