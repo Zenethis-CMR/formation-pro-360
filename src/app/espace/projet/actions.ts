@@ -7,7 +7,7 @@ export type ProjectSaveResult={ok:true;project:ProductProject}|{ok:false;error:"
 export async function saveProductProject(revision:number,dossier:ProductDossier):Promise<ProjectSaveResult>{
  await requireRole("learner");
  if(!Number.isInteger(revision)||revision<0||!dossier||typeof dossier!=="object")return {ok:false,error:"invalid"};
- const fields=projectSections.flatMap(section=>[...section.fields]);
+ const fields=projectSections.flatMap<(typeof projectSections)[number]["fields"][number]>(section=>[...section.fields]);
  if(Object.keys(dossier).length!==fields.length||fields.some(field=>{
   const value=dossier[field.key];
   return typeof value!=="string"||value.length>field.max||("link" in field&&value.trim()!==""&&!safeProjectLink(value.trim()));
