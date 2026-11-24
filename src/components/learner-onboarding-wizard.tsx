@@ -28,7 +28,7 @@ export function LearnerOnboardingWizard({current,initialError}:{current:LearnerP
   e.preventDefault();if(active.current)return;if(step<3){advance();return;}
   const data=new FormData(e.currentTarget);if(!readValues(e.currentTarget).valid){setError("Vérifie les informations avant d’enregistrer.");return;}
   active.current=true;setPending(true);setError("");
-  try{const result=await saveLearnerPreferencesDraft(data);if(result.ok){setDirty(false);router.push("/espace/apprenant?welcome=1");router.refresh();}else setError(result.error==="invalid"?"Vérifie tes informations et ton rythme.":"La sauvegarde est indisponible. Tes choix restent affichés : réessaie.");}
+  try{const result=await saveLearnerPreferencesDraft(data);if(result.ok===true){setDirty(false);router.push("/espace/apprenant?welcome=1");router.refresh();}else setError(result.error==="invalid"?"Vérifie tes informations et ton rythme.":"La sauvegarde est indisponible. Tes choix restent affichés : réessaie.");}
   catch{setError("La sauvegarde est indisponible. Tes choix restent affichés : réessaie.");}finally{active.current=false;setPending(false);}
  }
  return <form ref={form} className="learner-welcome-form onboarding-wizard" onSubmit={submit} onChange={()=>setDirty(true)} noValidate>
