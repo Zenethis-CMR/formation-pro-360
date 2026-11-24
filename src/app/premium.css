@@ -1650,3 +1650,25 @@ button,a,input,textarea,select { -webkit-tap-highlight-color:transparent; }
 .learner-legacy-details-content .v2-legacy-heading{margin-top:8px}
 @media(max-width:540px){.learner-legacy-details>summary{padding:13px}.learner-legacy-details-content{padding:0 10px 13px}}
 @media(prefers-reduced-motion:reduce){.learner-legacy-details>summary>svg:last-child{transition:none}}
+
+/* Personal practice plan: explicit schedule states, no attendance claims. */
+.personal-week{padding:22px;margin:0 0 22px;border:1px solid #dce8f7;border-radius:16px;background:#fff;color:#203e63;scroll-margin-top:16px}
+.personal-week-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px}
+.personal-week-head h2{font-size:22px;line-height:1.25;margin:8px 0;color:#193957}
+.personal-week-head p,.personal-week-note{font-size:13px;line-height:1.6;color:#52677e;margin:8px 0}
+.personal-week-head a,.personal-week-next a{display:inline-flex;align-items:center;gap:8px;color:#175ca6;font-size:13px;font-weight:700;text-decoration:none;min-height:44px}
+.personal-week-totals{display:flex;flex-wrap:wrap;gap:12px 24px;padding:12px 0;font-size:13px;color:#324f6b}
+.personal-week-totals span{display:flex;align-items:center;gap:6px}
+.personal-week-days{list-style:none;padding:0;margin:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+.personal-week-day{display:flex;flex-direction:column;gap:6px;padding:12px;min-width:0;border-radius:10px;border:1px solid #dce8f7;background:#f4f8fd;font-size:13px;line-height:1.5}
+.personal-week-day.regular{border-color:#b7d9fc;background:#edf6ff}
+.personal-week-day.optional{border-style:dashed;background:#fff}
+.personal-week-day.off{background:#f7f8fa;color:#52677e}
+.personal-week-day[aria-current=date]{outline:2px solid #256dbf;outline-offset:1px}
+.personal-week-day time{font-size:12px;color:#415c77;font-weight:700;text-transform:capitalize}
+.personal-week-day small{font-size:12px;color:#415c77;line-height:1.5}
+.personal-week-next{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:14px;margin:14px 0 0;border-radius:10px;background:#eef6ff}
+.personal-week-next strong{font-size:12px;color:#375e86}
+.personal-week-next p{font-size:14px;font-weight:700;margin:5px 0;color:#193957}
+@media(min-width:1150px){.personal-week-days{grid-template-columns:repeat(4,minmax(0,1fr))}}
+@media(max-width:540px){.personal-week{padding:15px}.personal-week-head,.personal-week-next{flex-direction:column;align-items:flex-start}.personal-week-days{grid-template-columns:1fr}.personal-week-head h2{font-size:20px}}
