@@ -121,7 +121,8 @@ test("learner onboarding and dashboard prioritize the active current course",()=
  assert.match(intro,/primaryLesson/);
  assert.match(intro,/Reprendre mon atelier principal/);
  assert.match(intro,/Voir les modules et la durée personnalisée/);
- assert.match(intro,/href="\/espace\/parcours\/ingenierie-produit-ia">Voir les modules/);
+ assert.match(intro,/href="\/espace\/apprenant\/formations">Voir les modules/);
+ assert.match(intro,/loadLearningDetail\(active.slug\)/);
  assert.match(intro,/<LearnerOnboardingWizard current=\{current\}/);
  const wizard=read("src/components/learner-onboarding-wizard.tsx");
  assert.match(wizard,/saveLearnerPreferencesDraft\(data\)/);
