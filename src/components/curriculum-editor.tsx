@@ -31,9 +31,9 @@ export function CurriculumEditor({slug,detail,initial,historical}:{slug:string;d
  const validMinutes=Number.isInteger(content.minutes)&&content.minutes>=30&&content.minutes<=6000;
  const ready=missing.length===0&&validMinutes;
  const base="/espace/formateur/formations/"+encodeURIComponent(slug)+"/atelier/"+detail.lesson.id;
- useEffect(()=>{if(!dirty)return;const guard=(e:BeforeUnloadEvent)=>{e.preventDefault();e.returnValue="";};window.addEventListener("beforeunload",guard);return()=>window.removeEventListener("beforeunload",guard);},[dirty]);
+ useEffect(()=>{if(!dirty&&!pending)return;const guard=(e:BeforeUnloadEvent)=>{e.preventDefault();e.returnValue="";};window.addEventListener("beforeunload",guard);return()=>window.removeEventListener("beforeunload",guard);},[dirty,pending]);
  function field<K extends keyof CurriculumContent>(key:K,value:CurriculumContent[K]){setContent(c=>({...c,[key]:value}));}
- function allowLeave(){return !dirty||window.confirm("Quitter sans enregistrer les modifications ?");}
+ function allowLeave(){return !busy.current&&(!dirty||window.confirm("Quitter sans enregistrer les modifications ?"));}
  async function save(intent:"save"|"ready"){
   if(historical||busy.current||!validMinutes||intent==="ready"&&!ready)return;
   if(intent==="ready"&&!window.confirm("Marquer cette copie prête pour revue ? Elle restera privée et ne sera pas publiée."))return;
@@ -42,6 +42,7 @@ export function CurriculumEditor({slug,detail,initial,historical}:{slug:string;d
  }
  function textField(key:keyof typeof fields){const [label,help,max]=fields[key];return <label className="ca-field" key={key}><span>{label}</span><small>{help}</small>{key==="title"?<input value={content[key]} maxLength={max} onChange={e=>field(key,e.target.value)} disabled={pending||historical}/>:<textarea rows={key==="objective"?3:6} value={content[key]} maxLength={max} onChange={e=>field(key,e.target.value)} disabled={pending||historical}/>}<small className="ca-count">{content[key].length}/{max}</small></label>;}
  return <>
+ <Link className="ca-back" href={"/espace/formateur/formations?parcours="+encodeURIComponent(slug)} onClick={e=>{if(!allowLeave())e.preventDefault();}}>← Retour au programme</Link>
  <header className="ca-hero"><div><span><Sparkles size={16}/> CURRICULUM AUTHORING STUDIO</span><h1>{detail.lesson.title}</h1><p>{detail.lesson.module_title} · Leçon source v{detail.lesson.version} · {detail.lesson.status==="published"?"Publiée":"Brouillon"}</p></div><div className="ca-version"><LockKeyhole size={19}/><strong>{historical?"Historique":dirty?"Modifications locales":revision?state==="ready"?"Prêt pour revue":"Brouillon enregistré":"Nouvelle copie"}</strong><small>Révision {revision||"non enregistrée"}</small></div></header>
  <div className="ca-layout"><section className="ca-work"><nav className="ca-tabs" aria-label="Sections de rédaction">{sections.map(({label,icon:Icon},i)=><button type="button" key={label} aria-pressed={tab===i} onClick={()=>setTab(i)}><Icon size={18}/><span>{label}</span></button>)}</nav>
  <div className="ca-section"><h2>{sections[tab].label}</h2>
