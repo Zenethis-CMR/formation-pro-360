@@ -15,7 +15,8 @@ export async function signInWithPassword(formData:FormData) {
   if(!isValidEmail(email)||!password||password.length>128) redirect("/login?error=credentials");
   const response = await backendRequest(`${authApi}/login`, {method:"POST", body:JSON.stringify({email,password})}).catch(()=>null);
   if(!response?.ok) {
-    if(response?.status===429) redirect("/login?error=quota");
+    if(!response||response.status>=500) redirect("/login?error=setup");
+    if(response.status===429) redirect("/login?error=quota");
     if(response?.status===403) redirect("/login?error=confirm");
     redirect("/login?error=credentials");
   }

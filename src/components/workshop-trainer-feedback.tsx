@@ -22,9 +22,9 @@ export function WorkshopTrainerFeedback({review,criteria,onPlan}:{
       <span>{approved?"Validation officielle enregistrée · 100 XP selon les règles du parcours":
         "Une nouvelle version du livrable est nécessaire avant validation · Aucun XP attribué pour cette tentative"}</span>
     </div>
-    {feedbackText&&<blockquote className="studio-trainer-message">
+    {feedbackText?<blockquote className="studio-trainer-message">
       <strong>Commentaire du formateur</strong><p>{feedbackText}</p>
-    </blockquote>}
+    </blockquote>:<p>Le verdict officiel est enregistré. Aucun commentaire écrit n'est disponible pour cette correction.</p>}
     {scores.length===4&&<div className="studio-trainer-criteria">
       <h3><ClipboardCheck size={16}/> Grille de la correction</h3>
       {scores.map((score,i)=><div className="studio-trainer-criterion" key={i}>

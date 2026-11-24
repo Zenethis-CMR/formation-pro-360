@@ -98,19 +98,22 @@ export default async function V2WorkshopStudio({params,searchParams}:{
   const verifiedLessons=new Set((data?.submissions||[]).filter(s=>s.status==="approved")
     .map(s=>s.module_id+":"+s.lesson_slug));
   const fullCourseValidated=accessible&&verifiedLessons.size===16&&Number(data?.xp_total??0)>=1600;
-  const primaryHref=approved?"#retour-formateur":latest?.status==="pending"?"#livrable":
-    latest?.status==="changes_requested"?"#retour-formateur":"#brief";
-  const primaryLabel=approved?"Revoir ma correction":latest?.status==="pending"?"Suivre mon évaluation":
-    latest?.status==="changes_requested"?"Reprendre après la correction":"Commencer par les consignes";
   const officialRubric=lesson?rubricTitles(lesson.rubric):[];
   // Only actual reviewed submissions, scoped to the signed-in learner, count.
-  const latestReviewed=history.find(s=>s.status!=="pending"&&s.feedback&&
+  const latestReviewed=history.find(s=>s.status!=="pending"&&
     s.reviewed_at!==null);
   const review:WorkshopReview|null=latestReviewed?{
     status:latestReviewed.status==="approved"?"approved":"changes_requested",
     score:latestReviewed.score,feedback:latestReviewed.feedback,
     reviewed_at:latestReviewed.reviewed_at
   }:null;
+  // The primary action must always lead to a section rendered in this access state.
+  const reviewHref=review?"#retour-formateur":"#livrable";
+  const primaryHref=!accessible?base:approved?reviewHref:latest?.status==="pending"?"#livrable":
+    latest?.status==="changes_requested"?reviewHref:"#brief";
+  const primaryLabel=!accessible?"Vérifier mon accès":approved?"Revoir ma correction":
+    latest?.status==="pending"?"Suivre mon évaluation":
+    latest?.status==="changes_requested"?"Reprendre après la correction":"Commencer par les consignes";
   const feedbackCriteria=officialRubric.length===4?
     officialRubric:(guide?.checks||[]);
   return <main className="page studio-page">
@@ -129,7 +132,7 @@ export default async function V2WorkshopStudio({params,searchParams}:{
           <span><Award size={15}/> 100 XP après validation</span>
           {lesson&&<span><ShieldCheck size={15}/> Leçon officielle publiée</span>}
         </div>
-        <div className="studio-hero-links"><a href={primaryHref} className="studio-hero-main-link">{primaryLabel} <ArrowRight size={16}/></a><Link href={base} className="studio-hero-secondary-link">Voir les 16 ateliers</Link></div>
+        <div className="studio-hero-links"><Link href={primaryHref} className="studio-hero-main-link">{primaryLabel} <ArrowRight size={16}/></Link>{accessible&&<Link href={base} className="studio-hero-secondary-link">Voir les 16 ateliers</Link>}</div>
       </div>
       <div className="studio-hero-side"><span>TON OBJECTIF DE LA SEMAINE</span>
         <strong>{editorial.moduleTitle}</strong>
@@ -149,7 +152,7 @@ export default async function V2WorkshopStudio({params,searchParams}:{
     {query.livrable==="limite"&&<p role="alert" className="alert danger">Trop de tentatives rapprochées. Réessaie plus tard.</p>}
     {!accessible?<section className="studio-access" role="status">
       <LockKeyhole size={27}/><div><h2>{data?.enrollment==="paused"||data?.enrollment==="revoked"?"Ton accès au pilote est suspendu":
-        data?.enrollment===null?"Inscription requise pour ouvrir le studio":"Atelier momentanément indisponible"}</h2>
+        !data?"Atelier momentanément indisponible":data.enrollment===null?"Inscription requise pour ouvrir le studio":"Atelier momentanément indisponible"}</h2>
         <p>Les étapes détaillées, modèles de livrables et conseils de production sont réservés aux apprenants inscrits disposant d'un accès autorisé. La présentation publique des objectifs reste consultable.</p>
         <Link href={base}>Vérifier mon inscription et mes droits <ArrowRight size={16}/></Link>
       </div>
@@ -257,7 +260,7 @@ export default async function V2WorkshopStudio({params,searchParams}:{
       <aside className="studio-aside" aria-label="Sommaire de l'atelier">
         <div className="studio-aside-card"><span>TON STUDIO D'ATELIER</span><strong>{editorial.title}</strong><div className="studio-aside-divider"/>
           <a href="#brief">01 · La mission</a><a href="#studio-checklist-title">02 · Les étapes</a>
-          <a href="#carnet">03 · Carnet</a><a href="#qualite">04 · Qualité</a><a href="#boite-outils">05 · Modèles et outils</a>
+          {review&&<a href="#retour-formateur">Retour du formateur</a>}<a href="#carnet">03 · Carnet</a><a href="#qualite">04 · Qualité</a><a href="#boite-outils">05 · Modèles et outils</a>
           <a href="#coach">06 · Coach pédagogique</a>
           <a href="#livrable">07 · Remise du livrable</a>
           <div className="studio-aside-divider"/>
