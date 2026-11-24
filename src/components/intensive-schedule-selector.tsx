@@ -3,8 +3,8 @@ import {useState} from "react";
 import {CalendarDays, Clock3, Flame, Info} from "lucide-react";
 import {learnerDurations,weekdays} from "@/lib/learner-preferences";
 type Availability="regular"|"optional"|"off";
-export function IntensiveScheduleSelector({regularDays,optionalDays,initialMinutes}:{
- regularDays:number[]|null;optionalDays:number[];initialMinutes:number
+export function IntensiveScheduleSelector({regularDays,optionalDays,initialMinutes,guided=false}:{
+ regularDays:number[]|null;optionalDays:number[];initialMinutes:number;guided?:boolean
 }){
  const [choices,setChoices]=useState<Availability[]>(()=>weekdays.map(d=>
    regularDays?.includes(d.id)?"regular":optionalDays.includes(d.id)?"optional":"off"));
@@ -14,7 +14,7 @@ export function IntensiveScheduleSelector({regularDays,optionalDays,initialMinut
  const weeklyHours=regularCount*duration/60;
  return <>
    <fieldset className="learner-welcome-card schedule-card">
-     <legend className="learner-welcome-step-label"><span>04</span> Tes journées de formation</legend>
+     <legend className="learner-welcome-step-label"><span>{guided?"A":"04"}</span> Tes journées de formation</legend>
      <h2>Quels jours travailleras-tu régulièrement ?</h2>
      <p>Sélectionne au moins <strong>3 jours fixes par semaine</strong> et, si besoin, des jours supplémentaires en renfort. Exemple : mardi, jeudi, samedi, avec dimanche facultatif.</p>
      <div className="schedule-day-header"><span>JOUR</span><span>FIXE</span><span>EN RENFORT</span><span>INDISPONIBLE</span></div>
@@ -36,7 +36,7 @@ export function IntensiveScheduleSelector({regularDays,optionalDays,initialMinut
      </div>
    </fieldset>
    <fieldset className="learner-welcome-card schedule-card">
-     <legend className="learner-welcome-step-label"><span>05</span> Durée de tes séances</legend>
+     <legend className="learner-welcome-step-label"><span>{guided?"B":"05"}</span> Durée de tes séances</legend>
      <h2>Combien d'heures travailleras-tu chaque jour choisi ?</h2>
      <p>Le programme démarre à <strong>5 heures de travail actif par jour</strong>. Les séances peuvent être plus longues selon ton engagement et ton emploi du temps.</p>
      <div className="learner-duration-grid schedule-duration-grid">
