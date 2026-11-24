@@ -5,8 +5,9 @@ export const dynamic="force-dynamic";
 export const runtime="nodejs";
 
 type CoachBody={
-  lessonId:string;question:string;
-  mode?:"commencer"|"debloquer"|"verifier";
+  lessonId?:string;question:string;
+  scope?:"project";consent?:boolean;
+  mode?:"commencer"|"debloquer"|"verifier"|"preparer";
   work_summary?:string;
   previous_exchange?:{question:string;answer:string}
 };
@@ -37,13 +38,17 @@ export async function POST(request:NextRequest){
 
   let body:CoachBody;
   try{body=await request.json() as CoachBody;}catch{return errorJson(400,"invalid_json");}
-  if(!body||typeof body!=="object"||
-    !uuid.test(String(body.lessonId||""))||
+  const project=body?.scope==="project";
+  if(!body||typeof body!=="object"||Array.isArray(body)||
+    (body.scope!==undefined&&!project)||
+    (!project&&!uuid.test(String(body.lessonId||"")))||
     typeof body.question!=="string"||
-    body.question.trim().length<8||body.question.trim().length>1200)
+    body.question.trim().length<8||body.question.trim().length>(project?600:1200))
     return errorJson(400,"invalid_question");
+  if(project&&(body.consent!==true||body.previous_exchange!==undefined||body.lessonId!==undefined||!body.mode||Object.keys(body).some(key=>!["scope","consent","mode","question","work_summary"].includes(key))))
+    return errorJson(400,"invalid_project_consent");
   if(body.mode!==undefined&&
-    !["commencer","debloquer","verifier"].includes(body.mode))
+    !(project?["debloquer","verifier","preparer"]:["commencer","debloquer","verifier"]).includes(body.mode))
     return errorJson(400,"invalid_mode");
   if(body.work_summary!==undefined&&
     (typeof body.work_summary!=="string"||body.work_summary.trim().length>400))
@@ -57,6 +62,7 @@ export async function POST(request:NextRequest){
     return errorJson(400,"invalid_context");
 
   const payload={
+    ...(project?{consent:true}:{}),
     question:body.question.trim(),
     ...(body.mode?{mode:body.mode}:{}),
     ...(body.work_summary?.trim()?{work_summary:body.work_summary.trim()}:{}),
@@ -86,6 +92,7 @@ export async function POST(request:NextRequest){
       void (async()=>{
         try{
           const upstream=await backendRequest(
+            project?"/v1/training/catalog/ingenierie-produit-ia/project/coach":
             "/v1/training/catalog/ingenierie-produit-ia/lessons/"+
               body.lessonId+"/coach",
             {
@@ -107,7 +114,7 @@ export async function POST(request:NextRequest){
             }else{
               emit("failure",{status:upstream.status===403?"access":"unavailable",
                 message:upstream.status===403
-                  ?"Ton inscription ne donne pas accès au coach pour cet atelier."
+                  ?"Ton inscription ne donne pas accès à cette assistance."
                   :"Le modèle local ne répond pas actuellement. Tu peux réessayer plus tard."});
             }
             return;
