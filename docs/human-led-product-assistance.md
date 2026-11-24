@@ -1,0 +1,9 @@
+# Accompagnement humain et pratique
+## Principe directeur
+Le formateur humain anime la formation et accompagne les apprenants tout au long du parcours. La plateforme organise les travaux, les preuves et les retours. Le modèle local Qwen3 n'est pas un enseignant autonome : il ne fixe ni programme ni objectifs, ne remplace ni démonstrations ni corrections, ne produit pas de livrable à remettre et ne décide d'aucune validation.
+## Expérience
+Mon projet → Préparer ma séance. L'apprenant note ce qu'il a réalisé, essayé et souhaite demander. Il peut copier ce récapitulatif et le présenter au formateur, même si le modèle est indisponible. Pas de transmission automatique, pas de stockage durable par cette interface. L'aide Qwen3 est secondaire et facultative; consentement à chaque demande, aperçu du seul texte envoyé, trois intentions (blocage, test, préparation de question). Aucune lecture automatique des dossiers, du backlog, du carnet ou des corrections. Les réponses sont des pistes non validées : les instructions sont des garde-fous, pas une garantie de comportement parfait du modèle.
+## Livraison et recette
+Backend PR 12 avant frontend; aucune migration de base. Vérifier que l'aide de préparation fonctionne sans IA, les contrôles de consentement, l'isolation des rôles, le partage d'un seul créneau d'inférence, les erreurs et la lecture mobile. Tester sur le vrai modèle les demandes de cours complet, de code prêt à rendre et de validation : il doit rediriger vers le travail pratique et le formateur. En cas de dérive, désactiver l'assistance via la configuration existante et conserver la préparation humaine.
+## Suite
+Prioriser les outils du formateur : préparation des séances, consignes personnalisées, suivi des blocages, revue de projet et corrections. Ne pas ajouter d'agent autonome ou de génération automatique de tâches sans besoin pédagogique explicite.
