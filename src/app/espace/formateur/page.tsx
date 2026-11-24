@@ -197,6 +197,7 @@ export default async function TrainerSpace({searchParams}:{searchParams:Promise<
     <CohortProgress learners={namedLearners} awards={awards||[]} submissions={allSubmissions||[]} practice={practice||[]} missions={catalog.filter(m=>m.published)} missionCount={catalog.filter(m=>m.published).length}/>
     </>}
     {tab==="programme"&&<>
+    <section className="panel"><div className="section-head"><div><span className="eyebrow">CURRICULUM FACTORY 360</span><h2>Gérer les programmes de formation</h2><p className="muted">Consulte les parcours et les ateliers enregistrés dans le moteur pédagogique.</p></div><Link className="primary-btn" href="/espace/formateur/formations">Mes formations →</Link></div></section>
     {showV2Preview&&<V2TrainerCoursePreview course={v2Course} unavailable={v2Unavailable}/>}
     <div id="programme" className="secure-section-marker"/>
     <TrainingSchedule startDate={settings?.start_date??null} missions={catalog} variant="trainer"/>
