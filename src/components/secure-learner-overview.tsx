@@ -1,7 +1,7 @@
 "use client";
 import { useMemo, useState, type ReactNode } from "react";
 import Link from "next/link";
-import { ArrowRight, BadgeCheck, BookOpen, Code2, GraduationCap, Info, Search, Sparkles, Target, TrendingUp, Trophy } from "lucide-react";
+import { ArrowRight, Award, BadgeCheck, BookOpen, ClipboardCheck, Code2, GraduationCap, Info, Search, Sparkles, Target, TrendingUp, Trophy } from "lucide-react";
 import { LearnerCompactProfile } from "@/components/secure-academy-shell";
 import { TechnologyBadge, technologiesForMission, displayDomain } from "@/components/technology-badge";
 import type { V2DashboardPilot } from "@/lib/v2-dashboard-pilot";
@@ -43,7 +43,7 @@ export function SecureLearnerOverview({missions,submissions,approvedIds,dependen
     pilot.published&&pilot.enrollmentOpen?"Rejoindre le pilote gratuit":
     pilot.published?"Consulter le programme":"Découvrir le programme";
 
-  return <div className="real-overview" id="tableau-de-bord">
+  return <div className="real-overview learner-dashboard-v5" id="tableau-de-bord">
     <section className="academy-feature academy-feature-v2" aria-label="Formation principale">
       <div className="feature-copy">
         <span className="feature-label"><Sparkles size={14}/> PARCOURS PRINCIPAL · {pilot.published?"FORMATION DISPONIBLE":"APERÇU DU PROGRAMME"}</span>
@@ -71,9 +71,9 @@ export function SecureLearnerOverview({missions,submissions,approvedIds,dependen
       </div>
     </section>
     <section className="v2-pilot-metrics" aria-label="Progression du programme">
-      <div><span>ATELIERS VALIDÉS</span><strong>{enrolled?pilot.approved:"—"}<small> / 16</small></strong><p>{enrolled?"Validés par le formateur":"Après inscription"}</p></div>
-      <div><span>XP DU PARCOURS</span><strong>{enrolled?pilot.xp:"—"}</strong><p>{xp} XP des autres réalisations, comptés séparément</p></div>
-      <div><span>EN CORRECTION</span><strong>{enrolled?pilot.pending:"—"}</strong><p>{enrolled?"Livrables en attente":"Suivi après inscription"}</p></div>
+      <div className="v5-metric v5-verified"><div className="v5-metric-head"><span>ATELIERS VALIDÉS</span><span className="v5-metric-icon"><BadgeCheck size={20}/></span></div><strong>{enrolled?pilot.approved:"—"}<small> / 16</small></strong><p>{enrolled?"Validés par le formateur":"Après inscription"}</p>{enrolled&&<><div className="v5-progress-segments" role="img" aria-label={pilot.approved+" ateliers validés sur 16"}>{Array.from({length:16},(_,i)=><i key={i} className={i<pilot.approved?"filled":""}/>)}</div><small className="v5-progress-caption">{Math.min(100,Math.round(pilot.approved/16*100))}% du parcours</small></>}</div>
+      <div className="v5-metric v5-xp"><div className="v5-metric-head"><span>XP DU PARCOURS</span><span className="v5-metric-icon"><Award size={20}/></span></div><strong>{enrolled?pilot.xp:"—"}<small> XP</small></strong><p>{xp} XP des autres réalisations, comptés séparément</p><Link className="v5-metric-link" href="/espace/apprenant/bilan">Consulter mon bilan <ArrowRight size={14}/></Link></div>
+      <div className="v5-metric v5-review"><div className="v5-metric-head"><span>EN CORRECTION</span><span className="v5-metric-icon"><ClipboardCheck size={20}/></span></div><strong>{enrolled?pilot.pending:"—"}</strong><p>{enrolled?(pilot.pending>0?"Livrables en attente de ton formateur":"Aucun livrable en attente"):"Suivi après inscription"}</p><Link className="v5-metric-link" href="/espace/parcours/ingenierie-produit-ia">Voir mes ateliers <ArrowRight size={14}/></Link></div>
     </section>
     {finished&&<section className="learner-finish-celebration" aria-label="Fin de parcours validée">
       <Trophy size={27}/><div><span>16 ATELIERS APPROUVÉS PAR LE FORMATEUR</span>
