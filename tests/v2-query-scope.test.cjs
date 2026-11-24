@@ -8,7 +8,7 @@ test("learner optional data is queried only for its active tab",()=>{
   const page=read("src/app/espace/apprenant/page.tsx");
   assert.match(page,/tab==="progression" \? db\.from\("badges"\)/);
   assert.match(page,/tab==="progression" \? db\.from\("coach_messages"\)/);
-  assert.match(page,/tab==="dashboard" \? db\.from\("learner_preferences"\)/);
+  assert.match(page,/tab==="dashboard"\|\|tab==="programme" \? db\.from\("learner_preferences"\)/);
   assert.match(page,/tab==="progression"\|\|tab==="programme" \? db\.from\("training_settings"\)/);
   assert.match(page,/tab==="programme" \? skipped : db\.from\("submissions"\)/);
 });
