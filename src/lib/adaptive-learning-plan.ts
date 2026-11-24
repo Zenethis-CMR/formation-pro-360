@@ -12,24 +12,26 @@ type Slot={date:string;minutes:number;tasks:{id:string;title:string;minutes:numb
 export function publishedWorkItems(slug:string,track:StudioTrack):{items:WorkItem[];completeCoverage:boolean}{
  const plan=getAiTrainingPlan(slug);
  const editorial=slug===pilotCourse.slug?pilotCourse.modules:getSpecializationProgram(slug)?.modules;
- const budgets=new Map<string,{minutes:number;title:string;objective:string;evidence:string}>();
+ const budgets=new Map<string,{minutes:number;title:string;objective:string;evidence:string;order:number}>();
  if(plan&&editorial&&plan.modules.length===editorial.length)editorial.forEach((m,i)=>{
   if(plan.modules[i]?.activities.length!==m.lessons.length)return;
   const moduleSlug="slug" in m?m.slug:"semaine-"+(i+1);
   m.lessons.forEach((l,j)=>{
    const minutes=plan.modules[i].activities[j].minutes;
-   if(Number.isSafeInteger(minutes)&&minutes>0)budgets.set(moduleSlug+":"+l.slug,{minutes,title:l.title,objective:l.objective,evidence:l.evidence});
+   if(Number.isSafeInteger(minutes)&&minutes>0)budgets.set(moduleSlug+":"+l.slug,{minutes,title:l.title,objective:l.objective,evidence:l.evidence,order:budgets.size});
   });
  });
  const matched=new Set<string>();
+ const orderById=new Map<string,number>();
  const items=track.lessons.map(l=>{
   const module=track.modules.find(m=>m.id===l.module_id);
   const key=module?.slug+":"+l.slug;
   const budget=budgets.get(key);
   const matches=!!budget&&l.version===1&&l.title===budget.title&&l.objective===budget.objective&&l.evidence_required===budget.evidence;
-  if(matches)matched.add(key);
+  if(matches){matched.add(key);orderById.set(l.id,budget!.order);}
   return {id:l.id,title:l.title,state:l.state,minutes:matches?budget!.minutes:null};
  });
+ items.sort((a,b)=>(orderById.get(a.id)??Number.MAX_SAFE_INTEGER)-(orderById.get(b.id)??Number.MAX_SAFE_INTEGER));
  return {items,completeCoverage:budgets.size>0&&matched.size===budgets.size&&items.length===budgets.size};
 }
 function dateFrom(value:string){

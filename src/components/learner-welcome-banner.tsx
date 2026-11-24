@@ -5,9 +5,9 @@ import { pilotCourse } from "@/lib/v2-public-catalog";
 import { goalLabel, plannedWeeklyHours, formatWeekdays, type LearnerPreferences } from "@/lib/learner-preferences";
 
 type NextMission={id:string;title:string;week:number}|null;
-export function LearnerWelcomeBanner({preferences,mission,pilot}:{
+export function LearnerWelcomeBanner({preferences,mission,pilot,adaptivePlanning=false}:{
   preferences:LearnerPreferences|null;
-  mission:NextMission;pilot?:V2DashboardPilot|null;
+  mission:NextMission;pilot?:V2DashboardPilot|null;adaptivePlanning?:boolean;
 }) {
   const enrolled=pilot?.enrollment==="active"||pilot?.enrollment==="completed";
   const nextLesson=enrolled&&pilot?.resumeSlug?pilotCourse.modules.flatMap(
@@ -22,7 +22,7 @@ export function LearnerWelcomeBanner({preferences,mission,pilot}:{
         ? "Bonjour "+preferences.preferred_name+", prêt pour la suite ?"
         : "Prêt à construire ton premier projet ?"}</h2>
       <p>{preferences
-        ? "Ton objectif : "+goalLabel(preferences.goal)+". Priorité à la conception produit et à la réalisation de livrables vérifiés."
+        ? "Ton objectif : "+goalLabel(preferences.goal)+(adaptivePlanning?". Les ateliers et les livrables de ta formation active restent prioritaires.":". Priorité à la conception produit et à la réalisation de livrables vérifiés.")
         : "Quelques informations facultatives nous aideront à te guider. Tu peux aussi commencer directement ton premier atelier."}</p>
       <div className="learner-personal-actions">
         {nextLesson?<Link href={mainCourse+"/atelier/"+nextLesson.slug} className="learner-primary-start">
@@ -38,7 +38,7 @@ export function LearnerWelcomeBanner({preferences,mission,pilot}:{
           {preferences?<Settings2 size={16}/>:<GraduationCap size={16}/>}
           {preferences?"Modifier mes préférences":"Personnaliser mon parcours"}
         </Link>
-        <Link className="learner-personal-settings" href="/espace/apprenant?onglet=programme#planning-personnel">
+        <Link className="learner-personal-settings" href={adaptivePlanning?"/espace/apprenant?onglet=programme#planning-adaptatif":"/espace/apprenant?onglet=programme#planning-personnel"}>
           <CalendarDays size={16}/> Voir mon planning personnel
         </Link>
       </div>

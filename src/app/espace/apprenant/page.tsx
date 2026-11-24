@@ -68,9 +68,9 @@ export default async function LearnerSpace({searchParams}:{searchParams:Promise<
   const nonPilot=!!active&&active.slug!=="ingenierie-produit-ia";
   const adaptive=active&&activeDetail?<AdaptiveLearningPanel slug={active.slug} track={activeDetail.studio} summary={activeDetail.progress.summary} xp={activeDetail.progress.xp} availability={rawPreferences as LearnerPreferences|null}/>:null;
   // V2 rights and XP are independent of the historical V1 mission ledger.
-  const pilot=tab==="dashboard"||tab==="programme"?await getV2DashboardPilot():null;
-  const v2Progress=tab==="progression"?await loadV2LearnerProgress():null;
-  const resourceResponse=tab==="programme"
+  const pilot=nonPilot?null:tab==="dashboard"||tab==="programme"?await getV2DashboardPilot():null;
+  const v2Progress=nonPilot?null:tab==="progression"?await loadV2LearnerProgress():null;
+  const resourceResponse=!nonPilot&&tab==="programme"
     ?await backendRequest("/v1/training/catalog/ingenierie-produit-ia").catch(()=>null)
     :null;
   const courseResources:LearnerCourseResources|null=resourceResponse?.ok
@@ -92,7 +92,7 @@ export default async function LearnerSpace({searchParams}:{searchParams:Promise<
         :<><section className="panel" role="status"><h2>Le parcours est momentanément indisponible</h2><p>Tu peux consulter tes réalisations et revenir au programme.</p><Link className="primary-btn" href="/espace/parcours/ingenierie-produit-ia">Voir le parcours</Link></section><LearnerCompactProfile/><DashboardQuickLinks trainer={false} enrolled={false}/></>}
       {!nonPilot&&adaptive}
       <DashboardDisclosure title="Mes objectifs et mon rythme" description="Personnaliser mon parcours et mon planning">
-        <LearnerWelcomeBanner preferences={rawPreferences as LearnerPreferences|null} mission={insight.nextMission} pilot={nonPilot?null:pilot}/>
+        <LearnerWelcomeBanner preferences={rawPreferences as LearnerPreferences|null} mission={insight.nextMission} pilot={nonPilot?null:pilot} adaptivePlanning={!!adaptive}/>
       </DashboardDisclosure>
       <section className="panel"><h2>Mes formations</h2><p>Retrouve tes inscriptions et consulte les résultats de chaque parcours séparément.</p><Link className="primary-btn" href="/espace/apprenant/formations">Gérer mes parcours <ArrowUpRight size={16}/></Link></section>
       <section className="v2-catalog-banner"><div><span>LE CATALOGUE 360</span><h2>Découvrir les sept formations</h2><p>Compare les charges et les durées estimées selon ton rythme personnel. Le catalogue indique les parcours disponibles.</p></div><Link href="/catalogue" className="v2-catalog-banner-link">Explorer le catalogue <ArrowUpRight size={16}/></Link></section>

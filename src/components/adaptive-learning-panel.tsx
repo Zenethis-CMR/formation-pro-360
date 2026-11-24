@@ -9,7 +9,7 @@ const formatDate=(value:string)=>new Intl.DateTimeFormat("fr-FR",{weekday:"long"
 export function AdaptiveLearningPanel({slug,track,summary,xp,availability}:{slug:string;track:StudioTrack;summary:ProgressSummary|null;xp:number;availability:Availability|null}){
  const {items,completeCoverage}=publishedWorkItems(slug,track);
  const plan=forecastWork(items,availability,doualaCalendarDate(),completeCoverage);
- const next=track.lessons.find(l=>l.state==="changes_requested")??track.lessons.find(l=>l.state==="not_started");
+ const next=items.find(l=>l.state==="changes_requested")??items.find(l=>l.state==="not_started");
  const base="/espace/apprenant/formations/"+encodeURIComponent(slug)+"/studio";
  const nextHref=next?base+"?atelier="+encodeURIComponent(next.id):base;
  const done=completeCoverage&&items.length>0&&items.every(x=>x.state==="approved");

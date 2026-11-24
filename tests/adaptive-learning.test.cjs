@@ -23,8 +23,9 @@ test("budget joins exact published identity and version, never backend array pos
  const result=publishedWorkItems(course.slug,track);
  assert.equal(result.completeCoverage,true);
  assert.equal(result.items.reduce((n,x)=>n+x.minutes,0),63*60);
+ assert.equal(result.items[0].id,course.modules[0].lessons[0].slug);
  const altered=publishedWorkItems(course.slug,{...track,lessons:[{...lessons[0],version:2},...lessons.slice(1)]});
- assert.equal(altered.completeCoverage,false);assert.equal(altered.items[0].minutes,null);
+ assert.equal(altered.completeCoverage,false);assert.equal(altered.items.find(x=>x.id===lessons[0].id).minutes,null);
 });
 test("active choice is server-validated, account-bound and connected to dashboard and navigation",()=>{
  const action=read("src/app/espace/apprenant/formations/actions.ts"),ctx=read("src/lib/active-learning-context.ts"),home=read("src/app/espace/apprenant/page.tsx"),shell=read("src/components/secure-academy-shell.tsx");
