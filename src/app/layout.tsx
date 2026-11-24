@@ -8,12 +8,13 @@ import "./fullscreen.css";
 import "./login/onboarding-auth.css";
 import "./workspace-motion.css";
 import "./catalogue/curriculum-360.css";
+import "./public-experience.css";
 
 const jakarta = Plus_Jakarta_Sans({subsets:["latin"],display:"swap",variable:"--font-jakarta"});
 
 export const metadata: Metadata = {
-  title: "Formation Pro 360 | Plateforme de formation sécurisée",
-  description: "Espace privé de formation : missions pratiques, accompagnement et évaluations"
+  title: "Formation Pro 360 | Formations pratiques et IA",
+  description: "Sept formations orientées projets, méthodes IA, accompagnement humain et réalisations vérifiables."
 };
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return <html lang="fr"><body className={jakarta.variable}><AppShell>{children}</AppShell></body></html>;

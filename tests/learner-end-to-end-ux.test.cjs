@@ -86,7 +86,7 @@ test("authentication outage is distinguishable from invalid credentials or expir
  const actions=read("src/app/auth/actions.ts");
  const verification=read("src/app/auth/verify/route.ts");
  const login=read("src/app/login/page.tsx");
- assert.ok(actions.includes('if(!response||response.status>=500) redirect("/login?error=setup")'));
+ assert.ok(actions.includes('if(!response||response.status>=500) redirect(destination("/login?error=setup"))'));
  assert.ok(verification.includes('!result || result.status >= 500'));
  assert.ok(verification.includes('error=verification_unavailable'));
  assert.ok(login.includes('params.error==="verification_unavailable"'));

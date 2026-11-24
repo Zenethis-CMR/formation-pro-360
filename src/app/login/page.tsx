@@ -3,10 +3,12 @@ import { ArrowLeft, ArrowRight, BadgeCheck, BookOpenCheck, CheckCircle2, Code2, 
 import { registerLearner, requestPasswordReset, resendVerificationEmail, signInWithPassword } from "@/app/auth/actions";
 import { AuthSubmitButton } from "@/components/auth-submit-button";
 import { AuthPasswordField } from "@/components/auth-password-field";
+import {publicCourseChoice,withCourseChoice} from "@/lib/public-course-choice";
+import {pilotCourse,specializations} from "@/lib/v2-public-catalog";
 import { isBackendConfigured } from "@/lib/database/server";
 
 type Mode="connexion"|"inscription"|"recuperation";
-type Params={mode?:string;sent?:string;error?:string;verification?:string};
+type Params={mode?:string;sent?:string;error?:string;verification?:string;parcours?:string|string[]};
 const messages:Record<string,string>={
   setup:"La connexion est momentanément indisponible. Contacte le responsable de la plateforme.",
   email:"Entre une adresse e-mail valide pour continuer.",
@@ -35,6 +37,9 @@ export default async function Login({searchParams}:{searchParams:Promise<Params>
   const params=await searchParams;
   const mode:Mode=(["connexion","inscription","recuperation"].includes(params.mode||"")
     ? params.mode as Mode : "connexion");
+  const choice=publicCourseChoice(params.parcours);
+  const chosen=choice===pilotCourse.slug?pilotCourse:specializations.find(t=>t.slug===choice);
+  const link=(path:string)=>withCourseChoice(path,choice);
   const configured=isBackendConfigured();
   const creating=mode==="inscription";
   const needsConfirmation=mode!=="recuperation"&&(params.verification==="1"||params.sent==="signup"||params.sent==="resend"
@@ -52,7 +57,7 @@ export default async function Login({searchParams}:{searchParams:Promise<Params>
         <h1>Développe des compétences qui <em>prennent vie.</em></h1>
         <p className="auth-story-lead">Un projet fil rouge, des séances pratiques avec ton formateur et des réalisations concrètes à chaque étape.</p>
         <div className="auth-story-milestones">
-          <div><span><Code2 size={19}/></span><div><strong>16 ateliers, 8 semaines</strong><small>Un parcours structuré autour de vrais livrables.</small></div></div>
+          <div><span><Code2 size={19}/></span><div><strong>Sept formations, un rythme personnalisé</strong><small>Un parcours structuré autour de vrais livrables.</small></div></div>
           <div><span><BookOpenCheck size={19}/></span><div><strong>La pratique d'abord</strong><small>Construis, teste, améliore et publie tes projets.</small></div></div>
           <div><span><BadgeCheck size={19}/></span><div><strong>Des acquis vérifiés</strong><small>Des preuves et des XP après validation du formateur.</small></div></div>
         </div>
@@ -64,30 +69,31 @@ export default async function Login({searchParams}:{searchParams:Promise<Params>
         <div className="auth-new-intro"><span className="auth-form-kicker"><ShieldCheck size={15}/> ESPACE SÉCURISÉ</span>
           <h2>{title}</h2>
           <p>{needsConfirmation?"Confirme ton adresse avant de commencer ta formation."
-            :creating?"Crée ton compte apprenant pour accéder aux ateliers et suivre tes progrès."
+            :creating?"Crée ton compte apprenant, puis vérifie les inscriptions disponibles. Un compte ne constitue pas une inscription à une formation."
             :mode==="connexion"?"Retrouve tes missions et reprends exactement là où tu t'étais arrêté."
             :"Nous t'enverrons un lien pour définir un nouveau mot de passe."}</p>
         </div>
+        {chosen&&<div className="public-choice-banner"><strong>Formation qui t’intéresse : {chosen.name}</strong>Ton choix sera conservé pour vérifier les inscriptions. <Link href="/catalogue">Changer de formation</Link>.</div>}
         {!needsConfirmation&&(mode==="connexion"||mode==="inscription")&&<nav className="auth-mode-tabs" aria-label="Connexion ou inscription">
-          <Link href="/login?mode=connexion" className={mode==="connexion"?"active":""} aria-current={mode==="connexion"?"page":undefined}><LockKeyhole size={16}/> Connexion</Link>
-          <Link href="/login?mode=inscription" className={mode==="inscription"?"active":""} aria-current={creating?"page":undefined}><UserPlus size={16}/> Inscription</Link>
+          <Link href={link("/login?mode=connexion")} className={mode==="connexion"?"active":""} aria-current={mode==="connexion"?"page":undefined}><LockKeyhole size={16}/> Connexion</Link>
+          <Link href={link("/login?mode=inscription")} className={mode==="inscription"?"active":""} aria-current={creating?"page":undefined}><UserPlus size={16}/> Inscription</Link>
         </nav>}
         {mode==="recuperation"&&<Link href="/login" className="auth-back-link"><ArrowLeft size={15}/> Retour à la connexion</Link>}
         {!configured&&<p className="alert danger" role="alert">La connexion est momentanément indisponible.</p>}
         {params.sent&&confirmations[params.sent]&&<p className="auth-new-feedback success" role="status"><CheckCircle2 size={18}/>{confirmations[params.sent]}</p>}
         {params.sent==="verified"&&<p className="auth-verified-next" role="status"><CheckCircle2 size={18}/>
-          <span>Étape 1 terminée : connecte-toi, choisis ton objectif (facultatif), puis découvre les 16 ateliers.</span>
+          <span>Étape 1 terminée : connecte-toi, choisis ton objectif (facultatif), puis découvre les formations et vérifie ton inscription.</span>
         </p>}
         {params.error&&<p className="auth-new-feedback danger" role="alert">{messages[params.error]||"Une erreur est survenue. Réessaie plus tard."}</p>}
         {configured&&<>
-          {mode==="connexion"&&!needsConfirmation&&<form action={signInWithPassword} className="auth-new-form">
+          {mode==="connexion"&&!needsConfirmation&&<form action={signInWithPassword} className="auth-new-form"><input type="hidden" name="parcours" value={choice??""}/>
             <label htmlFor="login-email">Adresse e-mail</label>
             <input id="login-email" name="email" type="email" autoComplete="email" placeholder="prenom@exemple.com" maxLength={254} required/>
             <AuthPasswordField name="password" label="Mot de passe" autoComplete="current-password"/>
-            <div className="auth-forgot-row"><Link href="/login?mode=recuperation">Mot de passe oublié ?</Link></div>
+            <div className="auth-forgot-row"><Link href={link("/login?mode=recuperation")}>Mot de passe oublié ?</Link></div>
             <AuthSubmitButton label="Se connecter à mon espace" pendingLabel="Connexion en cours…"/>
           </form>}
-          {mode==="inscription"&&!needsConfirmation&&<form action={registerLearner} className="auth-new-form">
+          {mode==="inscription"&&!needsConfirmation&&<form action={registerLearner} className="auth-new-form"><input type="hidden" name="parcours" value={choice??""}/>
             <label htmlFor="signup-email">Adresse e-mail</label>
             <input id="signup-email" name="email" type="email" autoComplete="email" placeholder="prenom@exemple.com" maxLength={254} required/>
             <AuthPasswordField name="password" label="Créer un mot de passe" autoComplete="new-password"/>
@@ -96,7 +102,7 @@ export default async function Login({searchParams}:{searchParams:Promise<Params>
             <AuthSubmitButton label="Créer mon compte apprenant" pendingLabel="Création du compte…"/>
             <p className="auth-new-legal">Après ton inscription, vérifie ta boîte de réception et les spams. Les rôles formateurs sont attribués uniquement par l'administration.</p>
           </form>}
-          {mode==="recuperation"&&<form action={requestPasswordReset} className="auth-new-form">
+          {mode==="recuperation"&&<form action={requestPasswordReset} className="auth-new-form"><input type="hidden" name="parcours" value={choice??""}/>
             <label htmlFor="reset-email">Adresse e-mail du compte</label>
             <input id="reset-email" name="email" type="email" autoComplete="email" placeholder="prenom@exemple.com" maxLength={254} required/>
             <AuthSubmitButton label="Recevoir le lien de récupération" pendingLabel="Envoi en cours…"/>
@@ -109,12 +115,12 @@ export default async function Login({searchParams}:{searchParams:Promise<Params>
               <li className="is-current"><MailCheck size={16}/> Confirmer l'e-mail reçu</li>
               <li><BookOpenCheck size={16}/> Se connecter et découvrir les ateliers</li>
             </ol>
-            <Link href="/login?mode=connexion" className="auth-verification-next">
+            <Link href={link("/login?mode=connexion")} className="auth-verification-next">
               J'ai confirmé mon adresse : me connecter <ArrowRight size={16}/>
             </Link>
             <details className="auth-verification-retry" open={params.verification==="1"&&!!params.error}>
               <summary>Je n'ai pas reçu le message de confirmation</summary>
-              <form action={resendVerificationEmail} className="auth-new-form">
+              <form action={resendVerificationEmail} className="auth-new-form"><input type="hidden" name="parcours" value={choice??""}/>
                 <label htmlFor="resend-verification-email">Adresse e-mail utilisée à l'inscription</label>
                 <input id="resend-verification-email" name="email" type="email" autoComplete="email"
                   placeholder="prenom@exemple.com" maxLength={254} required/>
