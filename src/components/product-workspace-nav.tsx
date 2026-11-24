@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-html-link-for-pages -- full navigation triggers the native unsaved draft guard */
 import {FolderKanban,Columns3,GraduationCap,MessageSquare,BriefcaseBusiness} from "lucide-react";
 const items=[
  {id:"dossier",href:"/espace/projet",label:"Dossier produit",icon:FolderKanban},
