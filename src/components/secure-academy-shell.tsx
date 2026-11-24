@@ -106,7 +106,7 @@ export function SecureAcademyShell({children,stats}:{children:React.ReactNode;st
     if(!trainer&&path==="/espace/parcours/ingenierie-produit-ia"&&
       pathname.startsWith(path))return true;
     if(trainer&&path===base+"/suivi"&&pathname===base+"/bilan")return true;
-    if(trainer&&path===base&&new URLSearchParams(query||"").get("onglet")==="programme"&&pathname===base+"/formations")return true;
+    if(trainer&&path===base&&new URLSearchParams(query||"").get("onglet")==="programme"&&(pathname===base+"/formations"||pathname.startsWith(base+"/formations/")))return true;
     if(path!==pathname)return false;
     const tab=new URLSearchParams(query||"").get("onglet")||"dashboard";
     return tab===currentTab;
