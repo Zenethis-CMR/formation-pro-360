@@ -207,7 +207,7 @@ export async function saveDraftGuide(formData: FormData) {
   redirect(backPath+"?saved=1");
 }
 
-export async function saveLearnerPreferences(formData:FormData) {
+export async function saveLearnerPreferencesDraft(formData:FormData):Promise<{ok:true}|{ok:false;error:"invalid"|"save"}> {
   const {db,user}=await requireRole("learner");
   const parsed=parseLearnerPreferences({
     name:String(formData.get("preferredName")||""),
@@ -216,16 +216,21 @@ export async function saveLearnerPreferences(formData:FormData) {
     minutes:String(formData.get("minutesPerDay")||""),
     dayChoices:Array.from({length:7},(_,i)=>String(formData.get("day"+(i+1))||"off"))
   });
-  if(!parsed.valid) redirect("/espace/bienvenue?error=invalid");
+  if(!parsed.valid) return {ok:false,error:"invalid"};
   // The primary key is the existing Node-authenticated account ID. This updates only
   // optional learning preferences, never their profile role, missions or XP.
   const {error}=await db.from("learner_preferences").upsert({
     learner_id:user.id,...parsed.value,updated_at:new Date().toISOString()
   },{onConflict:"learner_id"});
-  if(error) redirect("/espace/bienvenue?error=save");
+  if(error) return {ok:false,error:"save"};
   revalidatePath("/espace/apprenant");
   revalidatePath("/espace/bienvenue");
   revalidatePath("/espace/formateur");
+  return {ok:true};
+}
+export async function saveLearnerPreferences(formData:FormData) {
+  const result=await saveLearnerPreferencesDraft(formData);
+  if(result.ok===false) redirect("/espace/bienvenue?error="+result.error);
   redirect("/espace/apprenant?welcome=1");
 }
 
