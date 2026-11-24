@@ -4,24 +4,24 @@ import Link from "next/link";
 import {useRouter} from "next/navigation";
 import {ArrowRight,CalendarDays,CheckCircle2,ClipboardCheck,ExternalLink,FileText,Flag,Plus,Send,Save,Target,MessageSquare} from "lucide-react";
 import {briefStatuses,briefPriority,briefIssues,briefFields,emptyBrief,isOverdue,localDay,safeEvidence,type BriefList,type PracticeBrief,type BriefFields,type BriefAction,type BriefStatus} from "@/lib/personal-practice";
-import {pilotCourse} from "@/lib/v2-public-catalog";
+import type {PedagogicalWorkshop} from "@/lib/pedagogical-types";
 import {actOnBrief} from "@/app/espace/defis/actions";
 type Participant={learner_id:string;preferred_name:string|null};
-const lessons=pilotCourse.modules.flatMap(m=>m.lessons.map(l=>({slug:l.slug,title:l.title,week:m.week})));
+
 const errors:Record<string,string>={revision_conflict:"Une version plus récente existe. Copie tes modifications avant de recharger.",publication_requirements:"Complète l'objectif, les consignes et les critères.",not_enrolled:"L'inscription ne permet plus cette opération.",invalid_transition:"Ce travail a changé d'état.",invalid_brief:"Vérifie les champs et les liens HTTPS.",attempt_limit:"La limite de tentatives est atteinte. Contacte le formateur.",unavailable:"Le service est indisponible. Ton texte reste dans cet écran."};
 const fields=[{key:"objective",label:"Objectif pédagogique",hint:"À la fin, l'apprenant doit savoir…",max:1500},{key:"instructions",label:"Travail à réaliser",hint:"Décris les étapes et le résultat concret à construire.",max:3000},{key:"criteria",label:"Critères de réussite",hint:"Quels résultats observables te permettront d'accepter le travail ?",max:2000},{key:"resources",label:"Ressources et références",hint:"Documents, liens ou pistes utiles (facultatif).",max:2000}] as const;
 const pretty=(d:string)=>d.split("-").reverse().join("/");
 const timestamp=(d:string)=>new Intl.DateTimeFormat("fr-FR",{dateStyle:"medium",timeStyle:"short",timeZone:"Africa/Douala"}).format(new Date(d));
-function BriefContent({b}:{b:Pick<BriefFields,"objective"|"instructions"|"criteria"|"resources"|"workshop_slug">}){
+function BriefContent({b,lessons}:{b:Pick<BriefFields,"objective"|"instructions"|"criteria"|"resources"|"workshop_slug">;lessons:PedagogicalWorkshop[]}){
  return <div className="pb-content">
  <section><span><Target size={17}/> 01 · OBJECTIF</span><h3>Ce que je dois apprendre</h3><p>{b.objective||"À préciser"}</p></section>
  <section><span><Flag size={17}/> 02 · PRATIQUE</span><h3>Ce que je dois réaliser</h3><p>{b.instructions||"À préciser"}</p></section>
  <section><span><ClipboardCheck size={17}/> 03 · VÉRIFICATION</span><h3>Comment réussir</h3><p>{b.criteria||"À préciser"}</p></section>
  {b.resources&&<section><span><FileText size={17}/> RESSOURCES</span><p>{b.resources}</p></section>}
- {b.workshop_slug&&<Link href={"/espace/parcours/ingenierie-produit-ia/atelier/"+b.workshop_slug}>Atelier associé <ArrowRight size={15}/></Link>}
+ {b.workshop_slug&&lessons.find(l=>l.slug===b.workshop_slug)&&<Link href={lessons.find(l=>l.slug===b.workshop_slug)!.href}>Atelier associé <ArrowRight size={15}/></Link>}
  </div>;
 }
-export function PersonalPracticeBoard({data,trainer,participants,truncated}:{data:BriefList;trainer:boolean;participants:Participant[];truncated:boolean}){
+export function PersonalPracticeBoard({data,trainer,participants,truncated,trackSlug="ingenierie-produit-ia",lessons=[]}:{data:BriefList;trainer:boolean;participants:Participant[];truncated:boolean;trackSlug?:string;lessons?:PedagogicalWorkshop[]}){
  const router=useRouter();
  const [selected,setSelected]=useState<string|null>(null);
  const [filter,setFilter]=useState("all");
@@ -50,7 +50,7 @@ export function PersonalPracticeBoard({data,trainer,participants,truncated}:{dat
  function patch(p:Partial<BriefFields>){setEditor(e=>e?{...e,fields:{...e.fields,...p}}:null);setNotice(null);}
  async function run(action:BriefAction){
   if(active.current)return;active.current=true;setPending(true);setNotice(null);
-  try{const res=await actOnBrief(action);if(res.ok===true){setSelected(res.brief.id);setEditor(null);setFilter("all");setSearch("");clearResponse();setNotice({error:false,text:action.intent==="draft"?"Brouillon enregistré.":action.intent==="publish"?"Défi attribué.":action.intent==="submit"?"Preuve envoyée au formateur.":action.intent==="review"?"Retour pédagogique enregistré.":"Défi annulé."});router.refresh();}else setNotice({error:true,text:errors[res.error]||"L'opération a été refusée. Vérifie les informations."});}
+  try{const res=await actOnBrief(action,trackSlug);if(res.ok===true){setSelected(res.brief.id);setEditor(null);setFilter("all");setSearch("");clearResponse();setNotice({error:false,text:action.intent==="draft"?"Brouillon enregistré.":action.intent==="publish"?"Défi attribué.":action.intent==="submit"?"Preuve envoyée au formateur.":action.intent==="review"?"Retour pédagogique enregistré.":"Défi annulé."});router.refresh();}else setNotice({error:true,text:errors[res.error]||"L'opération a été refusée. Vérifie les informations."});}
   catch{setNotice({error:true,text:errors.unavailable});}finally{active.current=false;setPending(false);}
  }
  const f=editor?.fields;
@@ -70,7 +70,7 @@ export function PersonalPracticeBoard({data,trainer,participants,truncated}:{dat
  {truncated&&<p className="pb-full">Liste limitée à 200 inscrits actifs.</p>}
  {fields.map(field=><label key={field.key}>{field.label}<textarea rows={4} value={f[field.key]} maxLength={field.max} placeholder={field.hint} onChange={e=>patch({[field.key]:e.target.value})}/></label>)}</div></fieldset>
  <div className="pb-checklist"><strong>Avant publication</strong><p>{briefIssues(f).length?"À compléter : "+briefIssues(f).join(" · "):"Le contenu pédagogique est complet."}</p><button className="pb-btn secondary" onClick={()=>setPreview(v=>!v)}>{preview?"Masquer":"Aperçu apprenant"}</button></div>
- {preview&&<div className="pb-preview"><span className="pb-kicker">APERÇU · NON PUBLIÉ</span><h3>{f.title||"Sans titre"}</h3><BriefContent b={f}/></div>}
+ {preview&&<div className="pb-preview"><span className="pb-kicker">APERÇU · NON PUBLIÉ</span><h3>{f.title||"Sans titre"}</h3><BriefContent b={f} lessons={lessons}/></div>}
  {notice&&<p role="alert" className="pb-alert">{notice.text}</p>}
  <div className="pb-actions"><button className="pb-btn secondary" disabled={pending} onClick={()=>{if(window.confirm("Fermer sans enregistrer ?")){setEditor(null);setNotice(null);}}}>Fermer</button><button className="pb-btn primary" disabled={pending||!f.learner_id||f.title.trim().length<3} onClick={()=>void run({intent:"draft",id:editor.id,revision:editor.revision,brief:f})}><Save size={16}/> Enregistrer le brouillon</button></div><p>La publication s'effectue ensuite depuis le brouillon enregistré.</p></section>}
  <section className="pb-panel"><div className="pb-heading"><div><span className="pb-kicker">ESPACE DE TRAVAIL</span><h2>{trainer?"Mes consignes":"Mes défis pratiques"}</h2></div></div>
@@ -78,7 +78,7 @@ export function PersonalPracticeBoard({data,trainer,participants,truncated}:{dat
  {!current?<div className="pb-empty"><ClipboardCheck size={38}/><h3>Aucun défi affiché</h3><p>{filter!=="all"||search?"Modifie les filtres.":trainer?"Crée un premier brouillon.":"Les consignes de ton formateur apparaîtront ici."}</p></div>:<div className="pb-grid">
  <div className="pb-list">{list.map(b=><button key={b.id} disabled={pending||!!editor} className={"pb-card "+(current.id===b.id?"selected":"")} aria-pressed={current.id===b.id} onClick={()=>select(b.id)}><span className={"pb-status "+b.status}>{briefStatuses[b.status]}</span><strong>{b.title}</strong>{trainer&&<small>{b.learner_name||"Apprenant "+b.learner_id?.slice(0,8)}</small>}{b.due_date&&<small className={today&&isOverdue(b,today)?"pb-late":""}><CalendarDays size={13}/> {pretty(b.due_date)}{today&&isOverdue(b,today)?" · Échéance dépassée":""}</small>}</button>)}</div>
  <article className="pb-detail" id="pb-detail" tabIndex={-1}><span className={"pb-status "+current.status}>{briefStatuses[current.status]}</span><h2>{current.title}</h2>{current.due_date&&<p>Échéance indicative · {pretty(current.due_date)}</p>}
- {current.status==="cancelled"?<p>Ce défi a été annulé par le formateur.</p>:<BriefContent b={current}/>}
+ {current.status==="cancelled"?<p>Ce défi a été annulé par le formateur.</p>:<BriefContent b={current} lessons={lessons}/>}
  {current.attempts.length>0&&<section className="pb-history"><h3><MessageSquare size={17}/> Remises et retours du formateur</h3>{current.attempts.map((a,i)=><div key={a.id} className="pb-attempt"><small>Tentative {current.attempts.length-i} · {timestamp(a.created_at)}</small>{safeEvidence(a.evidence_url)&&<a href={safeEvidence(a.evidence_url)!} target="_blank" rel="noopener noreferrer">Consulter la preuve <ExternalLink size={14}/></a>}{a.note&&<p>{a.note}</p>}{a.feedback&&<div className="pb-feedback"><strong>{a.outcome==="accepted"?"Travail accepté":"À reprendre"} · Retour humain</strong><p>{a.feedback}</p></div>}{!a.outcome&&<p>En attente du retour du formateur.</p>}</div>)}</section>}
  {!editor&&trainer&&current.status==="draft"&&<div className="pb-actions"><button className="pb-btn secondary" disabled={pending} onClick={()=>start(current)}>Modifier</button><button className="pb-btn primary" disabled={pending||briefIssues(briefFields(current)).length>0} onClick={()=>setConfirmation({intent:"publish",id:current.id,revision:current.revision})}><Send size={16}/> Attribuer le défi</button></div>}
  {!editor&&trainer&&["assigned","revision_requested"].includes(current.status)&&<button className="pb-btn secondary" disabled={pending} onClick={()=>setConfirmation({intent:"cancel",id:current.id,revision:current.revision})}>Annuler le défi</button>}
@@ -88,6 +88,6 @@ export function PersonalPracticeBoard({data,trainer,participants,truncated}:{dat
  {confirmation&&confirmation.id===current.id&&<div className="pb-confirm"><strong>Confirmer cette action ?</strong><p>{confirmation.intent==="publish"?"Le défi sera visible par l'apprenant. Les consignes publiées ne sont plus modifiables.":confirmation.intent==="review"?"Le commentaire sera enregistré dans l'historique.":confirmation.intent==="submit"?"Cette tentative sera transmise au formateur.":"Le défi sera annulé."}</p><div className="pb-actions"><button className="pb-btn primary" disabled={pending} onClick={()=>void run(confirmation)}>{pending?"Enregistrement…":"Confirmer"}</button><button className="pb-btn secondary" disabled={pending} onClick={()=>setConfirmation(null)}>Retour</button></div></div>}
  {notice?.error&&!editor&&<p role="alert" className="pb-alert">{notice.text}</p>}
  </article></div>}
- <nav className="pb-pagination" aria-label="Pages des défis">{data.page>1&&<Link href={"?page="+(data.page-1)}>← Précédente</Link>}<span>Page {data.page}</span>{data.has_next&&data.page<1000&&<Link href={"?page="+(data.page+1)}>Suivante →</Link>}</nav>
+ <nav className="pb-pagination" aria-label="Pages des défis">{data.page>1&&<Link href={"?parcours="+encodeURIComponent(trackSlug)+"&page="+(data.page-1)}>← Précédente</Link>}<span>Page {data.page}</span>{data.has_next&&data.page<1000&&<Link href={"?parcours="+encodeURIComponent(trackSlug)+"&page="+(data.page+1)}>Suivante →</Link>}</nav>
  </section></div>;
 }

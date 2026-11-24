@@ -23,3 +23,7 @@ Per-learner, per-track existing schema reused. Explicit track-scoped project and
 ## Phase 6a — Universal Trainer Cockpit
 
 Trainer-only aggregate endpoint covers published tracks and returns null metrics for drafts/archived. Counts are per enrollment, latest logical submission and verified XP ledger; no private notes. Global dashboard, explicit track selection, dynamic roster week columns, per-track individual reports and exports. Existing pilot details preserved. No changes to enrollment or publication. Sessions, personal briefs, support, collaborative reviews and backlog still require their own multi-track integration. Authenticated visual QA outstanding.
+
+## Phase 7a — pedagogical operations
+
+Practical sessions, personalized briefs and support threads reuse existing track-scoped data; explicit validated slug on mutations and permission-checked selections on both trainer and learner pages. Published lesson options are loaded from the backend and ambiguous duplicate workshop slugs omitted. Pagination retains track. No automated publication or XP awards. Collaborative reviews, backlog and project coaching remain pilot-specific. Trainer/learner visual QA outstanding.

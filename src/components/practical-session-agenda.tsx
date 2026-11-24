@@ -13,7 +13,7 @@ function Audience({session,trainer}:{session:PracticalSession;trainer:boolean}){
  const individual=trainer?!!session.learner_id:!!session.individual;
  return <span className="ps-audience">{individual?<UserRound size={14}/>:<Users size={14}/>} {individual?(trainer?session.learner_name||"Séance individuelle":"Individuelle"):"Collective"}</span>;
 }
-function SessionDetail({session,trainer,preview=false}:{session:PracticalSession;trainer:boolean;preview?:boolean}){
+function SessionDetail({session,trainer,preview=false,trackSlug="ingenierie-produit-ia"}:{session:PracticalSession;trainer:boolean;preview?:boolean;trackSlug?:string}){
  const link=safeMeetingLink(session.meeting_url);
  return <article className="ps-detail" aria-label="Détail de la séance">
   <div className="ps-detail-head"><div><span className={"ps-status "+session.status}>{statuses[session.status]}</span><h2>{session.title}</h2><p className="ps-meta"><CalendarDays size={15}/>{sessionDate(session)} <span>·</span> {sessionTime(session)} (Douala)</p><div className="ps-meta"><Audience session={session} trainer={trainer}/><span>·</span>{formats[session.format]}</div></div></div>
@@ -24,11 +24,11 @@ function SessionDetail({session,trainer,preview=false}:{session:PracticalSession
     <section><div className="ps-phase-label"><Users size={17}/><span>02 · Avec le formateur</span></div><h3>Démonstration et pratique</h3>{session.demonstration&&<><strong>Démonstration</strong><p>{session.demonstration}</p></>}<strong>Exercice</strong><p>{session.exercise||"À préciser par le formateur."}</p></section>
     <section><div className="ps-phase-label"><ClipboardList size={17}/><span>03 · Après la séance</span></div><h3>Réalisation attendue</h3><p>{session.expected_result||"À préciser par le formateur."}</p>{session.resources&&<><strong>Ressources</strong><p>{session.resources}</p></>}{session.recap&&<><strong>Compte rendu du formateur</strong><p>{session.recap}</p></>}</section>
    </div>
-   {!trainer&&!preview&&session.status!=="draft"&&<Link className="ps-inline-link" href="/espace/projet/accompagnement">Préparer mes questions pour le formateur <ArrowRight size={15}/></Link>}
+   {!trainer&&!preview&&session.status!=="draft"&&<Link className="ps-inline-link" href={trackSlug==="ingenierie-produit-ia"?"/espace/projet/accompagnement":"/espace/apprenant/aide?parcours="+encodeURIComponent(trackSlug)}>Préparer mes questions pour le formateur <ArrowRight size={15}/></Link>}
   </>}
  </article>;
 }
-export function PracticalSessionAgenda({agenda,trainer,participants,participantsTruncated}:{agenda:SessionAgenda;trainer:boolean;participants:Participant[];participantsTruncated:boolean}){
+export function PracticalSessionAgenda({agenda,trainer,participants,participantsTruncated,trackSlug="ingenierie-produit-ia"}:{agenda:SessionAgenda;trainer:boolean;participants:Participant[];participantsTruncated:boolean;trackSlug?:string}){
  const router=useRouter();
  const [filter,setFilter]=useState<Filter>("all");
  const [search,setSearch]=useState("");
@@ -70,7 +70,7 @@ export function PracticalSessionAgenda({agenda,trainer,participants,participants
   if(!fields.starts_at||fields.title.trim().length<3||!Number.isInteger(fields.duration_minutes)||fields.duration_minutes<15||fields.duration_minutes>600){setNotice("Le titre, la date et la durée doivent être valides.");return;}
   active.current=true;setPending(true);setNotice("");
   try{
-   const result=await savePracticalSession(editor.id,editor.revision,intent,fields);
+   const result=await savePracticalSession(editor.id,editor.revision,intent,fields,trackSlug);
    if(result.ok===true){
     setEditor(null);setConfirm(null);setShowPreview(false);setSelected(result.session.id);setFilter("all");setSearch("");
     setNotice(intent==="draft"?"Brouillon enregistré.":intent==="publish"?"Séance publiée.":intent==="complete"?"Séance clôturée.":"Séance annulée.");
@@ -123,8 +123,8 @@ export function PracticalSessionAgenda({agenda,trainer,participants,participants
     <div className="ps-agenda-grid"><div className="ps-list">{visible.map(s=><button key={s.id} className={"ps-session-card "+(current?.id===s.id?"selected":"")} aria-pressed={current?.id===s.id} onClick={()=>openSession(s.id)}>
      <div className="ps-date-tile"><span>{new Intl.DateTimeFormat("fr-FR",{month:"short",timeZone:"Africa/Douala"}).format(new Date(s.starts_at))}</span><strong>{localDateTime(s.starts_at).slice(8,10)}</strong></div>
      <div className="ps-card-content"><span className={"ps-status "+s.status}>{statuses[s.status]}</span><strong>{s.title}</strong><small>{sessionTime(s)} · {formats[s.format]}</small><Audience session={s} trainer={trainer}/></div><ChevronRight size={17} className="ps-chevron"/>
-    </button>)}</div><div className="ps-selection" id="ps-selected-session">{current&&<><SessionDetail session={current} trainer={trainer}/>{trainer&&["draft","published"].includes(current.status)&&<button className="ps-btn secondary" disabled={!!editor||pending} onClick={()=>startEdit(current)}>Modifier / gérer la séance <ArrowRight size={15}/></button>}</>}</div></div>}
-   <nav className="ps-pagination" aria-label="Pages des séances">{agenda.page>1&&<Link href={"?page="+(agenda.page-1)}>← Précédente</Link>}<span>Page {agenda.page}</span>{agenda.has_next&&agenda.page<1000&&<Link href={"?page="+(agenda.page+1)}>Suivante →</Link>}</nav>
+    </button>)}</div><div className="ps-selection" id="ps-selected-session">{current&&<><SessionDetail session={current} trainer={trainer} trackSlug={trackSlug}/>{trainer&&["draft","published"].includes(current.status)&&<button className="ps-btn secondary" disabled={!!editor||pending} onClick={()=>startEdit(current)}>Modifier / gérer la séance <ArrowRight size={15}/></button>}</>}</div></div>}
+   <nav className="ps-pagination" aria-label="Pages des séances">{agenda.page>1&&<Link href={"?parcours="+encodeURIComponent(trackSlug)+"&page="+(agenda.page-1)}>← Précédente</Link>}<span>Page {agenda.page}</span>{agenda.has_next&&agenda.page<1000&&<Link href={"?parcours="+encodeURIComponent(trackSlug)+"&page="+(agenda.page+1)}>Suivante →</Link>}</nav>
   </section>
  </div>;
 }

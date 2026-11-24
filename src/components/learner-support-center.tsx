@@ -4,11 +4,11 @@ import Link from "next/link";
 import {useRouter} from "next/navigation";
 import {ArrowRight,LifeBuoy,MessageCircle,CheckCircle2,AlertCircle,Plus,Send,BookOpen,UserRound,GraduationCap} from "lucide-react";
 import {emptySupport,supportReady,supportOrder,supportCategories,supportStatuses,supportTimestamp,type SupportList,type SupportThread,type SupportFields,type SupportCategory,type SupportAction} from "@/lib/learner-support";
-import {pilotCourse} from "@/lib/v2-public-catalog";
+import type {PedagogicalWorkshop} from "@/lib/pedagogical-types";
 import {actOnSupport} from "@/app/espace/aide/actions";
-const lessons=pilotCourse.modules.flatMap(m=>m.lessons.map(l=>({slug:l.slug,title:l.title,week:m.week})));
+
 const errors:Record<string,string>={revision_conflict:"Un nouvel échange a été enregistré. Copie ton texte avant de recharger.",not_enrolled:"Ton inscription ne permet plus cette action.",invalid_transition:"Cette demande a changé d'état.",invalid_support:"Vérifie le contenu de ta demande.",message_limit:"Cette discussion a atteint sa limite. Crée une nouvelle demande si nécessaire.",unavailable:"Le service est indisponible. Ton texte reste affiché."};
-export function LearnerSupportCenter({data,trainer,canCreate}:{data:SupportList;trainer:boolean;canCreate:boolean}){
+export function LearnerSupportCenter({data,trainer,canCreate,trackSlug="ingenierie-produit-ia",lessons=[]}:{data:SupportList;trainer:boolean;canCreate:boolean;trackSlug?:string;lessons?:PedagogicalWorkshop[]}){
  const router=useRouter();
  const [selected,setSelected]=useState<string|null>(null),[filter,setFilter]=useState("all"),[search,setSearch]=useState("");
  const [draft,setDraft]=useState<SupportFields|null>(null),[body,setBody]=useState(""),[pending,setPending]=useState(false);
@@ -30,7 +30,7 @@ export function LearnerSupportCenter({data,trainer,canCreate}:{data:SupportList;
  function patch(p:Partial<SupportFields>){setDraft(d=>d?{...d,...p}:null);setNotice(null);}
  async function run(action:SupportAction){
   if(running.current)return;running.current=true;setPending(true);setNotice(null);
-  try{const result=await actOnSupport(action,trainer?"trainer":"learner");
+  try{const result=await actOnSupport(action,trainer?"trainer":"learner",trackSlug);
    if(result.ok===true){setDraft(null);reset();setFilter("all");setSearch("");setSelected(result.thread.id);setNotice({error:false,text:action.intent==="create"?"Demande transmise à l'espace formateur.":action.intent==="resolve"?"Résolution confirmée.":action.intent==="reopen"?"Demande rouverte.":"Réponse enregistrée."});router.refresh();}
    else setNotice({error:true,text:errors[result.error]||"Action refusée. Vérifie les informations."});
   }catch{setNotice({error:true,text:errors.unavailable});}finally{running.current=false;setPending(false);}
@@ -55,7 +55,7 @@ export function LearnerSupportCenter({data,trainer,canCreate}:{data:SupportList;
    <div className="sc-toolbar"><div className="sc-filters" aria-label="Filtrer les demandes">{filters.map(f=><button key={f.id} className={filter===f.id?"on":""} aria-pressed={filter===f.id} disabled={pending||!!draft} onClick={()=>changeFilter(f.id)}>{f.label}</button>)}</div><input type="search" aria-label="Rechercher sur cette page" placeholder="Rechercher…" disabled={pending||dirty} value={search} onChange={e=>{setSearch(e.target.value);setSelected(null);reset();}}/></div>
    {!current?<div className="sc-empty"><MessageCircle size={36}/><h3>Aucune demande affichée</h3><p>{filter!=="all"||search?"Modifie les filtres.":trainer?"Les difficultés signalées apparaîtront ici.":"Tu peux signaler une difficulté lorsque tu en as besoin."}</p></div>:<div className="sc-grid"><div className="sc-list">{visible.map(t=><button key={t.id} className={"sc-card "+(current.id===t.id?"selected":"")} aria-pressed={current.id===t.id} disabled={pending||!!draft} onClick={()=>open(t.id)}><span className={"sc-status "+t.status}>{supportStatuses[t.status]}</span><strong>{t.title}</strong><small>{supportCategories[t.category]}{trainer?" · "+(t.learner_name||"Apprenant "+t.learner_id?.slice(0,8)):""}</small>{t.urgency==="blocking"&&t.status!=="resolved"&&<span className="sc-urgent"><AlertCircle size={13}/> Bloquant (déclaré)</span>}<small>{supportTimestamp(t.updated_at)}</small></button>)}</div>
     <article className="sc-detail" id="sc-detail" tabIndex={-1}><span className={"sc-status "+current.status}>{supportStatuses[current.status]}</span><h2>{current.title}</h2><p>{supportCategories[current.category]} · {current.urgency==="blocking"?"Blocage déclaré":"Difficulté déclarée"}</p>
-     <div className="sc-context"><h3>La demande initiale</h3><strong>Contexte</strong><p>{current.context}</p><strong>Tentatives</strong><p>{current.attempted}</p><strong>Aide attendue</strong><p>{current.expected}</p>{current.workshop_slug&&<Link href={"/espace/parcours/ingenierie-produit-ia/atelier/"+current.workshop_slug}><BookOpen size={15}/> Atelier associé</Link>}</div>
+     <div className="sc-context"><h3>La demande initiale</h3><strong>Contexte</strong><p>{current.context}</p><strong>Tentatives</strong><p>{current.attempted}</p><strong>Aide attendue</strong><p>{current.expected}</p>{current.workshop_slug&&lessons.find(l=>l.slug===current.workshop_slug)&&<Link href={lessons.find(l=>l.slug===current.workshop_slug)!.href}><BookOpen size={15}/> Atelier associé</Link>}</div>
      <h3 className="sc-conversation-title">Échanges avec le formateur</h3>
      {!current.messages.length&&<p>En attente d'un premier retour.</p>}
      <div className="sc-conversation">{current.messages.map(m=><section key={m.id} className={"sc-message "+m.author_role}><div className="sc-message-head">{m.author_role==="trainer"?<GraduationCap size={16}/>:<UserRound size={16}/>}<strong>{m.author_role==="trainer"?"Formateur":"Apprenant"}</strong><small>{supportTimestamp(m.created_at)}</small></div>{m.kind!=="reply"&&<strong className="sc-event">{m.kind==="resolved"?"Résolution confirmée":"Demande rouverte"}</strong>}<p>{m.body}</p></section>)}</div>
@@ -66,7 +66,7 @@ export function LearnerSupportCenter({data,trainer,canCreate}:{data:SupportList;
      {trainer&&current.status==="resolved"&&<p><CheckCircle2 size={15}/> L'apprenant a confirmé la résolution. Il peut rouvrir la demande.</p>}
      {current.editable===false&&<p>Consultation seule : l’inscription n’est plus active.</p>}
     </article></div>}
-   <nav className="sc-pagination" aria-label="Pages des demandes">{data.page>1&&<Link href={"?page="+(data.page-1)}>← Précédente</Link>}<span>Page {data.page}</span>{data.has_next&&data.page<1000&&<Link href={"?page="+(data.page+1)}>Suivante →</Link>}</nav>
+   <nav className="sc-pagination" aria-label="Pages des demandes">{data.page>1&&<Link href={"?parcours="+encodeURIComponent(trackSlug)+"&page="+(data.page-1)}>← Précédente</Link>}<span>Page {data.page}</span>{data.has_next&&data.page<1000&&<Link href={"?parcours="+encodeURIComponent(trackSlug)+"&page="+(data.page+1)}>Suivante →</Link>}</nav>
   </section>
  </div>;
 }

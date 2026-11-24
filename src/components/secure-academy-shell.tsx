@@ -77,7 +77,7 @@ export function SecureAcademyShell({children,stats}:{children:React.ReactNode;st
     {href:"/espace/formateur/corrections",label:"Corriger les ateliers",icon:BadgeCheck},
     {href:base+"/suivi",label:"Suivi des apprenants",icon:Users},
     {href:base+"?onglet=apprenants",label:"Autres apprenants",icon:Users},
-    {href:base+"/seances",label:otherCourse?"Séances du pilote":"Mes séances",icon:CalendarDays},
+    {href:base+"/seances",label:"Mes séances",icon:CalendarDays},
     {href:base+"/defis",label:"Consignes et défis",icon:ClipboardCheck},
     {href:base+"/aide",label:"Suivi des blocages",icon:MessageCircle},
     {href:base+"/revues",label:"Revues de projets",icon:FolderKanban},
@@ -88,8 +88,8 @@ export function SecureAcademyShell({children,stats}:{children:React.ReactNode;st
     {href:"/espace/apprenant/formations",label:"Mes formations",icon:Sparkles},
     {href:projectBase?projectBase+"/projet":"/espace/projet",label:"Mon projet",icon:FolderKanban},
     {href:base+"/seances",label:"Mes séances",icon:CalendarDays},
-    {href:base+"/defis",label:otherCourse?"Défis du pilote":"Mes défis",icon:ClipboardCheck},
-    {href:base+"/aide",label:otherCourse?"Aide du pilote":"Besoin d’aide",icon:MessageCircle},
+    {href:base+"/defis",label:"Mes défis",icon:ClipboardCheck},
+    {href:base+"/aide",label:"Besoin d’aide",icon:MessageCircle},
     {href:base+"/bilan",label:otherCourse?"Bilan du pilote":"Mon bilan",icon:BarChart3},
     {href:projectBase?projectBase+"/portfolio":"/espace/portfolio",label:"Mon portfolio",icon:BriefcaseBusiness},
     {href:base+"?onglet=missions",label:"Mes réalisations",icon:BookOpen},
@@ -193,9 +193,9 @@ export function SecureAcademyShell({children,stats}:{children:React.ReactNode;st
           (pathname===base+"/seances"||pathname===base+"/defis"||pathname===base+"/aide"||pathname==="/espace/portfolio"||pathname==="/espace/bienvenue"||pathname==="/espace/compte"||(pathname===base&&currentTab!=="dashboard"))?"on":""
         }><Settings2 size={19}/>Plus</summary>
         <nav className="academy-mobile-more-menu" aria-label="Autres rubriques apprenant">
-          <Link href={base+"/seances"}><CalendarDays size={16}/> {otherCourse?"Séances du pilote":"Mes séances"}</Link>
-          <Link href={base+"/defis"}><ClipboardCheck size={16}/> {otherCourse?"Défis du pilote":"Mes défis"}</Link>
-          <Link href={base+"/aide"}><MessageCircle size={16}/> {otherCourse?"Aide du pilote":"Besoin d’aide"}</Link>
+          <Link href={base+"/seances"}><CalendarDays size={16}/> {"Mes séances"}</Link>
+          <Link href={base+"/defis"}><ClipboardCheck size={16}/> {"Mes défis"}</Link>
+          <Link href={base+"/aide"}><MessageCircle size={16}/> {"Besoin d’aide"}</Link>
           <Link href={base+"?onglet=missions"}><BookOpen size={16}/> Mes réalisations</Link>
           <Link href={base+"?onglet=progression"}><BarChart3 size={16}/> Ma progression</Link>
           <Link href={projectBase?projectBase+"/portfolio":"/espace/portfolio"}><BriefcaseBusiness size={16}/> Mon portfolio</Link>

@@ -9,5 +9,5 @@ test("individual reports and pagination preserve selected track, reject mismatch
  const roster=read("src/app/espace/formateur/suivi/page.tsx"),report=read("src/app/espace/formateur/bilan/page.tsx"),view=read("src/components/learning-report-view.tsx");
  assert.ok(roster.includes("result.course_slug===slug"));assert.ok(roster.includes("weeks.map"));assert.ok(roster.includes('query+"&page="'));
  assert.ok(report.includes("data.course_slug===slug&&data.learner.id===id"));
- assert.ok(view.includes('{pilot&&<section'));assert.ok(view.includes("s&&pilot?"));
+ assert.ok(view.includes('{pilot&&<section'));assert.ok(view.includes('pilot||x.title!=="Revues collaboratives"'));
 });
