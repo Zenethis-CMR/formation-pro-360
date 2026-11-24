@@ -1,3 +1,4 @@
+import "./workspace-v3.css";
 import { requireRole } from "@/lib/auth/require-role";
 import { SecureAcademyShell, type SecureWorkspaceStats } from "@/components/secure-academy-shell";
 

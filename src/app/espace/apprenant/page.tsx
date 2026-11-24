@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { DashboardHeader, DashboardQuickLinks, DashboardDisclosure } from "@/components/dashboard-workspace";
 import { ArrowUpRight, BookOpen, LockKeyhole } from "lucide-react";
 import { redirect } from "next/navigation";
 import { requireRole } from "@/lib/auth/require-role";
@@ -76,14 +77,14 @@ export default async function LearnerSpace({searchParams}:{searchParams:Promise<
   return <main className="page secure-learner-page">
     {tab!=="dashboard"&&<WorkspaceTabHeading role="learner" tab={tab}/>}
     {tab==="dashboard"&&<>
-      {pilot&&<LearnerJourneyGuide pilot={pilot} profileSaved={!!rawPreferences}/>}
-      <section className="panel"><span className="eyebrow">RÉALISATIONS · PREUVES OFFICIELLES</span><h2>Mon bilan pédagogique</h2><p className="muted">Consulte tes résultats, les thèmes de compétences abordés et tes jalons.</p><Link className="primary-btn" href="/espace/apprenant/bilan">Ouvrir mon bilan</Link></section>
-      <section className="panel"><span className="eyebrow">TON FORMATEUR T’ACCOMPAGNE</span><h2>Une difficulté dans ton projet ?</h2><p className="muted">Décris ton blocage et retrouve vos échanges.</p><Link className="primary-btn" href="/espace/apprenant/aide">Demander de l’aide</Link></section>
-      <section className="panel"><span className="eyebrow">PRATIQUE PERSONNALISÉE</span><h2>Mes défis</h2><p className="muted">Retrouve les exercices de ton formateur et ses retours sur tes preuves.</p><Link className="primary-btn" href="/espace/apprenant/defis">Ouvrir mes défis</Link></section>
-      <section className="panel"><span className="eyebrow">AVEC TON FORMATEUR</span><h2>Mes séances pratiques</h2><p className="muted">Retrouve les rendez-vous, la préparation et les travaux attendus.</p><Link className="primary-btn" href="/espace/apprenant/seances">Consulter mes séances</Link></section>
-      {pilot&&<SecureLearnerOverview missions={missions} submissions={submissions} approvedIds={[...approved]} dependencies={deps} xp={xp} level={level} pilot={pilot}/>}
-      <LearnerWelcomeBanner preferences={rawPreferences as LearnerPreferences|null}
-        mission={insight.nextMission} pilot={pilot}/>
+      <DashboardHeader trainer={false} name={(rawPreferences as LearnerPreferences|null)?.preferred_name}/>
+      {pilot?<SecureLearnerOverview missions={missions} submissions={submissions} approvedIds={[...approved]} dependencies={deps} xp={xp} level={level} pilot={pilot}
+        primaryAction={<LearnerJourneyGuide pilot={pilot} profileSaved={!!rawPreferences}/>}
+        workspace={<DashboardQuickLinks trainer={false} enrolled={pilot.enrollment==="active"||pilot.enrollment==="completed"}/>}/>
+        :<><section className="panel" role="status"><h2>Le parcours est momentanément indisponible</h2><p>Tu peux consulter tes réalisations et revenir au programme.</p><Link className="primary-btn" href="/espace/parcours/ingenierie-produit-ia">Voir le parcours</Link></section><DashboardQuickLinks trainer={false}/></>}
+      <DashboardDisclosure title="Mes objectifs et mon rythme" description="Personnaliser mon parcours et mon planning">
+        <LearnerWelcomeBanner preferences={rawPreferences as LearnerPreferences|null} mission={insight.nextMission} pilot={pilot}/>
+      </DashboardDisclosure>
       <section className="v2-catalog-banner"><div><span>LE CATALOGUE 360</span><h2>Sept formations, une première spécialisation active</h2><p>Découvre les six autres domaines, actuellement en préparation. Tes missions historiques et les XP obtenus restent conservés séparément.</p></div><Link href="/catalogue" className="v2-catalog-banner-link">Explorer le catalogue <ArrowUpRight size={16}/></Link></section>
     </>}
     <div className="secure-learner-alerts">

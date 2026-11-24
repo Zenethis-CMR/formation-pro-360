@@ -34,7 +34,11 @@ test("portfolio is discoverable in learner navigation, dashboard and progress",(
  const progress=read("src/components/v2-learner-progress-panel.tsx");
  assert.match(shell,/label:"Mon portfolio"/);
  assert.match(shell,/\/espace\/portfolio/);
- assert.match(overview,/enrolled&&<section className="portfolio-dashboard-shortcut"/);
+ const workspace=read("src/components/dashboard-workspace.tsx");
+ const home=read("src/app/espace/apprenant/page.tsx");
+ assert.match(workspace,/title:"Mon portfolio",desc:"Présenter mes réalisations vérifiées",href:"\/espace\/portfolio"/);
+ assert.match(home,/workspace=\{<DashboardQuickLinks/);
+ assert.ok(overview.indexOf("{workspace}")<overview.indexOf("learner-legacy-details"));
  assert.match(progress,/Voir mes réalisations vérifiées/);
  assert.match(progress,/\/espace\/portfolio/);
  const styles=read("src/app/premium.css");
