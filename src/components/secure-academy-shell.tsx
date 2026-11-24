@@ -91,7 +91,7 @@ export function SecureAcademyShell({children,stats}:{children:React.ReactNode;st
     {href:base+"/seances",label:"Mes séances",icon:CalendarDays},
     {href:base+"/defis",label:"Mes défis",icon:ClipboardCheck},
     {href:base+"/aide",label:"Besoin d’aide",icon:MessageCircle},
-    {href:base+"/bilan",label:otherCourse?"Bilan du pilote":"Mon bilan",icon:BarChart3},
+    {href:base+"/bilan",label:"Mon bilan",icon:BarChart3},
     {href:projectBase?projectBase+"/portfolio":"/espace/portfolio",label:"Mon portfolio",icon:BriefcaseBusiness},
     {href:base+"?onglet=missions",label:"Mes réalisations",icon:BookOpen},
     {href:base+"?onglet=progression",label:"Ma progression",icon:BarChart3},
@@ -191,7 +191,7 @@ export function SecureAcademyShell({children,stats}:{children:React.ReactNode;st
       <Link href={base+"/suivi"} aria-current={mobileDestination==="learners"?"page":undefined} className={mobileDestination==="learners"?"on":""}><Users size={19}/>Apprenants</Link>
     </>:<>
       <Link href={projectBase?projectBase+"/projet":"/espace/projet"} aria-current={mobileDestination==="project"?"page":undefined} className={mobileDestination==="project"?"on":""}><FolderKanban size={19}/>Projet</Link>
-      <Link href={base+"/bilan"} aria-current={mobileDestination==="report"?"page":undefined} className={mobileDestination==="report"?"on":""}><BarChart3 size={19}/>{otherCourse?"Bilan pilote":"Bilan"}</Link>
+      <Link href={base+"/bilan"} aria-current={mobileDestination==="report"?"page":undefined} className={mobileDestination==="report"?"on":""}><BarChart3 size={19}/>Bilan</Link>
     </>}
     <Link href={trainer?base+"/seances":"/espace/apprenant/formations"} aria-current={mobileDestination===(trainer?"sessions":"courses")?"page":undefined} className={mobileDestination===(trainer?"sessions":"courses")?"on":""}><CalendarDays size={19}/>{trainer?"Séances":"Formations"}</Link>
     {trainer?<details ref={mobileMore} className="academy-mobile-more" onKeyDown={e=>{if(e.key==="Escape"&&mobileMore.current?.open){e.preventDefault();mobileMore.current.open=false;mobileMore.current.querySelector("summary")?.focus();}}}><summary aria-label="Autres rubriques formateur" className={mobileDestination==="more"?"on":""}><Settings2 size={19}/>Plus</summary><nav className="academy-mobile-more-menu" aria-label="Autres rubriques formateur"><Link href="/catalogue"><BookOpen size={16}/> Catalogue des formations</Link><Link href={base+"?onglet=evaluations"}><ClipboardCheck size={16}/> Autres évaluations</Link><Link href={base+"?onglet=apprenants"}><Users size={16}/> Autres apprenants</Link><Link href={base+"/revues"}><FolderKanban size={16}/> Revues de projets</Link><Link href={base+"/aide"}><MessageCircle size={16}/> Suivi des blocages</Link><Link href={base+"/defis"}><ClipboardCheck size={16}/> Consignes et défis</Link><Link href={base+"?onglet=programme"}><CalendarDays size={16}/> Programme</Link><Link href="/espace/compte"><Settings2 size={16}/> Mon compte</Link></nav></details>:

@@ -15,3 +15,9 @@ test("shared focus mode is reversible, desktop only, and contextual shortcuts ex
  assert.ok(css.includes("workspace-learner-shell.workspace-focus .workspace-learner-rail{display:none}"));assert.ok(css.includes("safe-area-inset-bottom"));assert.ok(css.includes("@media print"));
  assert.ok(page.includes("trackSlug={active.slug}"));assert.ok(quick.includes('projectBase+"/projet"'));assert.ok(quick.includes('projectBase+"/portfolio"'));
 });
+
+test("learner report is contextual and the narrow studio offers an accessible native workshop selector",()=>{
+ const report=read("src/app/espace/apprenant/bilan/page.tsx"),studio=read("src/app/espace/apprenant/formations/[parcours]/studio/page.tsx"),css=read("src/app/espace/apprenant/formations/[parcours]/studio/studio.css");
+ assert.ok(report.includes("selectEnrolledTrack(tracks,query.parcours??active?.slug)"));assert.ok(report.includes("data.course_slug===slug&&data.learner?.id===user.id"));assert.ok(!report.includes("learning-report?learner_id"));assert.ok(report.includes("workshopLinks={workshopLinks}"));
+ assert.ok(studio.includes('method="get" action={base}'));assert.ok(studio.includes('htmlFor="us-workshop-select"'));assert.ok(studio.includes('name="atelier" defaultValue={lesson?.id??""}'));assert.ok(css.includes(".us-layout>.us-nav{display:none}"));assert.ok(css.includes(".us-compact-program{display:grid;gap:8px}"));
+});
