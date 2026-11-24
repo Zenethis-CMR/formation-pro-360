@@ -26,7 +26,10 @@ test("one learner-facing product without V1/V2 version labels",()=>{
  assert.match(shell,/label:"Mes réalisations"/);
  assert.match(shell,/label:"Catalogue"/);
  const overview=read("src/components/secure-learner-overview.tsx");
+ assert.match(overview,/XP DU PARCOURS/);
  assert.match(overview,/XP CUMULÉS/);
+ assert.ok(overview.indexOf("XP DU PARCOURS")<overview.indexOf("learner-legacy-details"));
+ assert.ok(overview.indexOf("XP CUMULÉS")>overview.indexOf("learner-legacy-details"));
  assert.match(overview,/xp\+pilot.xp/);
  assert.match(overview,/XP de tes autres réalisations/);
 });
