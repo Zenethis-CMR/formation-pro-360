@@ -66,3 +66,5 @@
 @media(max-width:370px){.dash-action-grid{grid-template-columns:1fr}.dash-action-card{min-height:78px}.dash-action-arrow{display:block}}
 @media(prefers-reduced-motion:reduce){.dash-action-card,.dash-disclosure>summary svg,.secure-academy-frame .sidebar-link{transition:none}.dash-action-card:hover{transform:none}}
 @media print{.secure-academy-frame .academy-sidebar{position:static;max-height:none;overflow:visible}.dash-account,.dash-actions{display:none!important}}
+
+.workspace-profile-stat{min-width:0;padding:9px 2px;border:1px solid var(--workspace-line);border-radius:9px;background:var(--workspace-subtle)}.workspace-profile-stat>b{display:block;font-size:19px;line-height:1.4;color:var(--workspace-ink);font-variant-numeric:tabular-nums}.workspace-profile-stat>span{font-size:10px;line-height:1.4;color:var(--workspace-muted);overflow-wrap:anywhere}.dash-account svg{flex-shrink:0}
