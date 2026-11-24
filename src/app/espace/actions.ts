@@ -226,6 +226,8 @@ export async function saveLearnerPreferencesDraft(formData:FormData):Promise<{ok
   revalidatePath("/espace/apprenant");
   revalidatePath("/espace/bienvenue");
   revalidatePath("/espace/formateur");
+  revalidatePath("/catalogue","layout");
+  revalidatePath("/espace/parcours/ingenierie-produit-ia");
   return {ok:true};
 }
 export async function saveLearnerPreferences(formData:FormData) {
