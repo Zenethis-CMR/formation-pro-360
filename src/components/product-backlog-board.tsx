@@ -1,4 +1,5 @@
 "use client";
+import {WorkspaceSaveStatus} from "@/components/workspace-feedback";
 import {useEffect,useRef,useState} from "react";
 import Link from "next/link";
 import {Plus,Save,Download,Pencil,Trash2,ArrowRight} from "lucide-react";
@@ -103,7 +104,7 @@ export function ProductBacklogBoard({initial,editable}:{initial:ProductBacklog|n
     </article>)}
    </section>;
   })}</div>
-  <div className="backlog-save"><div><strong>{dirty?"Modifications non enregistrées":savedAt?"Backlog enregistré":"Aucun enregistrement"}</strong>{savedAt&&<small>Version {revision}</small>}{editing&&<small>Applique ou annule la tâche en cours avant de sauvegarder.</small>}{notice&&<p role={notice.error?"alert":"status"} className={notice.error?"backlog-error":""}>{notice.text}</p>}</div>
+  <div className="backlog-save"><div><WorkspaceSaveStatus pending={pending} dirty={dirty||!!editing} saved={!!savedAt} error={!!notice?.error} readOnly={!editable}/>{savedAt&&<small>Version {revision}</small>}{editing&&<small>Applique ou annule la tâche en cours avant de sauvegarder.</small>}{notice&&<p role={notice.error?"alert":"status"} className={notice.error?"backlog-error":""}>{notice.text}</p>}</div>
    <div className="backlog-buttons"><button type="button" onClick={exportTasks}><Download size={16}/> Export JSON</button>{editable&&<button type="button" className="backlog-primary" disabled={pending||!dirty||!!editing} onClick={()=>void save()}><Save size={16}/>{pending?"Enregistrement…":"Enregistrer le tableau"}</button>}</div>
   </div>
  </section>;
