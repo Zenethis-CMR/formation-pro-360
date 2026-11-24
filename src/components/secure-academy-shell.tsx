@@ -114,8 +114,8 @@ export function SecureAcademyShell({children,stats}:{children:React.ReactNode;st
   const secondaryActive=!trainer&&secondary.some(l=>isActive(l.href));
   useEffect(()=>{if(desktopMore.current)desktopMore.current.open=secondaryActive;},[pathname,currentTab,secondaryActive]);
   return <WorkspaceStatsContext.Provider value={stats}><div className="academy-viewport secure-academy-viewport"><div className={"academy-frame secure-academy-frame"+(detail?" secure-academy-detail":"")+(learnerDashboard?" workspace-learner-dashboard":"")+(!trainer?" workspace-learner-shell":"")}>
+    <a className="ux-skip-link" href="#workspace-content">Aller au contenu principal</a>
     <aside className="academy-sidebar">
-      <a className="ux-skip-link" href="#workspace-content">Aller au contenu principal</a>
       <Link href={base} className="academy-brand"><span className="brand-flower"><GraduationCap size={23} strokeWidth={2.1}/></span><span>Formation <span>Pro 360</span></span></Link>
       <nav aria-label="Navigation de l'espace personnel" className="sidebar-navigation dash-nav">
         {groups.map(g=><div className="dash-nav-group" key={g.label}><div className="sidebar-category">{g.label}</div>{g.items.map(({href,label,icon:Icon})=><Link key={href} href={href} className={"sidebar-link"+(isActive(href)?" is-active":"")} aria-current={isActive(href)?"page":undefined}><Icon size={18} strokeWidth={1.8}/><span>{label}</span>{label==="Évaluations"&&stats.pending>0&&<b>{stats.pending}</b>}<WorkspaceLinkPending/></Link>)}</div>)}
