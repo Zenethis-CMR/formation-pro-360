@@ -95,6 +95,7 @@ export function SecureLearnerOverview({missions,submissions,approvedIds,dependen
       </summary>
       <div className="learner-legacy-details-content">
     <div className="v2-legacy-heading"><div><span>AUTRES RÉALISATIONS · ACQUIS CONSERVÉS</span><h2>Mes projets et missions complémentaires</h2><p>Ces réalisations sont toujours accessibles avec leurs validations et récompenses.</p></div><Link href="/espace/apprenant?onglet=missions">Mes autres projets <ArrowRight size={15}/></Link></div>
+    {enrolled&&<p className="dash-note"><strong>XP CUMULÉS : {xp+pilot.xp}</strong> · {xp} XP de tes autres réalisations et {pilot.xp} XP du parcours principal.</p>}
     <section className="academy-metrics" aria-label="Indicateurs des réalisations complémentaires">
       <div className="metric"><div className="metric-icon blue"><GraduationCap size={20}/></div>
         <div><span>Niveau des missions</span><strong>{String(level).padStart(2,"0")}</strong><small>Progression par expérience</small></div></div>
