@@ -1,0 +1,80 @@
+/* Shared sizing for every secure workspace. Preserve existing mobile/rail visibility. */
+.secure-academy-viewport{
+ --workspace-nav-width:230px;
+ --workspace-rail-width:290px;
+}
+@media(min-width:1280px){
+ .secure-academy-viewport{--workspace-nav-width:245px;--workspace-rail-width:300px}
+}
+@media(min-width:1500px){
+ .secure-academy-viewport{--workspace-nav-width:265px;--workspace-rail-width:325px}
+}
+@media(min-width:821px){
+ .secure-academy-viewport .secure-academy-frame,
+ .secure-academy-viewport .secure-academy-frame.secure-academy-detail,
+ .secure-academy-viewport .secure-academy-frame.workspace-learner-shell{
+  grid-template-columns:var(--workspace-nav-width) minmax(0,1fr)
+ }
+ .secure-academy-viewport .secure-academy-frame .academy-sidebar{
+  min-width:0;padding-inline:16px;scrollbar-gutter:stable
+ }
+ .secure-academy-viewport .secure-academy-frame .academy-brand{
+  font-size:14px;gap:8px;white-space:nowrap
+ }
+}
+@media(min-width:1151px){
+ .secure-academy-viewport .secure-academy-frame:not(.secure-academy-detail):not(.workspace-learner-shell){
+  grid-template-columns:var(--workspace-nav-width) minmax(0,1fr) var(--workspace-rail-width)
+ }
+}
+@media(min-width:1280px){
+ .secure-academy-viewport .secure-academy-frame.workspace-learner-shell{
+  grid-template-columns:var(--workspace-nav-width) minmax(0,1fr) var(--workspace-rail-width)
+ }
+}
+.secure-academy-frame .sidebar-link{position:relative;gap:10px;min-height:44px;padding-block:9px;font-size:13px}
+.secure-academy-frame .sidebar-link>span:not(.ux-link-indicator){
+ flex:1 1 auto;min-width:0;white-space:normal;overflow-wrap:anywhere;line-height:1.4
+}
+.secure-academy-frame .sidebar-link:has(>.ux-link-indicator){padding-right:27px}
+.secure-academy-frame .sidebar-link>.ux-link-indicator{
+ position:absolute;right:8px;top:50%;transform:translateY(-50%);
+ width:15px;height:15px;flex:none;margin:0;pointer-events:none
+}
+.secure-academy-frame .sidebar-link>.ux-link-indicator[data-pending=false]{display:none}
+.secure-academy-frame .workspace-more-links .sidebar-link{font-size:12px;gap:8px}
+.secure-academy-frame .secure-academy-rail{
+ min-width:0;padding:25px 20px;position:sticky;top:0;align-self:start;
+ min-height:100dvh;max-height:100dvh;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin
+}
+.secure-academy-frame .secure-academy-rail .profile-mini-grid,
+.workspace-profile-body .profile-mini-grid{
+ grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;align-items:stretch
+}
+.secure-academy-frame .secure-academy-rail .workspace-profile-stat,
+.workspace-profile-body .workspace-profile-stat{
+ min-width:0;padding:10px 6px;min-height:74px;justify-content:flex-start
+}
+.secure-academy-frame .secure-academy-rail .workspace-profile-stat>span,
+.workspace-profile-body .workspace-profile-stat>span{
+ display:block;max-width:100%;white-space:normal;overflow-wrap:anywhere;
+ text-align:center;font-size:11px;line-height:1.35;color:#536b83;margin-top:4px
+}
+.secure-academy-frame .secure-academy-rail .workspace-profile-stat>b{
+ font-size:21px;max-width:100%;overflow-wrap:anywhere
+}
+.secure-academy-frame .secure-academy-rail .rail-widget-heading{gap:8px;align-items:baseline}
+.secure-academy-frame .secure-academy-rail .rail-widget-heading h3{min-width:0;overflow-wrap:anywhere}
+.secure-academy-frame .secure-academy-rail .rail-widget p{font-size:13px;line-height:1.6;color:#536b83}
+.secure-academy-frame .secure-academy-rail .rail-cta{min-height:44px;gap:8px;line-height:1.4;white-space:normal}
+.secure-academy-frame .secure-academy-rail .rail-cta svg{flex-shrink:0}
+@media(max-width:820px){
+ .secure-academy-viewport .secure-academy-frame,
+ .secure-academy-viewport .secure-academy-frame.secure-academy-detail,
+ .secure-academy-viewport .secure-academy-frame.workspace-learner-shell{grid-template-columns:minmax(0,1fr)}
+}
+@media print{
+ .secure-academy-viewport .secure-academy-frame{display:block!important}
+ .secure-academy-viewport .secure-academy-frame .academy-sidebar,
+ .secure-academy-viewport .secure-academy-frame .secure-academy-rail{display:none!important}
+}
