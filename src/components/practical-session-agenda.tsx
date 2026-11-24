@@ -13,18 +13,18 @@ function Audience({session,trainer}:{session:PracticalSession;trainer:boolean}){
  const individual=trainer?!!session.learner_id:!!session.individual;
  return <span className="ps-audience">{individual?<UserRound size={14}/>:<Users size={14}/>} {individual?(trainer?session.learner_name||"Séance individuelle":"Individuelle"):"Collective"}</span>;
 }
-function SessionDetail({session,trainer}:{session:PracticalSession;trainer:boolean}){
+function SessionDetail({session,trainer,preview=false}:{session:PracticalSession;trainer:boolean;preview?:boolean}){
  const link=safeMeetingLink(session.meeting_url);
  return <article className="ps-detail" aria-label="Détail de la séance">
   <div className="ps-detail-head"><div><span className={"ps-status "+session.status}>{statuses[session.status]}</span><h2>{session.title}</h2><p className="ps-meta"><CalendarDays size={15}/>{sessionDate(session)} <span>·</span> {sessionTime(session)} (Douala)</p><div className="ps-meta"><Audience session={session} trainer={trainer}/><span>·</span>{formats[session.format]}</div></div></div>
   {session.status==="cancelled"?<p className="ps-alert"><AlertCircle size={17}/> Séance annulée. {session.recap||"Attends les prochaines consignes du formateur."}</p>:<>
-   {session.status==="published"&&<div className="ps-join"><div>{session.location&&<p><MapPin size={16}/>{session.location}</p>}<p><Clock3 size={16}/>{session.duration_minutes} minutes · Heure de Douala</p></div>{link&&<a className="ps-btn primary" href={link} target="_blank" rel="noopener noreferrer"><Video size={16}/> Ouvrir le lien <ExternalLink size={14}/></a>}</div>}
+   {session.status==="published"&&<div className="ps-join"><div>{session.location&&<p><MapPin size={16}/>{session.location}</p>}<p><Clock3 size={16}/>{session.duration_minutes} minutes · Heure de Douala</p></div>{link&&!preview&&<a className="ps-btn primary" href={link} target="_blank" rel="noopener noreferrer"><Video size={16}/> Ouvrir le lien <ExternalLink size={14}/></a>}</div>}
    <div className="ps-phases">
     <section><div className="ps-phase-label"><BookOpen size={17}/><span>01 · Avant la séance</span></div><h3>Préparation et objectifs</h3><strong>Objectifs</strong><p>{session.objectives||"À préciser par le formateur."}</p>{session.preparation&&<><strong>À préparer</strong><p>{session.preparation}</p></>}</section>
     <section><div className="ps-phase-label"><Users size={17}/><span>02 · Avec le formateur</span></div><h3>Démonstration et pratique</h3>{session.demonstration&&<><strong>Démonstration</strong><p>{session.demonstration}</p></>}<strong>Exercice</strong><p>{session.exercise||"À préciser par le formateur."}</p></section>
     <section><div className="ps-phase-label"><ClipboardList size={17}/><span>03 · Après la séance</span></div><h3>Réalisation attendue</h3><p>{session.expected_result||"À préciser par le formateur."}</p>{session.resources&&<><strong>Ressources</strong><p>{session.resources}</p></>}{session.recap&&<><strong>Compte rendu du formateur</strong><p>{session.recap}</p></>}</section>
    </div>
-   {!trainer&&session.status!=="draft"&&<Link className="ps-inline-link" href="/espace/projet/accompagnement">Préparer mes questions pour le formateur <ArrowRight size={15}/></Link>}
+   {!trainer&&!preview&&session.status!=="draft"&&<Link className="ps-inline-link" href="/espace/projet/accompagnement">Préparer mes questions pour le formateur <ArrowRight size={15}/></Link>}
   </>}
  </article>;
 }
@@ -50,7 +50,8 @@ export function PracticalSessionAgenda({agenda,trainer,participants,participants
   return (filter==="all"||(filter==="upcoming"&&upcoming)||(filter==="draft"&&s.status==="draft")||(filter==="history"&&s.status!=="draft"&&!upcoming))&&
     [s.title,s.objectives,s.learner_name||""].some(v=>v.toLowerCase().includes(search.trim().toLowerCase()));
  });
- const current=visible.find(s=>s.id===selected)||visible[0]||null;
+ const current=visible.find(s=>s.id===selected)||visible.find(s=>s.id===next?.id)||visible[0]||null;
+ const openSession=(id:string)=>{setSelected(id);if(window.matchMedia("(max-width: 1000px)").matches)requestAnimationFrame(()=>document.getElementById("ps-selected-session")?.scrollIntoView({block:"start",behavior:window.matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth"}));};
  const startEdit=(session?:PracticalSession)=>{
   if(editor||pending)return;
   const fields=session?sessionFields(session):newSession();
@@ -85,7 +86,8 @@ export function PracticalSessionAgenda({agenda,trainer,participants,participants
   <section className="ps-feature">
    <div className="ps-feature-main"><span className="ps-eyebrow"><CalendarDays size={15}/> {trainer?"TON PLANNING PÉDAGOGIQUE":"AVEC TON FORMATEUR"}</span>
     <h2>{next?next.title:now?"Aucune séance à venir sur cette page":"Ton agenda pratique"}</h2>
-    {next?<><p>{sessionDate(next)} · {sessionTime(next)} · {formats[next.format]}</p><div className="ps-feature-actions"><button type="button" className="ps-btn light" onClick={()=>{setFilter("all");setSearch("");setSelected(next.id);document.getElementById("ps-agenda")?.scrollIntoView({behavior:"smooth"});}}>Voir la séance <ArrowRight size={16}/></button></div></>:<p>{trainer?"Prépare une nouvelle séance, puis publie-la lorsque les consignes sont prêtes.":"Les séances publiées par ton formateur apparaîtront ici."}</p>}
+    {next?<><p>{sessionDate(next)} · {sessionTime(next)} · {formats[next.format]}</p><div className="ps-feature-actions"><button type="button" className="ps-btn light" onClick={()=>{setFilter("all");setSearch("");openSession(next.id);if(window.matchMedia("(min-width: 1001px)").matches)document.getElementById("ps-agenda")?.scrollIntoView({behavior:window.matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth"});}}>Voir la séance <ArrowRight size={16}/></button></div></>:<p>{trainer?"Prépare une nouvelle séance, puis publie-la lorsque les consignes sont prêtes.":"Les séances publiées par ton formateur apparaîtront ici."}</p>}
+   {trainer&&<button type="button" className="ps-btn light" disabled={!!editor||pending} onClick={()=>startEdit()}><Plus size={16}/> Nouvelle séance</button>}
    </div><div className="ps-feature-date" aria-hidden="true">{next?<><span>{new Intl.DateTimeFormat("fr-FR",{month:"short",timeZone:"Africa/Douala"}).format(new Date(next.starts_at))}</span><strong>{localDateTime(next.starts_at).slice(8,10)}</strong><small>Heure de Douala</small></>:<CalendarDays size={58} strokeWidth={1.2}/>}</div>
   </section>
   <div className="ps-summary">{[{label:"Séances affichées",value:sessions.length},{label:"À venir / en cours",value:now?sessions.filter(s=>s.status==="published"&&Date.parse(s.starts_at)+s.duration_minutes*60000>now).length:"—"},{label:trainer?"Brouillons":"Clôturées",value:sessions.filter(s=>s.status===(trainer?"draft":"completed")).length}].map(m=><div key={m.label}><span>{m.label}</span><strong>{m.value}</strong></div>)}</div>
@@ -103,10 +105,10 @@ export function PracticalSessionAgenda({agenda,trainer,participants,participants
      {fields.format!=="onsite"&&<label className="ps-full">Lien de réunion HTTPS<input type="url" maxLength={800} value={fields.meeting_url} onChange={e=>patch({meeting_url:e.target.value})} placeholder="https://…"/></label>}
     </div></section>
     <section className="ps-form-block"><h3><span>02</span> Contenu pédagogique</h3><div className="ps-form-grid">{longFields.map(f=><label key={f.key}>{f.label}<textarea rows={3} maxLength={f.max} value={fields[f.key]} onChange={e=>patch({[f.key]:e.target.value})} placeholder={f.hint}/></label>)}</div></section>
-    <section className="ps-form-block"><h3><span>03</span> Compte rendu ou motif d'annulation</h3><label><textarea rows={3} maxLength={2400} value={fields.recap} onChange={e=>patch({recap:e.target.value})} placeholder="Retours, recommandations et prochaine étape…"/></label></section>
+    <section className="ps-form-block"><h3><span>03</span> Compte rendu ou motif d'annulation</h3><label>Retour du formateur<textarea rows={3} maxLength={2400} value={fields.recap} onChange={e=>patch({recap:e.target.value})} placeholder="Retours, recommandations et prochaine étape…"/></label></section>
    </fieldset>
    <div className="ps-publication"><div><strong>{issues.length?"Éléments à compléter avant publication":"Informations de publication complétées"}</strong><p>{issues.length?issues.join(" · "):"Vérifie la date, les participants et l'aperçu apprenant."}</p></div><button className="ps-btn secondary" disabled={pending||!preview||!fields.starts_at} onClick={()=>setShowPreview(v=>!v)}>{showPreview?"Masquer l'aperçu":"Aperçu apprenant"}</button></div>
-   {showPreview&&preview&&fields.starts_at&&<div className="ps-preview"><span className="ps-kicker">APERÇU · NON PUBLIÉ</span><SessionDetail session={preview} trainer={false}/></div>}
+   {showPreview&&preview&&fields.starts_at&&<div className="ps-preview"><span className="ps-kicker">APERÇU · NON PUBLIÉ</span><SessionDetail session={preview} trainer={false} preview/></div>}
    {notice&&<p role="alert" className="ps-alert"><AlertCircle size={16}/>{notice}</p>}
    {confirm&&<div className="ps-confirm" role="status"><p>{confirm==="cancel"?"Confirmer l'annulation ? Les apprenants concernés verront le statut annulé.":confirm==="complete"?"Confirmer la clôture ? Seul le compte rendu sera enregistré avec le statut.":"Confirmer la publication ? La séance sera visible par les apprenants concernés."}</p><button disabled={pending} className="ps-btn primary" onClick={()=>void save(confirm)}>Confirmer</button><button disabled={pending} className="ps-btn secondary" onClick={()=>setConfirm(null)}>Retour</button></div>}
    <div className="ps-editor-actions"><button className="ps-btn secondary" disabled={pending} onClick={()=>{if(window.confirm("Fermer l'éditeur et perdre les modifications non enregistrées ?")){setEditor(null);setNotice("");setConfirm(null);}}}>Fermer</button>
@@ -118,10 +120,10 @@ export function PracticalSessionAgenda({agenda,trainer,participants,participants
    <div className="ps-section-heading"><div><span className="ps-kicker">AGENDA</span><h2>{trainer?"Toutes mes séances":"Mes séances pratiques"}</h2><p>Page {agenda.page} · dates en heure de Douala</p></div>{trainer&&<button className="ps-btn primary" disabled={!!editor||pending} onClick={()=>startEdit()}><Plus size={17}/> Nouvelle séance</button>}</div>
    <div className="ps-toolbar"><div className="ps-filters" aria-label="Filtrer les séances">{filters.map(f=><button key={f.id} className={filter===f.id?"on":""} aria-pressed={filter===f.id} onClick={()=>{setFilter(f.id);setSelected(null);}}>{f.label}</button>)}</div><input aria-label="Rechercher les séances de cette page" type="search" value={search} onChange={e=>{setSearch(e.target.value);setSelected(null);}} placeholder="Rechercher…"/></div>
    {!visible.length?<div className="ps-empty"><CalendarDays size={36}/><h3>Aucune séance affichée</h3><p>{search||filter!=="all"?"Modifie les filtres ou consulte une autre page.":trainer?"Crée une séance pour commencer.":"Attends les prochaines publications de ton formateur."}</p></div>:
-    <div className="ps-agenda-grid"><div className="ps-list">{visible.map(s=><button key={s.id} className={"ps-session-card "+(current?.id===s.id?"selected":"")} aria-pressed={current?.id===s.id} onClick={()=>setSelected(s.id)}>
+    <div className="ps-agenda-grid"><div className="ps-list">{visible.map(s=><button key={s.id} className={"ps-session-card "+(current?.id===s.id?"selected":"")} aria-pressed={current?.id===s.id} onClick={()=>openSession(s.id)}>
      <div className="ps-date-tile"><span>{new Intl.DateTimeFormat("fr-FR",{month:"short",timeZone:"Africa/Douala"}).format(new Date(s.starts_at))}</span><strong>{localDateTime(s.starts_at).slice(8,10)}</strong></div>
      <div className="ps-card-content"><span className={"ps-status "+s.status}>{statuses[s.status]}</span><strong>{s.title}</strong><small>{sessionTime(s)} · {formats[s.format]}</small><Audience session={s} trainer={trainer}/></div><ChevronRight size={17} className="ps-chevron"/>
-    </button>)}</div><div className="ps-selection">{current&&<><SessionDetail session={current} trainer={trainer}/>{trainer&&["draft","published"].includes(current.status)&&<button className="ps-btn secondary" disabled={!!editor||pending} onClick={()=>startEdit(current)}>Modifier / gérer la séance <ArrowRight size={15}/></button>}</>}</div></div>}
+    </button>)}</div><div className="ps-selection" id="ps-selected-session">{current&&<><SessionDetail session={current} trainer={trainer}/>{trainer&&["draft","published"].includes(current.status)&&<button className="ps-btn secondary" disabled={!!editor||pending} onClick={()=>startEdit(current)}>Modifier / gérer la séance <ArrowRight size={15}/></button>}</>}</div></div>}
    <nav className="ps-pagination" aria-label="Pages des séances">{agenda.page>1&&<Link href={"?page="+(agenda.page-1)}>← Précédente</Link>}<span>Page {agenda.page}</span>{agenda.has_next&&agenda.page<1000&&<Link href={"?page="+(agenda.page+1)}>Suivante →</Link>}</nav>
   </section>
  </div>;
