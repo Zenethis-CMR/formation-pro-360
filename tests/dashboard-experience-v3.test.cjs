@@ -31,3 +31,21 @@ test("navigation prioritizes official routes and preserves secondary workflows",
  assert.ok(css.includes("max-width:370px"));
  assert.ok(css.includes(":focus-visible"));
 });
+
+test("learner V4 keeps six primary links, secondary destinations and profile after the hero",()=>{
+ const shell=read("src/components/secure-academy-shell.tsx"),overview=read("src/components/secure-learner-overview.tsx"),css=read("src/app/espace/workspace-v3.css");
+ assert.ok(shell.includes('{label:"APPRENDRE",items:links.slice(0,3)}'));
+ assert.ok(shell.includes('{label:"AVEC MON FORMATEUR",items:links.slice(3,6)}'));
+ assert.ok(shell.includes("const secondary=[...links.slice(6)"));
+ assert.ok(shell.includes('className="workspace-desktop-more" open={secondaryActive}'));
+ assert.ok(shell.includes('e.key==="Escape"'));
+ assert.ok(shell.includes("const learnerDashboard=!trainer&&dashboard;"));
+ assert.ok(shell.includes("LearnerProfileWidgets stats={stats}"));
+ assert.ok(shell.includes("Autres réalisations"));
+ assert.ok(shell.includes("CONSEIL PÉDAGOGIQUE"));
+ assert.ok(overview.indexOf("v2-pilot-metrics")<overview.indexOf("<LearnerCompactProfile/>"));
+ assert.ok(overview.indexOf("<LearnerCompactProfile/>")<overview.indexOf("{workspace}"));
+ assert.ok(css.includes("@media(min-width:1280px)"));
+ assert.ok(css.includes(".workspace-learner-dashboard .workspace-compact-profile{display:block}"));
+ assert.ok(css.includes(".workspace-learner-dashboard .workspace-learner-rail{display:none}"));
+});
