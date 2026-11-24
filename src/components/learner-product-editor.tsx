@@ -12,6 +12,7 @@ export function LearnerProductEditor({initial,editable}:{initial:ProductProject|
  const [savedAt,setSavedAt]=useState(initial?.updated_at??null);
  const [status,setStatus]=useState<{kind:"ok"|"error";message:string}|null>(null);
  const [pending,setPending]=useState(false);
+ const [activeSection,setActiveSection]=useState<(typeof projectSections)[number]["id"]>("vision");
  const saving=useRef(false);
  const dirty=Object.keys(draft).some(key=>draft[key as ProjectKey]!==baseline[key as ProjectKey]);
  useEffect(()=>{
@@ -23,6 +24,8 @@ export function LearnerProductEditor({initial,editable}:{initial:ProductProject|
  const change=(key:ProjectKey,value:string)=>{setDraft(old=>({...old,[key]:value}));setStatus(null);};
  const save=async()=>{
   if(saving.current||!editable)return;
+  const invalidSection=projectSections.find(section=>section.fields.some(field=>"link" in field&&draft[field.key].trim()&&!safeProjectLink(draft[field.key])));
+  if(invalidSection){setActiveSection(invalidSection.id);setStatus({kind:"error",message:errors.invalid});return;}
   saving.current=true;setPending(true);setStatus(null);
   try{
    const result=await saveProductProject(revision,draft);
@@ -36,6 +39,7 @@ export function LearnerProductEditor({initial,editable}:{initial:ProductProject|
   const url=URL.createObjectURL(new Blob([lines.join("\n")],{type:"text/markdown;charset=utf-8"}));
   const a=document.createElement("a");a.href=url;a.download="mon-projet-formation-pro.md";a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
  };
+ const activeIndex=projectSections.findIndex(s=>s.id===activeSection);
  const fieldsCount=projectSections.reduce((n,s)=>n+s.fields.length,0);
  const filled=projectSections.reduce((n,s)=>n+s.fields.filter(f=>draft[f.key]?.trim()).length,0);
  return <section className="product-editor" aria-labelledby="product-editor-title">
@@ -46,11 +50,11 @@ export function LearnerProductEditor({initial,editable}:{initial:ProductProject|
   </div>
   <progress value={filled} max={fieldsCount} aria-label="Champs du dossier renseignés"/>
   <p className="product-note">Le remplissage du dossier ne valide aucun atelier. Ne saisis ni clé API, ni mot de passe, ni donnée personnelle de client.</p>
-  <nav className="product-section-nav" aria-label="Sections du dossier produit">{projectSections.map(s=><a key={s.id} href={"#project-"+s.id}>{s.title}<span>{s.fields.filter(f=>draft[f.key]?.trim()).length}/{s.fields.length}</span></a>)}</nav>
+  <nav className="product-section-nav pw-section-nav" aria-label="Sections du dossier produit">{projectSections.map((s,i)=>{const n=s.fields.filter(f=>draft[f.key]?.trim()).length;return <button type="button" key={s.id} aria-pressed={activeSection===s.id} onClick={()=>setActiveSection(s.id)} className={activeSection===s.id?"active":""}><span className="pw-section-number">{String(i+1).padStart(2,"0")}</span><strong>{s.title}</strong><span className="pw-section-count">{n}/{s.fields.length}</span></button>})}</nav>
   {!editable&&<p className="product-note" role="status">Ton parcours est terminé : le dossier reste consultable et exportable en lecture seule.</p>}
-  <form onSubmit={e=>{e.preventDefault();void save();}}>
+  <form onSubmit={e=>{e.preventDefault();void save();}} noValidate>
    <fieldset disabled={!editable||pending} className="product-fields">
-    {projectSections.map((section,index)=><section className="product-form-section" id={"project-"+section.id} key={section.id}>
+    {projectSections.map((section,index)=>activeSection===section.id&&<section className="product-form-section" id={"project-"+section.id} key={section.id}>
      <div className="product-form-heading"><span>{String(index+1).padStart(2,"0")}</span><div><h3>{section.title}</h3><p>{section.description}</p></div></div>
      <div className="product-form-grid">{section.fields.map(field=>{
       const isLink="link" in field;
@@ -59,11 +63,13 @@ export function LearnerProductEditor({initial,editable}:{initial:ProductProject|
        <label htmlFor={"product-"+field.key}>{field.label}</label>
        {isLink||field.max<=400?<input id={"product-"+field.key} name={field.key} type={isLink?"url":"text"} value={draft[field.key]||""} maxLength={field.max} placeholder={isLink?"https://…":"À compléter"} onChange={e=>change(field.key,e.target.value)}/>:
         <textarea id={"product-"+field.key} name={field.key} rows={4} value={draft[field.key]||""} maxLength={field.max} placeholder="À compléter au fil de ton projet…" onChange={e=>change(field.key,e.target.value)}/>}
+       <small className="pw-field-count">{(draft[field.key]||"").length}/{field.max}</small>
        {link&&<a href={link} target="_blank" rel="noopener noreferrer">Ouvrir la référence <ArrowRight size={13}/></a>}
       </div>;
      })}</div>
     </section>)}
    </fieldset>
+   <div className="pw-section-controls"><button type="button" disabled={activeIndex===0} onClick={()=>setActiveSection(projectSections[activeIndex-1].id)}>← Précédent</button><span>Rubrique {activeIndex+1} sur {projectSections.length}</span><button type="button" disabled={activeIndex===projectSections.length-1} onClick={()=>setActiveSection(projectSections[activeIndex+1].id)}>Suivant →</button></div>
    <div className="product-save-bar">
     <div><strong>{dirty?"Modifications non enregistrées":savedAt?"Dossier enregistré":"Premier enregistrement à effectuer"}</strong>
      {savedAt&&<small>Version {revision} · {new Intl.DateTimeFormat("fr-FR",{dateStyle:"short",timeStyle:"short",timeZone:"Africa/Douala"}).format(new Date(savedAt))}</small>}
