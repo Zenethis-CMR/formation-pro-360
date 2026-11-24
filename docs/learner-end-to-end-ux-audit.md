@@ -51,3 +51,7 @@ Contrôles de code : formulaire, contraintes de mot de passe, redirection après
 | Largeurs 360, 390, 768 et 1440 px, clavier seul | Champs, erreurs et boutons utilisables sans débordement | À exécuter |
 
 L'ouverture du domaine de production depuis l'environnement de contrôle n'a pas abouti ; aucune conclusion sur la disponibilité publique du site, la réception SMTP ni le rendu visuel ne peut en être tirée. Aucun compte réel ou test n'a été créé. Utiliser une session dédiée autorisée et ne jamais enregistrer ses identifiants ou jetons dans le dépôt.
+
+## Lot C — Planning individuel (24 novembre 2026)
+Le raccourci du tableau de bord mène à un calendrier des sept prochains jours dans Mes ressources. Il utilise les préférences déjà sauvegardées : jours fixes et facultatifs, 5/6/8/10 heures par séance, date locale de Douala. Les heures facultatives ne sont pas incluses dans l'engagement fixe. La répartition indicative 30/70 et le prochain atelier sont affichés sans créer de présence, retard, événement, ou XP. Les préférences anciennes ou incomplètes donnent une invitation facultative à les compléter.
+Recette à effectuer après CI : vérifier le profil à quatre jours fixes de six heures (24 h), modifier un jour, tester la frontière dimanche/lundi et le mobile. Vérifier également les comptes suspendus, achevés et sans préférences. Aucun rappel ni session de cohorte n'est créé par ce lot.

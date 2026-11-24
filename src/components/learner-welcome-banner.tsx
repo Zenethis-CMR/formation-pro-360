@@ -38,6 +38,9 @@ export function LearnerWelcomeBanner({preferences,mission,pilot}:{
           {preferences?<Settings2 size={16}/>:<GraduationCap size={16}/>}
           {preferences?"Modifier mes préférences":"Personnaliser mon parcours"}
         </Link>
+        <Link className="learner-personal-settings" href="/espace/apprenant?onglet=programme#planning-personnel">
+          <CalendarDays size={16}/> Voir mon planning personnel
+        </Link>
       </div>
     </div>
     <aside className="learner-personal-side">
