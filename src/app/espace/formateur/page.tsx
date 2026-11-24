@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import Link from "next/link";
+import { DashboardHeader, DashboardQuickLinks, DashboardDisclosure } from "@/components/dashboard-workspace";
 import { createMission, reviewMission, publishMission } from "@/app/espace/actions";
 import { requireRole } from "@/lib/auth/require-role";
 import { isBackendConfigured } from "@/lib/database/server";
@@ -124,15 +125,16 @@ export default async function TrainerSpace({searchParams}:{searchParams:Promise<
   return <main className="page secure-trainer-page">
     {tab!=="dashboard"&&<WorkspaceTabHeading role="trainer" tab={tab}/>}
     {tab==="dashboard"&&<>
+      <DashboardHeader trainer/>
       <V2TrainerEvaluationOverview/>
-      <section className="panel"><span className="eyebrow">SÉANCES PRATIQUES</span><h2>Préparer mes prochaines séances</h2><p className="muted">Planifie les démonstrations, objectifs et travaux à réaliser avec tes apprenants.</p><Link className="primary-btn" href="/espace/formateur/seances">Ouvrir mes séances</Link></section>
-      <section className="panel"><span className="eyebrow">PILOTAGE PÉDAGOGIQUE V2</span><h2>Préparer mes interventions</h2><p className="muted">Consulte les ateliers vérifiés, les dépôts à corriger et les travaux à reprendre pour chaque apprenant du parcours pilote.</p><Link className="primary-btn" href="/espace/formateur/suivi">Ouvrir le cockpit de suivi</Link></section>
-      <section className="panel"><span className="eyebrow">ACCOMPAGNEMENT INDIVIDUEL</span><h2>Consignes et défis pratiques</h2><p className="muted">Attribue des travaux ciblés, consulte les preuves et accompagne les reprises.</p><Link className="primary-btn" href="/espace/formateur/defis">Gérer mes défis</Link></section>
-      <section className="panel"><span className="eyebrow">ACCOMPAGNEMENT HUMAIN</span><h2>Suivre les difficultés signalées</h2><p className="muted">Consulte les demandes, réponds et prépare tes interventions individuelles.</p><Link className="primary-btn" href="/espace/formateur/aide">Ouvrir le suivi des blocages</Link></section>
-      <section className="panel"><span className="eyebrow">REVUE PRODUIT · COLLABORATION</span><h2>Examiner les projets partagés</h2><p className="muted">Consulte les versions partagées et formule des recommandations contextualisées.</p><Link className="primary-btn" href="/espace/formateur/revues">Ouvrir les revues de projets</Link></section>
-      <LocalCoachDiagnostics/>
-      <SecureTrainerOverview pending={pendingCount} learners={learnerCount}
-        missions={published.length} validatedXp={(awards||[]).reduce((sum,x)=>sum+Number(x.xp),0)}/>
+      <DashboardQuickLinks trainer/>
+      <DashboardDisclosure title="Réalisations complémentaires" description="Missions historiques, statistiques et corrections">
+        <SecureTrainerOverview pending={pendingCount} learners={learnerCount}
+          missions={published.length} validatedXp={(awards||[]).reduce((sum,x)=>sum+Number(x.xp),0)}/>
+      </DashboardDisclosure>
+      <DashboardDisclosure title="État technique du coach local" description="Diagnostic Qwen3 · réservé au formateur">
+        <LocalCoachDiagnostics/>
+      </DashboardDisclosure>
     </>}
     {params.success&&<p className="alert success" role="status">{params.success==="message"?"Message pédagogique enregistré dans l'espace apprenant.":"Modification enregistrée dans la base de données."}</p>}
     {params.error&&<p className="alert danger" role="alert">Échec de l'opération. Vérifie les champs ou les droits d'accès.</p>}
