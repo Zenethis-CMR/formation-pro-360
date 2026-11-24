@@ -1,3 +1,4 @@
+import "./diagnostic.css";
 import Link from "next/link";
 import {requireRole} from "@/lib/auth/require-role";
 import {LearnerEntryDiagnostic} from "@/components/learner-entry-diagnostic";
