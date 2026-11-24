@@ -58,3 +58,6 @@
 .cf360 :focus-visible{outline:3px solid #2865b5;outline-offset:3px}
 @media(max-width:1000px){.cf360-detail-layout{grid-template-columns:1fr}.cf360-context{position:static;grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:650px){.cf360-hero{grid-template-columns:1fr;padding:23px}.cf360-hero-art{display:none}.cf360-hero h1{font-size:32px}.cf360-context,.cf360-lessons{grid-template-columns:1fr}.cf360-week-count{display:none}.cf360-week summary{padding:12px}.cf360-lessons{padding:10px}.cf360-track-body{padding:16px}}
+
+.cf360-week-num{flex-basis:76px;white-space:nowrap;font-size:12px}.cf360-track-meta>span{display:inline-flex;align-items:center;gap:5px}.cf360-track-meta>span:first-child{font-weight:800;border-radius:7px;background:var(--cf-tint);padding:5px 8px}
+@media(max-width:650px){.cf360-week-num{flex-basis:62px;font-size:11px}.cf360-week-copy strong{font-size:14px}}
