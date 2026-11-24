@@ -19,6 +19,7 @@ import { getV2DashboardPilot } from "@/lib/v2-dashboard-pilot";
 import { loadV2LearnerProgress } from "@/lib/v2-learner-progress";
 import { V2LearnerProgressPanel } from "@/components/v2-learner-progress-panel";
 import { LearnerJourneyGuide } from "@/components/learner-journey-guide";
+import { LearnerWeekPlan } from "@/components/learner-week-plan";
 import { V2LearnerResourcesPanel, type LearnerCourseResources } from "@/components/v2-learner-resources-panel";
 import { backendRequest } from "@/lib/auth/backend";
 
@@ -45,7 +46,7 @@ export default async function LearnerSpace({searchParams}:{searchParams:Promise<
     tab==="progression"||tab==="programme" ? db.from("training_settings").select("start_date").eq("id",true).maybeSingle() : skipped,
     tab==="progression" ? db.from("coach_messages").select("id,trainer_id,learner_id,body,created_at").eq("learner_id",user.id).order("created_at",{ascending:false}).limit(8) : skipped,
     tab==="progression" ? db.from("workshop_steps").select("learner_id,mission_id,completed_at").eq("learner_id",user.id) : skipped,
-    tab==="dashboard" ? db.from("learner_preferences").select("learner_id,preferred_name,goal,experience,minutes_per_day,regular_days,optional_days").eq("learner_id",user.id).maybeSingle() : skipped
+    tab==="dashboard"||tab==="programme" ? db.from("learner_preferences").select("learner_id,preferred_name,goal,experience,minutes_per_day,regular_days,optional_days").eq("learner_id",user.id).maybeSingle() : skipped
   ]);
   if(missionError || subsError || xpError || depsError || badgeError || earnedError || practiceError || settingsError || messagesError || stepsError || preferencesError) return <main className="page"><p className="alert danger">Impossible de charger le parcours. Vérifie que les migrations SQL sont appliquées.</p></main>;
   const missions = (rawMissions || []) as Mission[];
@@ -58,7 +59,7 @@ export default async function LearnerSpace({searchParams}:{searchParams:Promise<
   const currentMission = missions.find(m => !approved.has(m.id) &&
     !deps.some(d => d.mission_id===m.id && !approved.has(d.prerequisite_id)));
   // V2 rights and XP are independent of the historical V1 mission ledger.
-  const pilot=tab==="dashboard"?await getV2DashboardPilot():null;
+  const pilot=tab==="dashboard"||tab==="programme"?await getV2DashboardPilot():null;
   const v2Progress=tab==="progression"?await loadV2LearnerProgress():null;
   const resourceResponse=tab==="programme"
     ?await backendRequest("/v1/training/catalog/ingenierie-produit-ia").catch(()=>null)
@@ -94,6 +95,7 @@ export default async function LearnerSpace({searchParams}:{searchParams:Promise<
       <SkillMastery missions={missions} approved={approved}/>
     </>}
     {tab==="programme"&&<>
+      <LearnerWeekPlan preferences={rawPreferences as LearnerPreferences|null} pilot={pilot}/>
       <V2LearnerResourcesPanel data={courseResources}/>
       <section className="learner-other-resources">
         <div className="v2-legacy-section-head"><span>AUTRES RÉALISATIONS · RESSOURCES CONSERVÉES</span>
