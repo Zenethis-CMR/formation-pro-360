@@ -1,0 +1,30 @@
+const test=require("node:test");
+const assert=require("node:assert/strict");
+const fs=require("node:fs"),path=require("node:path");
+const read=p=>fs.readFileSync(path.join(__dirname,"..",p),"utf8");
+test("session preparation works independently of the optional model",()=>{
+ const ui=read("src/components/product-practice-assistance.tsx");
+ const page=read("src/app/espace/projet/accompagnement/page.tsx");
+ assert.ok(page.includes('requireRole("learner")'));
+ assert.ok(ui.indexOf("Mon récapitulatif de séance")<ui.indexOf('<details className="practice-ai">'));
+ assert.ok(ui.includes("navigator.clipboard.writeText(brief)"));
+ assert.ok(ui.includes("Aucun recours à l'IA n'est obligatoire"));
+ assert.ok(ui.includes("Piste IA non validée"));
+ assert.ok(ui.includes("Aucun XP"));
+ assert.ok(!ui.includes("localStorage"));
+ assert.ok(read("src/app/espace/projet/page.tsx").includes('href="/espace/projet/accompagnement"'));
+});
+test("project coaching needs explicit consent and bounded voluntary context",()=>{
+ const api=read("src/app/api/coach/route.ts");
+ const ui=read("src/components/product-practice-assistance.tsx");
+ assert.ok(api.includes('body.consent!==true'));
+ assert.ok(api.includes('body.previous_exchange!==undefined'));
+ assert.ok(api.includes('project?600:1200'));
+ assert.ok(api.includes('/ingenierie-produit-ia/project/coach'));
+ assert.ok(api.includes('if(origin!==allowed)'));
+ assert.ok(ui.includes('scope:"project",consent:true'));
+ assert.ok(ui.includes('setConsent(false)'));
+ assert.ok(ui.includes('slice(0,400)'));
+ assert.ok(ui.includes("Aucun dossier, backlog, carnet"));
+ assert.ok(read("src/components/workshop-coach.tsx").includes("ses consignes priment toujours"));
+});
