@@ -1,11 +1,11 @@
 const test=require("node:test"),assert=require("node:assert/strict"),fs=require("node:fs"),path=require("node:path"),ts=require("typescript"),vm=require("node:vm");
 const read=p=>fs.readFileSync(path.join(__dirname,"..",p),"utf8");
 const exportsObj={};vm.runInNewContext(ts.transpileModule(read("src/lib/ai-training-plans.ts"),{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2022}}).outputText,{exports:exportsObj});
-const {aiTrainingPlans,trainingHours,getAiTrainingPlan,estimateTraining,estimateLabel}=exportsObj;
+const {aiTrainingPlans,trainingHours,trainingMinutes,formatWorkload,getAiTrainingPlan,estimateTraining,estimateLabel}=exportsObj;
 test("all seven courses have 16 workload-budgeted activities with domain-specific methods",()=>{
- const expected={"ingenierie-produit-ia":160,"design-produit-ux-ui-motion":60,"copywriting-communication-contenu-ia":40,"marketing-acquisition-ia":62,"automatisation-integrations-agents-ia":64,"infrastructure-devops-cybersecurite":90,"entrepreneuriat-numerique-monetisation":43};
+ const expected={"ingenierie-produit-ia":63,"design-produit-ux-ui-motion":22,"copywriting-communication-contenu-ia":11.5,"marketing-acquisition-ia":20.25,"automatisation-integrations-agents-ia":25,"infrastructure-devops-cybersecurite":25.75,"entrepreneuriat-numerique-monetisation":13};
  assert.equal(aiTrainingPlans.length,7);
- for(const [slug,hours] of Object.entries(expected)){const plan=getAiTrainingPlan(slug);assert.ok(plan);assert.equal(trainingHours(plan),hours);assert.equal(plan.modules.length,8);assert.equal(plan.modules.flatMap(m=>m.activities).length,16);for(const m of plan.modules){assert.equal(m.activities.length,2);for(const a of m.activities){assert.ok(a.hours>0&&Number.isInteger(a.hours));assert.ok(a.procedure.length>40);}}}
+ for(const [slug,hours] of Object.entries(expected)){const plan=getAiTrainingPlan(slug);assert.ok(plan);assert.equal(trainingHours(plan),hours);assert.equal(plan.modules.length,8);assert.equal(plan.modules.flatMap(m=>m.activities).length,16);for(const m of plan.modules){assert.equal(m.activities.length,2);for(const a of m.activities){assert.ok(a.minutes>=30&&a.minutes<=360&&Number.isInteger(a.minutes));assert.ok(a.procedure.length>40);assert.equal(a.hours*60,a.minutes);assert.equal(a.understandingMinutes+a.productionMinutes+a.verificationMinutes,a.minutes);assert.ok(a.verificationMinutes>0&&a.productionMinutes>0);}}}
  assert.equal(new Set(aiTrainingPlans.flatMap(p=>p.modules.flatMap(m=>m.activities.map(a=>a.procedure)))).size,112);
 });
 test("calendar estimate rounds work sessions up, only uses fixed days and never invents availability",()=>{
@@ -26,3 +26,5 @@ test("catalogue derives personalized estimates from the authenticated learner on
  assert.ok(pilot.includes("<TrainingDuration plan={plan} rhythm={rhythm}"));
  assert.ok(studio.includes("Les critères officiels restent inchangés."));
 });
+
+test("minute budgets are formatted without decimal hours and sum correctly",()=>{assert.equal(formatWorkload(45),"45 min");assert.equal(formatWorkload(75),"1 h 15");assert.equal(formatWorkload(1545),"25 h 45");const devops=getAiTrainingPlan("infrastructure-devops-cybersecurite");assert.equal(devops.modules[1].activities[0].minutes,45);assert.equal(devops.modules[1].activities[1].minutes,60);assert.equal(trainingMinutes(devops),1545);assert.equal(estimateLabel(trainingHours(devops),{regular_days:[1,2,3,4],minutes_per_day:360}),"1 sem. + 1 séance");assert.equal(aiTrainingPlans.reduce((n,p)=>n+trainingMinutes(p),0),10830);});

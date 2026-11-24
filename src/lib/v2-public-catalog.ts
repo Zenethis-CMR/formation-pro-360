@@ -5,7 +5,7 @@
 export const pilotCourse={
   "slug": "ingenierie-produit-ia",
   "name": "Ingénierie produit et IA",
-  "summary": "Huit semaines pour concevoir, livrer, tester, promouvoir et commercialiser un produit numérique.",
+  "summary": "Concevoir, livrer, tester, promouvoir et commercialiser un produit numérique à ton rythme avec l’IA.",
   "deliverable": "Application SaaS ou outil métier : flux en ligne au jour 14, MVP testé au premier mois, expérimentation commerciale au deuxième.",
   "modules": [
     {

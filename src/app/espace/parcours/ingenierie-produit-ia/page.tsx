@@ -2,7 +2,7 @@ import Link from "next/link";
 import { ArrowLeft, ArrowRight, BadgeCheck, BookOpen, CheckCircle2, Clock3, LockKeyhole, Sparkles } from "lucide-react";
 import { requireRole } from "@/lib/auth/require-role";
 import { backendRequest } from "@/lib/auth/backend";
-import {getAiTrainingPlan,trainingHours} from "@/lib/ai-training-plans";
+import {getAiTrainingPlan,trainingHours,formatWorkload} from "@/lib/ai-training-plans";
 import {TrainingDuration} from "@/components/training-duration";
 import {getCatalogStudyRhythm} from "@/lib/catalog-study-rhythm";
 import { pilotCourse } from "@/lib/v2-public-catalog";
@@ -60,7 +60,7 @@ export default async function V2LearnerTrack({searchParams}:{
       <span className="journey-overline"><Sparkles size={15}/> FORMATION · PROJET FIL ROUGE</span>
       <h1>Ingénierie produit et IA<span>.</span></h1>
       <p>Construis ton produit numérique : premier flux en ligne, MVP testé, puis essais de commercialisation. Les huit modules sont des étapes pédagogiques, pas une échéance imposée.</p>
-      <div className="v2-track-facts"><span><BookOpen size={15}/> 8 modules</span><span><BadgeCheck size={15}/> 16 ateliers</span><span><Clock3 size={15}/> {trainingHours(plan)} h de travail</span></div>
+      <div className="v2-track-facts"><span><BookOpen size={15}/> 8 modules</span><span><BadgeCheck size={15}/> 16 ateliers</span><span><Clock3 size={15}/> {formatWorkload(trainingHours(plan)*60)} de travail</span></div>
     </header>
     <TrainingDuration plan={plan} rhythm={rhythm}/>
     {params.livrable==="envoye"&&<p className="alert success" role="status">Ton livrable a été transmis. Le formateur peut maintenant le corriger.</p>}

@@ -3,7 +3,8 @@ import {notFound} from "next/navigation";
 import {ArrowLeft,ArrowRight,ArrowUpRight,Award,BookOpen,CheckCircle2,ChevronRight,ClipboardCheck,Clock3,ExternalLink,Flag,LockKeyhole,MessageSquare,ShieldCheck,Sparkles,Target,TriangleAlert,Trophy} from "lucide-react";
 import {requireRole} from "@/lib/auth/require-role";
 import {backendRequest} from "@/lib/auth/backend";
-import {getAiTrainingPlan} from "@/lib/ai-training-plans";
+import {ActivityWorkload} from "@/components/activity-workload";
+import {getAiTrainingPlan,formatWorkload} from "@/lib/ai-training-plans";
 import {pilotCourse} from "@/lib/v2-public-catalog";
 import {v2WorkshopGuides} from "@/lib/v2-workshop-guides";
 import {V2WorkshopChecklist,V2WorkshopCopyTools} from "@/components/v2-workshop-tools";
@@ -130,7 +131,7 @@ export default async function V2WorkshopStudio({params,searchParams}:{
         <h1>{lesson?.title||editorial.title}<span>.</span></h1>
         <p>{lesson?.objective||editorial.objective}</p>
         <div className="studio-hero-tags"><span><BookOpen size={15}/> Atelier {position+1}/16</span>
-          <span><Clock3 size={15}/> {aiActivity?.hours??v2WorkshopGuides[slug].minutes/60} h de travail indicatives</span>
+          <span><Clock3 size={15}/> {formatWorkload(aiActivity?.minutes??v2WorkshopGuides[slug].minutes)} de travail indicatif</span>
           <span><Award size={15}/> 100 XP après validation</span>
           {lesson&&<span><ShieldCheck size={15}/> Leçon officielle publiée</span>}
         </div>
@@ -178,7 +179,7 @@ export default async function V2WorkshopStudio({params,searchParams}:{
           <p className="studio-leading">{guide?.brief}</p>
           <div className="studio-human-note"><MessageSquare size={19}/><div><strong>Un atelier pratique, avec ton formateur.</strong><p>Les consignes et démonstrations se travaillent ensemble. Les outils servent à préparer, pratiquer et documenter ton travail ; seul le formateur valide les réalisations.</p><Link href="/espace/apprenant/aide">Demander un accompagnement <ArrowRight size={14}/></Link></div></div>
           <div className="studio-objective-card"><span>CONSIGNE OFFICIELLE · EXERCICE GUIDÉ</span><p>{lesson?.guided_work}</p></div>
-          {aiActivity&&<div className="studio-objective-card"><span>MÉTHODE IA · REPÈRE DE PRODUCTION COMPLÉMENTAIRE</span><p>{aiActivity.procedure}</p><p>Vérifie le résultat, documente les corrections et explique tes choix au formateur. Les critères officiels restent inchangés.</p></div>}
+          {aiActivity&&<div className="studio-objective-card"><span>MÉTHODE IA · REPÈRE DE PRODUCTION COMPLÉMENTAIRE</span><ActivityWorkload activity={aiActivity}/><p>{aiActivity.procedure}</p><p>Vérifie le résultat, documente les corrections et explique tes choix au formateur. Les critères officiels restent inchangés.</p></div>}
           <div className="studio-objective-card is-independent"><span>CONSIGNE OFFICIELLE · TRAVAIL AUTONOME</span><p>{lesson?.independent_work}</p></div>
         </section>
         {guide&&(workbook&&lesson&&data?.enrollment==="active"?
@@ -269,7 +270,7 @@ export default async function V2WorkshopStudio({params,searchParams}:{
         </section>}
         <nav className="studio-next-nav" aria-label="Navigation entre ateliers">
           {previous?<Link href={base+"/atelier/"+previous.slug}><ArrowLeft size={16}/><span><small>ATELIER PRÉCÉDENT</small><strong>{previous.title}</strong></span></Link>:<span/>}
-          {next?<Link href={base+"/atelier/"+next.slug}><span><small>ATELIER SUIVANT</small><strong>{next.title}</strong></span><ArrowRight size={16}/></Link>:<Link href={base}><span><small>FIN DU PARCOURS</small><strong>Revoir les huit semaines</strong></span><ArrowRight size={16}/></Link>}
+          {next?<Link href={base+"/atelier/"+next.slug}><span><small>ATELIER SUIVANT</small><strong>{next.title}</strong></span><ArrowRight size={16}/></Link>:<Link href={base}><span><small>FIN DU PARCOURS</small><strong>Revoir les huit modules</strong></span><ArrowRight size={16}/></Link>}
         </nav>
       </div>
 

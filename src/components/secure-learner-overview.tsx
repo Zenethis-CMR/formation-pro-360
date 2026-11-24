@@ -4,7 +4,7 @@ import Link from "next/link";
 import { ArrowRight, Award, BadgeCheck, BookOpen, ClipboardCheck, Code2, GraduationCap, Info, Search, Sparkles, Target, TrendingUp, Trophy } from "lucide-react";
 import { LearnerCompactProfile } from "@/components/secure-academy-shell";
 import { TechnologyBadge, technologiesForMission, displayDomain } from "@/components/technology-badge";
-import {getAiTrainingPlan,trainingHours,estimateLabel,type StudyRhythm} from "@/lib/ai-training-plans";
+import {getAiTrainingPlan,trainingHours,estimateLabel,formatWorkload,type StudyRhythm} from "@/lib/ai-training-plans";
 import type { V2DashboardPilot } from "@/lib/v2-dashboard-pilot";
 
 export type OverviewMission={
@@ -54,7 +54,7 @@ export function SecureLearnerOverview({missions,submissions,approvedIds,dependen
         <p>Du problème utilisateur au MVP en ligne, puis aux premiers essais commerciaux. Un projet fil rouge et des réalisations évaluées.</p>
         <div className="feature-meta">
           <span className="feature-tech-logos"><TechnologyBadge name="React" compact/><TechnologyBadge name="Next.js" compact/><TechnologyBadge name="PostgreSQL" compact/></span>
-          <span>8 modules · 16 ateliers · {workload} h{duration?" · "+duration+" au rythme choisi":""}</span>
+          <span>8 modules · 16 ateliers · {formatWorkload(workload*60)}{duration?" · "+duration+" au rythme choisi":""}</span>
         </div>
         <div className="v2-feature-actions">
           <Link href={resumeHref} className="feature-action">{actionLabel} <ArrowRight size={16}/></Link>
