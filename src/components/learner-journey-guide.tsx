@@ -62,6 +62,7 @@ export function LearnerJourneyGuide({pilot,profileSaved}:{pilot:V2DashboardPilot
       <div className="learner-journey-actions">
         <Link href={message.href} className="learner-journey-cta">{message.action}<ArrowRight size={16}/></Link>
         {stage==="profile"&&<Link className="learner-journey-skip" href={route}>Passer cette étape <ArrowRight size={14}/></Link>}
+        {!finished&&<Link className="learner-journey-skip" href="/espace/diagnostic">Faire mon diagnostic facultatif <ArrowRight size={14}/></Link>}
       </div>
     </header>
     <ol className="learner-journey-steps" aria-label="Les étapes de mon apprentissage">
