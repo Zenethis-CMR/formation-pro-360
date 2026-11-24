@@ -1,4 +1,5 @@
 import Link from "next/link";
+import {ProductWorkspaceNav} from "@/components/product-workspace-nav";
 import { ArrowLeft, ArrowRight, BriefcaseBusiness, LockKeyhole, ShieldCheck, TriangleAlert } from "lucide-react";
 import { requireRole } from "@/lib/auth/require-role";
 import { backendRequest } from "@/lib/auth/backend";
@@ -39,6 +40,7 @@ export default async function LearnerPortfolioPage(){
       <Link href="/espace/apprenant?onglet=progression"><ArrowLeft size={16}/> Ma progression</Link>
       <Link href="/espace/parcours/ingenierie-produit-ia">Les 16 ateliers <ArrowRight size={15}/></Link>
     </div>
+    <ProductWorkspaceNav active="portfolio"/>
     {!data?
       <section className="portfolio-unavailable" role="status">
         {response?.status===403?<LockKeyhole size={29}/>:<TriangleAlert size={29}/>}
