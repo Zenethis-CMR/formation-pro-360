@@ -1,0 +1,33 @@
+const test=require("node:test");
+const assert=require("node:assert/strict");
+const fs=require("node:fs");
+const path=require("node:path");
+const vm=require("node:vm");
+const ts=require("typescript");
+const read=p=>fs.readFileSync(path.join(__dirname,"..",p),"utf8");
+const output=ts.transpileModule(read("src/lib/learner-entry-diagnostic.ts"),{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2022}}).outputText;
+const exportsObject={};
+vm.runInNewContext(output,{exports:exportsObject});
+const {diagnosticScenarios,assessEntryDiagnostic}=exportsObject;
+test("seven distinct scenarios give deterministic feedback and reject partial or invalid answers",()=>{
+ assert.equal(diagnosticScenarios.length,7);
+ assert.equal(new Set(diagnosticScenarios.map(s=>s.id)).size,7);
+ assert.equal(assessEntryDiagnostic({}),null);
+ const answers=Object.fromEntries(diagnosticScenarios.map(s=>[s.id,s.correct]));
+ assert.equal(assessEntryDiagnostic(answers).correctCount,7);
+ const wrong={...answers,product:0};
+ assert.equal(assessEntryDiagnostic(wrong).correctCount,6);
+ assert.equal(assessEntryDiagnostic({...answers,product:99}),null);
+});
+test("all recommendations reference existing workshops; diagnostic remains optional and private",()=>{
+ const catalog=read("src/lib/v2-public-catalog.ts");
+ for(const s of diagnosticScenarios)assert.ok(catalog.includes('"slug": "'+s.workshop+'"'));
+ const page=read("src/app/espace/diagnostic/page.tsx");
+ const ui=read("src/components/learner-entry-diagnostic.tsx");
+ assert.ok(page.includes('requireRole("learner")'));
+ assert.ok(ui.includes("Passer le diagnostic"));
+ assert.ok(ui.includes("Résultat non sauvegardé"));
+ assert.ok(ui.includes("aucun XP"));
+ assert.ok(!ui.includes("localStorage"));
+ assert.ok(read("src/components/learner-journey-guide.tsx").includes('/espace/diagnostic'));
+});
