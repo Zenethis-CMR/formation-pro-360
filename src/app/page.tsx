@@ -183,7 +183,7 @@ export default async function HomePage() {
                   <a className="landing-button landing-button-primary" href="#formations">Explorer les formations <ArrowRight size={17} /></a>
                   <a className="landing-button landing-button-secondary" href="/login">J’ai déjà un compte</a>
                 </div>
-                <p className="landing-hero-note"><ShieldCheck size={15} /> Présentiel à Douala, Makepe BM de préférence, ou à distance.</p>
+                <p className="landing-hero-note"><ShieldCheck size={15} /><span>Présentiel à <strong>Makepe BM, Douala Cameroun</strong> de préférence, ou à distance.</span></p>
               </Reveal>
               <Reveal className="landing-hero-art" delay={140}><LandingPreview /></Reveal>
             </section>
