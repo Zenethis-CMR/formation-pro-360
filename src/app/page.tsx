@@ -140,7 +140,7 @@ function LandingPreview() {
         src="/images/landing-dashboard.png"
         alt="Tableau de bord apprenant Formation Pro 360, avec le parcours en cours et sa progression"
         width={1920}
-        height={1224}
+        height={1226}
         priority
       />
     </div>
@@ -183,7 +183,7 @@ export default async function HomePage() {
                   <a className="landing-button landing-button-primary" href="#formations">Explorer les formations <ArrowRight size={17} /></a>
                   <a className="landing-button landing-button-secondary" href="/login">J’ai déjà un compte</a>
                 </div>
-                <p className="landing-hero-note"><ShieldCheck size={15} /> Consulte les programmes librement. Les inscriptions ouvertes sont confirmées dans ton espace.</p>
+                <p className="landing-hero-note"><ShieldCheck size={15} /> Formations en présentiel à Douala (Makepe BM de préférence) ou à distance. Consulte les programmes librement.</p>
                 <div className="landing-hero-trust">
                   <span className="landing-trust-avatars" aria-hidden="true"><i><Target size={13} /></i><i><BookOpen size={13} /></i><i><BadgeCheck size={13} /></i></span>
                   <span><strong>Du concret à chaque étape</strong><small>Ateliers · réalisations · retours humains</small></span>
@@ -301,6 +301,7 @@ export default async function HomePage() {
               <Reveal className="landing-faq-intro"><h2 id="faq-title">Quelques réponses<br /><span>pour bien commencer.</span></h2><p>Découvre comment se déroule le parcours avant de créer ton espace.</p></Reveal>
               <div className="landing-faq-list">
                 <details className="landing-faq-item"><summary>Est-ce que je peux consulter les formations avant de m’inscrire ? <ChevronDown size={18} /></summary><p>Oui. Tu peux explorer les domaines et les projets présentés. Les possibilités d’inscription sont confirmées dans ton espace personnel.</p></details>
+                <details className="landing-faq-item"><summary>Où se déroulent les formations ? <ChevronDown size={18} /></summary><p>Les formations sont proposées en présentiel à Douala, de préférence à Makepe BM, ou à distance.</p></details>
                 <details className="landing-faq-item"><summary>Est-ce que le parcours impose un rythme fixe ? <ChevronDown size={18} /></summary><p>Tu peux définir tes disponibilités et avancer selon ton rythme. Les durées affichées sont des estimations, pas une échéance imposée.</p></details>
                 <details className="landing-faq-item"><summary>Comment mes réalisations sont-elles évaluées ? <ChevronDown size={18} /></summary><p>Tu déposes le travail demandé dans l’atelier. Ton formateur peut ensuite te transmettre une correction et des indications pour poursuivre.</p></details>
                 <details className="landing-faq-item"><summary>Quelle place est donnée à l’intelligence artificielle ? <ChevronDown size={18} /></summary><p>L’IA fait partie de plusieurs domaines de formation. Les ressources pédagogiques t’aident à l’utiliser pour produire, tester et vérifier ton travail avec discernement.</p></details>
