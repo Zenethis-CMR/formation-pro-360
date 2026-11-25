@@ -178,16 +178,12 @@ export default async function HomePage() {
               <div className="landing-hero-glow landing-hero-glow-two" aria-hidden="true" />
               <Reveal className="landing-hero-copy">
                 <h1 id="landing-title">Apprends en réalisant.<br /><span>Construis ton avenir professionnel.</span></h1>
-                <p className="landing-hero-description">Des compétences qui se construisent en pratique, un projet à montrer et un formateur qui t’accompagne à chaque étape.</p>
+                <p className="landing-hero-description">Des ateliers pratiques, un projet concret et l’accompagnement d’un formateur.</p>
                 <div className="landing-hero-actions">
                   <a className="landing-button landing-button-primary" href="#formations">Explorer les formations <ArrowRight size={17} /></a>
                   <a className="landing-button landing-button-secondary" href="/login">J’ai déjà un compte</a>
                 </div>
-                <p className="landing-hero-note"><ShieldCheck size={15} /> Formations en présentiel à Douala (Makepe BM de préférence) ou à distance. Consulte les programmes librement.</p>
-                <div className="landing-hero-trust">
-                  <span className="landing-trust-avatars" aria-hidden="true"><i><Target size={13} /></i><i><BookOpen size={13} /></i><i><BadgeCheck size={13} /></i></span>
-                  <span><strong>Du concret à chaque étape</strong><small>Ateliers · réalisations · retours humains</small></span>
-                </div>
+                <p className="landing-hero-note"><ShieldCheck size={15} /> Présentiel à Douala, Makepe BM de préférence, ou à distance.</p>
               </Reveal>
               <Reveal className="landing-hero-art" delay={140}><LandingPreview /></Reveal>
             </section>
@@ -319,7 +315,10 @@ export default async function HomePage() {
             <Brand />
             <span>Apprendre. Construire. Progresser.</span>
             <div><a href="#formations">Formations</a><a href="#methode">Notre méthode</a><a href="/login">Mon espace</a></div>
-            <small>© {new Date().getFullYear()} Formation Pro 360</small>
+            <div className="landing-footer-meta">
+              <small className="landing-footer-copyright">© {new Date().getFullYear()} Formation Pro 360</small>
+              <small className="landing-footer-credit">Propulsé par <a href="https://zenithis.tech" target="_blank" rel="noreferrer">Zenithis LLC</a></small>
+            </div>
           </footer>
         </div>
       </div>

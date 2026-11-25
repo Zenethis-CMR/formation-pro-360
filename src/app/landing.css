@@ -502,3 +502,35 @@
   .landing-page *, .landing-page *::before, .landing-page *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
   .landing-reveal, .landing-reveal[data-reveal-state="hidden"] { opacity: 1; transform: none; }
 }
+
+/* Keep the hero focused and give the dashboard, journey strip, and catalog room to breathe. */
+.landing-hero { padding-bottom: 42px; }
+.landing-hero-copy { max-width: 1400px; }
+.landing-hero h1 { max-width: 1400px; font-size: clamp(40px, 4.4vw, 66px); }
+.landing-hero-description { max-width: 690px; margin: 16px auto 20px; }
+.landing-hero-note { max-width: none; margin-top: 12px; font-size: 13px; }
+.landing-hero-trust { display: none; }
+.landing-path-strip { min-height: 132px; padding-top: 24px; padding-bottom: 24px; }
+.landing-path-line { top: 50%; transform: translateY(-50%); }
+.landing-programs-section { padding-top: 58px; }
+.landing-footer .landing-footer-meta { grid-column: 1 / -1; display: flex; align-items: center; justify-content: space-between; gap: 14px; padding-top: 12px; border-top: 1px solid #f0f3f8; }
+.landing-footer-meta>small { color: #657b94; font-size: 11px; }
+.landing-footer .landing-footer-credit a { color: #526b85; font-weight: 750; text-decoration: none; }
+.landing-footer .landing-footer-credit a:hover { color: #337ad0; }
+
+@media (max-width: 820px) {
+  .landing-hero { padding-bottom: 34px; }
+  .landing-hero h1 { font-size: clamp(39px, 7vw, 58px); }
+  .landing-path-strip { padding-top: 24px; padding-bottom: 24px; }
+  .landing-programs-section { padding-top: 48px; }
+}
+
+@media (max-width: 560px) {
+  .landing-hero { padding-bottom: 26px; }
+  .landing-hero h1 { font-size: clamp(30px, 8.4vw, 42px); }
+  .landing-hero-note { font-size: 11px; }
+  .landing-path-strip { padding: 20px 17px; }
+  .landing-programs-section { padding-top: 40px; }
+  .landing-footer .landing-footer-meta { gap: 8px; }
+  .landing-footer-meta>small { font-size: 11px; }
+}
