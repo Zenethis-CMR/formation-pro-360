@@ -242,7 +242,7 @@ export default async function HomePage() {
               <div className="landing-hero-glow landing-hero-glow-two" aria-hidden="true" />
               <Reveal className="landing-hero-copy">
                 <div className="landing-eyebrow"><span className="landing-eyebrow-pulse" /> APPRENDRE · PRATIQUER · PROGRESSER</div>
-                <h1 id="landing-title">Apprends en réalisant.<br /><span>Construis ton avenir</span><br /><span className="landing-title-last">professionnel.</span></h1>
+                <h1 id="landing-title">Apprends en réalisant.<br /><span>Construis ton avenir professionnel.</span></h1>
                 <p className="landing-hero-description">Des compétences qui se construisent en pratique, un projet à montrer et un formateur qui t’accompagne à chaque étape.</p>
                 <div className="landing-hero-actions">
                   <a className="landing-button landing-button-primary" href="#formations">Explorer les formations <ArrowRight size={17} /></a>
