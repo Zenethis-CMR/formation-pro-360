@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { cookies } from "next/headers";
@@ -128,85 +129,19 @@ function Brand() {
 }
 
 function LandingPreview() {
-  const firstWorkshop = pilotCourse.modules[0]?.lessons[0]?.title ?? "Découvrir le premier atelier";
   return (
-    <div className="landing-visual-wrap" aria-label="Aperçu illustratif de l’espace apprenant">
+    <div className="landing-visual-wrap">
       <div className="landing-visual-aura" />
       <div className="landing-orbit landing-orbit-one"><span /><i /></div>
       <div className="landing-orbit landing-orbit-two"><span /><i /></div>
-      <div className="landing-float-card landing-float-card-top">
-        <span className="landing-float-icon"><BadgeCheck size={18} /></span>
-        <span><small>TA PROGRESSION</small><strong>Un pas après l’autre</strong></span>
-        <span className="landing-float-spark"><Sparkles size={16} /></span>
-      </div>
-      <div className="landing-dashboard">
-        <div className="landing-dashboard-bar">
-          <div className="landing-window-dots" aria-hidden="true"><i /><i /><i /></div>
-          <span className="landing-dashboard-brand"><span><GraduationCap size={13} /></span> Formation Pro 360</span>
-          <span className="landing-dashboard-status"><i /> Espace apprenant</span>
-          <span className="landing-avatar" aria-hidden="true">FP</span>
-        </div>
-        <div className="landing-dashboard-body">
-          <aside className="landing-dashboard-side" aria-hidden="true">
-            <span className="is-active"><Layers3 size={15} /></span>
-            <span><BookOpen size={15} /></span>
-            <span><Target size={15} /></span>
-            <span><MessageCircle size={15} /></span>
-            <span><BadgeCheck size={15} /></span>
-          </aside>
-          <div className="landing-dashboard-main">
-            <div className="landing-preview-heading">
-              <span className="landing-preview-eyebrow"><Sparkles size={12} /> TON PARCOURS</span>
-              <span className="landing-preview-menu"><i /><i /><i /></span>
-            </div>
-            <div className="landing-course-preview">
-              <div className="landing-course-art"><Lightbulb size={25} /></div>
-              <div className="landing-course-copy">
-                <small>FORMATION ACTIVE</small>
-                <strong>{pilotCourse.name}</strong>
-                <span>Des idées au premier produit testable.</span>
-              </div>
-              <span className="landing-course-arrow"><ArrowUpRight size={17} /></span>
-            </div>
-            <div className="landing-workshop-preview">
-              <div className="landing-workshop-title">
-                <span className="landing-workshop-icon"><Target size={17} /></span>
-                <span><small>PROCHAIN ATELIER</small><strong>{firstWorkshop}</strong></span>
-                <ArrowRight size={15} />
-              </div>
-              <div className="landing-workshop-steps" aria-hidden="true">
-                <span className="is-done"><i><Check size={11} /></i><b>Observer</b></span>
-                <span className="is-current"><i>2</i><b>Formuler</b></span>
-                <span><i>3</i><b>Vérifier</b></span>
-                <span><i>4</i><b>Partager</b></span>
-              </div>
-            </div>
-            <div className="landing-preview-bottom">
-              <span><BookOpen size={14} /><b>Carnet de travail</b><small>Notes et prochaines étapes</small></span>
-              <span><MessageCircle size={14} /><b>Retour formateur</b><small>Des conseils pour progresser</small></span>
-            </div>
-          </div>
-          <aside className="landing-dashboard-rail">
-            <div className="landing-rail-card">
-              <span className="landing-rail-label">LE PARCOURS</span>
-              <strong>{pilotCourse.modules.length} <small>modules</small></strong>
-              <div className="landing-rail-bars" aria-hidden="true">{pilotCourse.modules.map((module) => <i key={module.slug} />)}</div>
-              <span>{pilotWorkshopCount} ateliers · {pilotWorkload ?? "charge à découvrir"}</span>
-            </div>
-            <div className="landing-rail-note">
-              <span><ShieldCheck size={15} /></span>
-              <small>TES RÉALISATIONS</small>
-              <strong>Gardées dans ton espace personnel</strong>
-            </div>
-          </aside>
-        </div>
-      </div>
-      <div className="landing-float-card landing-float-card-bottom">
-        <span className="landing-notebook-icon"><BookOpen size={17} /></span>
-        <span><small>TON CARNET D’ATELIER</small><strong>Notes · étapes · liens de projet</strong></span>
-        <CircleCheck size={17} className="landing-saved-icon" />
-      </div>
-      <div className="landing-visual-caption"><span /><span>UN ESPACE QUI SUIT TON TRAVAIL, PAS À PAS</span></div>
+      <Image
+        className="landing-dashboard-image"
+        src="/images/landing-dashboard.webp"
+        alt="Tableau de bord apprenant Formation Pro 360, avec le parcours en cours et sa progression"
+        width={1187}
+        height={630}
+        priority
+      />
     </div>
   );
 }
@@ -241,7 +176,6 @@ export default async function HomePage() {
               <div className="landing-hero-glow landing-hero-glow-one" aria-hidden="true" />
               <div className="landing-hero-glow landing-hero-glow-two" aria-hidden="true" />
               <Reveal className="landing-hero-copy">
-                <div className="landing-eyebrow"><span className="landing-eyebrow-pulse" /> APPRENDRE · PRATIQUER · PROGRESSER</div>
                 <h1 id="landing-title">Apprends en réalisant.<br /><span>Construis ton avenir professionnel.</span></h1>
                 <p className="landing-hero-description">Des compétences qui se construisent en pratique, un projet à montrer et un formateur qui t’accompagne à chaque étape.</p>
                 <div className="landing-hero-actions">
@@ -255,11 +189,10 @@ export default async function HomePage() {
                 </div>
               </Reveal>
               <Reveal className="landing-hero-art" delay={140}><LandingPreview /></Reveal>
-              <a className="landing-scroll-cue" href="#formations" aria-label="Découvrir les formations"><span /><ChevronDown size={16} /></a>
             </section>
 
             <section className="landing-path-strip" aria-label="Le parcours de formation">
-              <div className="landing-path-label"><span>DE L’ENVIE À LA RÉALISATION</span><strong>Un parcours lisible.<br />Des acquis visibles.</strong></div>
+              <div className="landing-path-label"><strong>Un parcours lisible.<br />Des acquis visibles.</strong></div>
               <div className="landing-path-line" aria-hidden="true" />
               {[
                 ["01", "Découvrir", "Choisir son domaine"],
@@ -279,7 +212,6 @@ export default async function HomePage() {
             <section id="formations" className="landing-section landing-programs-section" aria-labelledby="programs-title">
               <Reveal className="landing-section-heading">
                 <div>
-                  <span className="landing-overline">CHOISIS TON TERRAIN DE JEU</span>
                   <h2 id="programs-title">{catalogCount} domaines.<br /><span>Des projets bien réels.</span></h2>
                 </div>
                 <p>Explore les compétences et les projets proposés. Construis un parcours qui correspond à tes objectifs et à ton temps disponible.</p>
@@ -305,7 +237,6 @@ export default async function HomePage() {
             <section id="methode" className="landing-method-section" aria-labelledby="method-title">
               <div className="landing-method-glow" aria-hidden="true" />
               <Reveal className="landing-method-intro">
-                <span className="landing-overline landing-overline-light">LA MÉTHODE FORMATION PRO 360</span>
                 <h2 id="method-title">Apprendre, c’est<br /><span>faire et recommencer.</span></h2>
                 <p>Tu avances en produisant. Tes ateliers deviennent des réalisations, et chaque retour t’aide à renforcer ton travail.</p>
                 <a href="/login?mode=inscription" className="landing-method-link">Commencer mon parcours <ArrowRight size={16} /></a>
@@ -320,12 +251,11 @@ export default async function HomePage() {
                 ))}
                 <div className="landing-method-connector" aria-hidden="true"><i /><i /><i /></div>
               </div>
-              <div className="landing-method-stamp" aria-hidden="true"><span>PROGRESSER</span><ArrowUpRight size={19} /></div>
             </section>
 
             <section id="espace" className="landing-section landing-benefits-section" aria-labelledby="benefits-title">
               <Reveal className="landing-section-heading landing-benefits-heading">
-                <div><span className="landing-overline">TA FORMATION, AU MÊME ENDROIT</span><h2 id="benefits-title">Tout ce qu’il faut<br /><span>pour aller plus loin.</span></h2></div>
+                <div><h2 id="benefits-title">Tout ce qu’il faut<br /><span>pour aller plus loin.</span></h2></div>
                 <p>Un espace personnel pour organiser ton apprentissage, garder tes notes et retrouver les retours de ton formateur.</p>
               </Reveal>
               <div className="landing-benefit-grid">
@@ -334,7 +264,6 @@ export default async function HomePage() {
                   return (
                     <Reveal key={benefit.title} className={`landing-benefit-card benefit-${benefit.accent}`} delay={index * 110}>
                       <span className="landing-benefit-icon"><Icon size={21} /></span>
-                      <span className="landing-benefit-index">0{index + 1} — TON ESPACE</span>
                       <h3>{benefit.title}</h3>
                       <p>{benefit.description}</p>
                       <div className="landing-benefit-decoration" aria-hidden="true"><i /><i /><i /><i /></div>
@@ -351,7 +280,6 @@ export default async function HomePage() {
 
             <section className="landing-flagship" aria-labelledby="flagship-title">
               <Reveal className="landing-flagship-copy">
-                <span className="landing-overline landing-overline-light">UN PARCOURS POUR PASSER DE L’IDÉE AU PRODUIT</span>
                 <h2 id="flagship-title">Ingénierie produit<br /><span>et intelligence artificielle.</span></h2>
                 <p>Pars d’un problème utilisateur, construis une première solution, puis confronte-la au réel avec des ateliers guidés.</p>
                 <div className="landing-flagship-tags"><span><Layers3 size={14} /> {pilotCourse.modules.length} modules</span><i /><span><BookOpen size={14} /> {pilotWorkshopCount} ateliers</span><i /><span><Clock3 size={14} /> {pilotWorkload ?? "charge proposée"}</span></div>
@@ -369,7 +297,7 @@ export default async function HomePage() {
             </section>
 
             <section className="landing-faq-section" aria-labelledby="faq-title">
-              <Reveal className="landing-faq-intro"><span className="landing-overline">AVANT DE TE LANCER</span><h2 id="faq-title">Quelques réponses<br /><span>pour bien commencer.</span></h2><p>Découvre comment se déroule le parcours avant de créer ton espace.</p></Reveal>
+              <Reveal className="landing-faq-intro"><h2 id="faq-title">Quelques réponses<br /><span>pour bien commencer.</span></h2><p>Découvre comment se déroule le parcours avant de créer ton espace.</p></Reveal>
               <div className="landing-faq-list">
                 <details className="landing-faq-item"><summary>Est-ce que je peux consulter les formations avant de m’inscrire ? <ChevronDown size={18} /></summary><p>Oui. Tu peux explorer les domaines et les projets présentés. Les possibilités d’inscription sont confirmées dans ton espace personnel.</p></details>
                 <details className="landing-faq-item"><summary>Est-ce que le parcours impose un rythme fixe ? <ChevronDown size={18} /></summary><p>Tu peux définir tes disponibilités et avancer selon ton rythme. Les durées affichées sont des estimations, pas une échéance imposée.</p></details>
@@ -380,7 +308,7 @@ export default async function HomePage() {
 
             <section className="landing-final-cta" aria-labelledby="final-cta-title">
               <div className="landing-cta-orb" aria-hidden="true" />
-              <Reveal className="landing-final-cta-copy"><span className="landing-overline">TON PROCHAIN PROJET COMMENCE ICI</span><h2 id="final-cta-title">Prêt·e à faire<br /><span>de tes idées un projet ?</span></h2><p>Choisis un domaine, explore les ateliers et commence à construire quelque chose qui te ressemble.</p></Reveal>
+              <Reveal className="landing-final-cta-copy"><h2 id="final-cta-title">Prêt·e à faire<br /><span>de tes idées un projet ?</span></h2><p>Choisis un domaine, explore les ateliers et commence à construire quelque chose qui te ressemble.</p></Reveal>
               <Reveal className="landing-final-cta-actions" delay={120}><a className="landing-button landing-button-primary" href="/login?mode=inscription">Créer mon compte apprenant <ArrowRight size={17} /></a><a className="landing-cta-login" href="/login">J’ai déjà un compte <ArrowUpRight size={15} /></a><small>Les programmes sont consultables librement.</small></Reveal>
             </section>
           </div>
@@ -393,7 +321,6 @@ export default async function HomePage() {
           </footer>
         </div>
       </div>
-      <div className="landing-bottom-signature" aria-hidden="true"><span>FAIRE. APPRENDRE. RECOMMENCER.</span><span>FORMATION PRO 360 <i>✳</i></span></div>
     </main>
   );
 }
