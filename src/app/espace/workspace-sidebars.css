@@ -65,6 +65,7 @@
 .secure-academy-frame .secure-academy-rail .rail-widget-heading h3{min-width:0;overflow-wrap:anywhere}
 .secure-academy-frame .secure-academy-rail .rail-widget p{font-size:13px;line-height:1.6;color:#536b83}
 .secure-academy-frame .secure-academy-rail .rail-cta{min-height:44px;gap:8px;line-height:1.4;white-space:normal}
+.secure-academy-frame .secure-academy-rail .rail-widget>.rail-cta+.rail-cta{margin-top:8px}
 .secure-academy-frame .secure-academy-rail .rail-cta svg{flex-shrink:0}
 @media(max-width:820px){
  .secure-academy-viewport .secure-academy-frame,
