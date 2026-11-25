@@ -212,8 +212,10 @@ function LandingPreview() {
 }
 
 export default async function HomePage() {
-  const hasSession = (await cookies()).get(authCookieName)?.value;
-  if (hasSession && (await currentUser().catch(() => null))) redirect("/espace");
+  const user = (await cookies()).get(authCookieName)?.value
+    ? await currentUser().catch(() => null)
+    : null;
+  if(user)redirect("/espace");
 
   return (
     <main id="top" className="landing-page">
