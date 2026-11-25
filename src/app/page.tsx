@@ -139,7 +139,7 @@ function LandingPreview() {
         className="landing-dashboard-image"
         src="/images/landing-dashboard.png"
         alt="Tableau de bord apprenant Formation Pro 360, avec le parcours en cours et sa progression"
-        width={1920}
+        width={1897}
         height={1226}
         priority
       />
@@ -190,7 +190,6 @@ export default async function HomePage() {
 
             <section className="landing-path-strip" aria-label="Le parcours de formation">
               <div className="landing-path-label"><strong>Un parcours lisible.<br />Des acquis visibles.</strong></div>
-              <div className="landing-path-line" aria-hidden="true" />
               {[
                 ["01", "Découvrir", "Choisir son domaine"],
                 ["02", "Pratiquer", "Réaliser les ateliers"],
