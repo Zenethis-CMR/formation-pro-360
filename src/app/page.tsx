@@ -132,14 +132,15 @@ function LandingPreview() {
   return (
     <div className="landing-visual-wrap">
       <div className="landing-visual-aura" />
+      <div className="landing-cloudscape" aria-hidden="true" />
       <div className="landing-orbit landing-orbit-one"><span /><i /></div>
       <div className="landing-orbit landing-orbit-two"><span /><i /></div>
       <Image
         className="landing-dashboard-image"
-        src="/images/landing-dashboard.webp"
+        src="/images/landing-dashboard.png"
         alt="Tableau de bord apprenant Formation Pro 360, avec le parcours en cours et sa progression"
-        width={1187}
-        height={630}
+        width={1920}
+        height={1224}
         priority
       />
     </div>
